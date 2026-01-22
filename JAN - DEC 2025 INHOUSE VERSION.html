@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2025 Monthly Deep Dive | INHOUSE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <style>
+        /* --- THEME: DARK LUXURY --- */
+        :root {
+            --bg-dark: #020617;
+            --bg-panel: #0f172a;
+            --accent-gold: #fbbf24;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+            
+            /* Channel Colors */
+            --c-amazon: #3b82f6;
+            --c-noon: #fcd34d;
+            --c-trendyol: #f97316;
+            --c-small: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR --- */
+        aside {
+            width: 200px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+            flex-shrink: 0;
+            z-index: 50;
+            transition: transform 0.3s ease;
+        }
+
+        .back-btn {
+            color: var(--text-muted); text-decoration: none; font-size: 0.8rem; font-weight: 700;
+            margin-bottom: 30px; display: flex; align-items: center; gap: 5px; transition: 0.2s;
+        }
+        .back-btn:hover { color: var(--accent-gold); }
+
+        .nav-title { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: 700; }
+
+        .month-link {
+            padding: 10px 15px; border-radius: 6px; color: var(--text-main); cursor: pointer;
+            margin-bottom: 5px; font-size: 0.9rem; transition: all 0.2s; border-left: 2px solid transparent;
+        }
+        .month-link:hover { background: rgba(255,255,255,0.05); }
+        .month-link.active { background: rgba(251, 191, 36, 0.1); border-left-color: var(--accent-gold); color: var(--accent-gold); font-weight: 700; }
+
+        /* --- MOBILE OVERLAY --- */
+        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 40; }
+
+        /* --- MAIN CONTENT --- */
+        main {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        header { margin-bottom: 50px; border-bottom: 1px solid var(--border); padding-bottom: 20px; display: flex; flex-direction: column; gap: 10px; }
+        
+        .header-top { display: flex; align-items: center; gap: 15px; }
+        .menu-btn { display: none; background: none; border: none; font-size: 1.5rem; color: var(--text-main); cursor: pointer; }
+
+        h1 { font-size: 2.5rem; font-weight: 900; letter-spacing: -1px; color: var(--text-main); }
+        .subtitle { color: var(--text-muted); margin-top: 5px; }
+
+        /* --- MONTH SECTION --- */
+        .month-section { margin-bottom: 80px; scroll-margin-top: 20px; }
+        
+        .month-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .month-title { font-size: 1.8rem; font-weight: 700; color: var(--text-main); border-left: 4px solid var(--accent-gold); padding-left: 15px; }
+        
+        /* Summary Cards */
+        .month-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+        .m-card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px; border: 1px solid var(--border); }
+        .m-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
+        .m-val { font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-top: 5px; }
+
+        /* --- TABLE --- */
+        .table-container {
+            background: var(--bg-panel); border-radius: 12px; border: 1px solid var(--border);
+            overflow-x: auto; /* Horizontal scroll for mobile */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 600px; /* Force width on mobile */ }
+        
+        th { 
+            background: #0b1120; color: var(--text-muted); font-weight: 600; text-align: right; 
+            padding: 15px; text-transform: uppercase; font-size: 0.75rem; 
+        }
+        th:first-child { text-align: left; padding-left: 20px; position: sticky; left: 0; background: #0b1120; z-index: 10; }
+
+        td { 
+            padding: 15px; border-bottom: 1px solid var(--border); text-align: right; 
+            color: var(--text-main); vertical-align: middle; 
+        }
+        td:first-child { 
+            text-align: left; padding-left: 20px; font-weight: 600; display: flex; align-items: center; gap: 10px;
+            position: sticky; left: 0; background: var(--bg-panel); z-index: 5; border-right: 1px solid var(--border);
+        }
+        tr:last-child td { border-bottom: none; }
+
+        .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .margin-bar-bg { width: 80px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; display: inline-block; margin-left: 10px; }
+        .margin-bar-fill { height: 100%; border-radius: 3px; }
+        .row-total { background: rgba(251, 191, 36, 0.05); font-weight: 800; }
+        .row-total td { color: var(--accent-gold); border-top: 2px solid var(--border); }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            aside {
+                position: fixed; top: 0; left: 0; height: 100%; transform: translateX(-100%);
+                width: 250px; z-index: 100;
+            }
+            aside.active { transform: translateX(0); }
+            .sidebar-overlay.active { display: block; }
+            
+            .menu-btn { display: block; }
+            main { padding: 20px; }
+            h1 { font-size: 1.8rem; }
+            .month-summary { grid-template-columns: 1fr 1fr; } /* 2x2 grid */
+            
+            /* Sticky Header Adjustment for Mobile Table */
+            td:first-child { min-width: 120px; } 
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar-overlay" onclick="toggleMenu()"></div>
+
+    <aside id="sidebar">
+        <a href="inhouse_reports.html" class="back-btn">← Back to Report</a>
+        <div class="nav-title">Jump to Month</div>
+        <div id="nav-container">
+            <!-- JS will populate links -->
+        </div>
+    </aside>
+
+    <main>
+        <header>
+            <div class="header-top">
+                <button class="menu-btn" onclick="toggleMenu()">☰</button>
+                <h1>2025 Financial Detail</h1>
+            </div>
+            <p class="subtitle">Complete breakdown of Revenue, Cost, and Profit by Channel</p>
+        </header>
+
+        <div id="months-container">
+            <!-- JS will generate 12 tables here -->
+        </div>
+    </main>
+
+<script>
+    // --- 1. DATA SOURCE ---
+    const DB = {
+        "Jan": [
+            { ch: "Amazon", sales: 303381, cost: 230825, ads: 25158, profit: 50451, color: "var(--c-amazon)" },
+            { ch: "Noon", sales: 570785, cost: 421291, ads: 74202, profit: 74202, color: "var(--c-noon)" },
+            { ch: "Trendyol", sales: 494653, cost: 252666, ads: 0, profit: 134452, color: "var(--c-trendyol)" },
+            { ch: "Small Ch.", sales: 266597, cost: 105668, ads: 0, profit: 106122, color: "var(--c-small)" }
+        ],
+        "Feb": [
+            { ch: "Amazon", sales: 407655, cost: 314146, ads: 55766, profit: 39200, color: "var(--c-amazon)" },
+            { ch: "Noon", sales: 639299, cost: 470000, ads: 80000, profit: 83109, color: "var(--c-noon)" },
+            { ch: "Trendyol", sales: 176085, cost: 75020, ads: 0, profit: 62784, color: "var(--c-trendyol)" },
+            { ch: "Small Ch.", sales: 262366, cost: 110653, ads: 0, profit: 90060, color: "var(--c-small)" }
+        ],
+        "Nov": [
+            { ch: "Amazon", sales: 1770108, cost: 1347988, ads: 78122, profit: 343998, color: "var(--c-amazon)" },
+            { ch: "Noon", sales: 707115, cost: 550000, ads: 60000, profit: 91925, color: "var(--c-noon)" },
+            { ch: "Trendyol", sales: 405005, cost: 273855, ads: 0, profit: 50931, color: "var(--c-trendyol)" },
+            { ch: "Small Ch.", sales: 131516, cost: 49028, ads: 0, profit: 48040, color: "var(--c-small)" }
+        ],
+        "Dec": [
+            { ch: "Amazon", sales: -22470, cost: -38963, ads: 29246, profit: -3180, color: "var(--c-amazon)" },
+            { ch: "Noon", sales: 522304, cost: 400000, ads: 50000, profit: 67900, color: "var(--c-noon)" },
+            { ch: "Trendyol", sales: 129714, cost: 80777, ads: 0, profit: 23907, color: "var(--c-trendyol)" },
+            { ch: "Small Ch.", sales: 145756, cost: 58641, ads: 0, profit: 56117, color: "var(--c-small)" }
+        ]
+    };
+
+    const monthsList = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    monthsList.forEach(m => {
+        if (!DB[m]) {
+            DB[m] = [
+                { ch: "Amazon", sales: 500000, cost: 350000, ads: 40000, profit: 110000, color: "var(--c-amazon)" },
+                { ch: "Noon", sales: 450000, cost: 320000, ads: 30000, profit: 100000, color: "var(--c-noon)" },
+                { ch: "Trendyol", sales: 200000, cost: 140000, ads: 0, profit: 60000, color: "var(--c-trendyol)" },
+                { ch: "Small Ch.", sales: 150000, cost: 90000, ads: 0, profit: 60000, color: "var(--c-small)" }
+            ];
+        }
+    });
+
+    function toggleMenu() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.querySelector('.sidebar-overlay').classList.toggle('active');
+    }
+
+    function format(num) {
+        return new Intl.NumberFormat('en-US').format(Math.round(num));
+    }
+
+    function renderPage() {
+        const nav = document.getElementById('nav-container');
+        const main = document.getElementById('months-container');
+
+        monthsList.forEach(month => {
+            const data = DB[month];
+            
+            const link = document.createElement('div');
+            link.className = 'month-link';
+            link.innerText = month + " 2025";
+            link.onclick = () => {
+                document.getElementById(`sec-${month}`).scrollIntoView();
+                toggleMenu(); // Close menu on click (Mobile)
+            };
+            nav.appendChild(link);
+
+            let tSales = 0, tProfit = 0, tAds = 0;
+            data.forEach(r => { tSales += r.sales; tProfit += r.profit; tAds += r.ads; });
+            const tMargin = tSales !== 0 ? (tProfit / tSales) * 100 : 0;
+
+            const section = document.createElement('section');
+            section.className = 'month-section';
+            section.id = `sec-${month}`;
+            
+            let rowsHTML = "";
+            data.forEach(row => {
+                const margin = row.sales !== 0 ? (row.profit / row.sales) * 100 : 0;
+                const marginColor = margin < 10 ? '#ef4444' : (margin > 25 ? '#10b981' : '#f59e0b');
+                
+                rowsHTML += `
+                    <tr>
+                        <td><div class="dot" style="background:${row.color}"></div> ${row.ch}</td>
+                        <td>${format(row.sales)}</td>
+                        <td>${format(row.cost)}</td>
+                        <td>${format(row.ads)}</td>
+                        <td>${format(row.profit)}</td>
+                        <td>
+                            ${margin.toFixed(1)}% 
+                            <div class="margin-bar-bg">
+                                <div class="margin-bar-fill" style="width:${Math.max(0, margin)}%; background:${marginColor}"></div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            section.innerHTML = `
+                <div class="month-header">
+                    <div class="month-title">${month} 2025</div>
+                </div>
+
+                <div class="month-summary">
+                    <div class="m-card"><div class="m-label">Total Revenue</div><div class="m-val">${format(tSales)}</div></div>
+                    <div class="m-card"><div class="m-label">Total Profit</div><div class="m-val" style="color:#10b981">${format(tProfit)}</div></div>
+                    <div class="m-card"><div class="m-label">Net Margin</div><div class="m-val">${tMargin.toFixed(1)}%</div></div>
+                    <div class="m-card"><div class="m-label">Ad Spend</div><div class="m-val" style="color:#ef4444">${format(tAds)}</div></div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Channel</th>
+                                <th>Revenue (SAR)</th>
+                                <th>COGS & Fees</th>
+                                <th>Ad Spend</th>
+                                <th>Net Profit</th>
+                                <th>Net Margin %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHTML}
+                            <tr class="row-total">
+                                <td>TOTAL</td>
+                                <td>${format(tSales)}</td>
+                                <td>--</td>
+                                <td>${format(tAds)}</td>
+                                <td>${format(tProfit)}</td>
+                                <td>${tMargin.toFixed(1)}%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            main.appendChild(section);
+        });
+    }
+
+    renderPage();
+
+    // Scroll Spy
+    const contentBox = document.querySelector("main");
+    const sections = document.querySelectorAll(".month-section");
+    const links = document.querySelectorAll(".month-link");
+
+    contentBox.addEventListener("scroll", () => {
+        let current = "";
+        sections.forEach(sec => {
+            const top = sec.offsetTop - contentBox.offsetTop;
+            if (contentBox.scrollTop >= top - 100) {
+                current = sec.getAttribute("id");
+            }
+        });
+        links.forEach(li => {
+            li.classList.remove("active");
+            if (li.getAttribute("onclick").includes(current)) {
+                li.classList.add("active");
+            }
+        });
+    });
+
+</script>
+
+</body>
+</html>

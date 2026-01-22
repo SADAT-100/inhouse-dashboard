@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Inhouse Marketplace Command Center</title>
+    
+    <!-- GOLDEN FAVICON -->
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/128/1553/1553879.png" type="image/png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --accent-cyan: #06b6d4;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 20%),
+                              radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 20%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        header { text-align: center; margin-bottom: 40px; margin-top: 20px; }
+        
+        h1 { 
+            font-size: 3rem; 
+            font-weight: 800; 
+            letter-spacing: -1px; 
+            margin-bottom: 10px; 
+            background: linear-gradient(to right, #ffffff, #fcd34d); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            line-height: 1.1;
+        }
+        
+        p { color: var(--text-muted); font-size: 1.1rem; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* CARD STYLES */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 25px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3);
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--accent-color);
+        }
+
+        .icon {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            background: rgba(255,255,255,0.05);
+            width: 50px; height: 50px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 12px;
+        }
+
+        .card h2 { font-size: 1.3rem; margin-bottom: 8px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+        .card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; flex-grow: 1; }
+
+        .btn {
+            background: rgba(255,255,255,0.05);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            transition: background 0.2s;
+            margin-top: auto;
+            font-size: 0.9rem;
+        }
+        
+        .card:hover .btn { background: var(--accent-color); color: white; }
+
+        /* Card Specifics */
+        .planner { --accent-color: var(--accent-blue); }
+        .reports { --accent-color: var(--accent-cyan); }
+        .bfl { --accent-color: var(--accent-purple); }
+        .pricing { --accent-color: var(--accent-green); }
+        .forecast { --accent-color: var(--accent-orange); }
+
+        .lock-icon { font-size: 1rem; opacity: 0.5; }
+
+        /* --- MOBILE MEDIA QUERY --- */
+        @media (max-width: 600px) {
+            body { align-items: flex-start; padding: 15px; }
+            h1 { font-size: 2.2rem; }
+            p { font-size: 1rem; }
+            header { margin-bottom: 30px; }
+            .grid { grid-template-columns: 1fr; } /* Force single column stack */
+            .card { padding: 20px; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Inhouse Marketplace Hub</h1>
+            <p>Central Command for Strategy, Logistics & Financial Planning</p>
+        </header>
+
+        <div class="grid">
+            
+            <!-- 1. MAIN PLANNER -->
+            <a href="2026_Manager_App_Final.html" class="card planner">
+                <div class="icon">📊</div>
+                <h2>2026 Strategy Planner</h2>
+                <p>The main AOP Dashboard. Manage the 26M Target, Profit Margins, and Monthly Channel KPIs.</p>
+                <div class="btn">Launch Dashboard →</div>
+            </a>
+
+            <!-- 2. INHOUSE REPORTS -->
+            <a href="inhouse_reports.html" class="card reports">
+                <div class="icon">📑</div>
+                <h2>Inhouse Reports</h2>
+                <p>Comprehensive sales analysis, monthly reporting, and performance metrics visualization.</p>
+                <div class="btn">View Reports →</div>
+            </a>
+
+            <!-- 3. BFL RECOVERY (PASSWORD PROTECTED) -->
+            <div onclick="checkPassword()" class="card bfl">
+                <div class="icon">🤝</div>
+                <h2>BFL Recovery Task <span class="lock-icon">🔒</span></h2>
+                <p>Action plan for Shukran to recover the Brands For Less account, stock, and payments.</p>
+                <div class="btn">Open Task Guide →</div>
+            </div>
+
+            <!-- 4. PRICING TOOL -->
+            <a href="Pricing_Calculator.html" class="card pricing">
+                <div class="icon">💰</div>
+                <h2>Pricing Calculator</h2>
+                <p>Calculate margins for Amazon & Noon. Ensure you hit the 15% profit target before listing.</p>
+                <div class="btn">Open Calculator →</div>
+            </a>
+
+            <!-- 5. RAMADAN FORECAST (Placeholder) -->
+            <div class="card forecast" style="opacity: 0.6; cursor: not-allowed;">
+                <div class="icon">🌙</div>
+                <h2>Ramadan Forecast</h2>
+                <p>Coming Soon: Inventory planning for FBA/FBN specific to the Ramadan rush.</p>
+                <div class="btn">Coming Soon</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- PASSWORD SCRIPT -->
+    <script>
+        function checkPassword() {
+            var password = prompt("🔒 Restricted Access\nPlease enter the Admin Password:");
+            
+            if (password === "4321") {
+                window.location.href = "Task_BFL_Recovery.html";
+            } else if (password != null) {
+                alert("❌ Access Denied: Incorrect Password");
+            }
+        }
+    </script>
+
+</body>
+</html>

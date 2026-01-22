@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Inhouse Strategic Planner v4.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- SheetJS for Excel Export -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --sidebar-bg: #0f172a;
+            --sidebar-hover: #1e293b;
+            --active-blue: #3b82f6;
+            --main-bg: #f8fafc;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --border: #cbd5e1;
+            --dark-header: #0f172a;
+            --card-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body { display: flex; height: 100vh; background-color: var(--main-bg); overflow: hidden; }
+
+        /* --- SIDEBAR --- */
+        aside {
+            width: 260px;
+            min-width: 260px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 25px 20px;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            z-index: 50;
+            flex-shrink: 0;
+            overflow-y: auto; 
+        }
+
+        .sidebar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; height: 40px; }
+
+        .back-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: fit-content; gap: 8px; padding: 8px 12px;
+            text-decoration: none; color: #94a3b8; font-size: 0.75rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px; transition: all 0.2s ease;
+        }
+        .back-btn:hover { background: rgba(142, 237, 11, 0.1); border-color: #8eed0b; color: #ffffff; }
+
+        .channel-logo {
+            width: 36px; height: 36px; object-fit: contain; background: white;
+            border-radius: 8px; padding: 4px; display: none; animation: fadeIn 0.4s ease;
+            box-shadow: 0 0 10px rgba(255,255,255,0.1);
+        }
+
+        .brand { font-size: 1.2rem; font-weight: 800; color: white; margin-bottom: 30px; letter-spacing: -1px; display: flex; align-items: center; gap: 10px; }
+        .brand-icon { background: var(--active-blue); width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+        .nav-section { font-size: 0.7rem; color: #64748b; font-weight: 700; margin-top: 20px; margin-bottom: 10px; padding-left: 10px; letter-spacing: 1px; }
+
+        .nav-item {
+            padding: 12px 15px; margin-bottom: 5px; border-radius: 8px; cursor: pointer; transition: all 0.2s;
+            font-weight: 500; color: #94a3b8; display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem;
+        }
+        .nav-item:hover { background-color: var(--sidebar-hover); color: white; }
+        .nav-item.active { background-color: var(--active-blue); color: white; font-weight: 700; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+        .tag { font-size: 0.7rem; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; }
+
+        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 40; }
+
+        /* --- MAIN LAYOUT --- */
+        main { flex: 1; padding: 0; overflow-y: auto; display: flex; flex-direction: column; position: relative; }
+
+        .view-section { padding: 40px; display: none; animation: fadeIn 0.3s ease; max-width: 1400px; margin: 0 auto; width: 100%; }
+        .view-section.active-view { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; gap: 15px; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-dark); }
+        h1 { font-size: 2rem; color: var(--text-dark); font-weight: 800; letter-spacing: -1px; }
+        .subtitle { color: var(--text-light); }
+
+        .action-btn {
+            background: white; border: 1px solid var(--border); padding: 8px 15px; border-radius: 6px; 
+            cursor: pointer; font-size: 0.9rem; font-weight: 600; color: var(--text-dark); display: inline-flex; align-items: center; gap: 8px;
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .action-btn:hover { background: #f1f5f9; border-color: var(--active-blue); }
+        .btn-primary { background: var(--active-blue); color: white; border: none; }
+        .btn-primary:hover { background: #2563eb; }
+
+        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .card { background: white; padding: 25px; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--card-shadow); }
+        .card-label { font-size: 0.8rem; color: var(--text-light); font-weight: 600; text-transform: uppercase; margin-bottom: 10px; }
+        .card-value { font-size: 2rem; font-weight: 800; color: var(--text-dark); }
+        .card-sub { font-size: 0.9rem; margin-top: 5px; font-weight: 500; }
+        .positive { color: #10b981; }
+        .comment-box { width: 100%; height: 150px; padding: 15px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Inter', sans-serif; resize: none; margin-top: 10px; font-size: 0.95rem; }
+
+        .controls { background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 20px; }
+        .input-group label { display: block; font-size: 0.7rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; text-transform: uppercase; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: bold; color: var(--text-dark); }
+        .mix-control { display: flex; gap: 10px; }
+        .mix-input { flex: 1; } .mix-input input { text-align: center; }
+
+        .table-container { background: white; border-radius: 12px; border: 1px solid var(--border); overflow-x: auto; box-shadow: var(--card-shadow); margin-bottom: 50px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 800px; }
+        th { background: var(--dark-header); color: white; font-weight: 600; text-align: right; padding: 15px; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; }
+        th:first-child { text-align: left; padding-left: 20px; position: sticky; left: 0; z-index: 11; background: var(--dark-header); }
+        th:last-child { text-align: left; padding-right: 20px; }
+        td { padding: 8px 15px; border-bottom: 1px solid var(--border); text-align: right; color: var(--text-dark); vertical-align: middle; }
+        td:first-child { text-align: left; padding-left: 20px; font-weight: 600; position: sticky; left: 0; background: white; z-index: 5; border-right: 1px solid #f1f5f9; }
+
+        .editable-num { background: #f1f5f9; border-radius: 4px; padding: 6px 10px; cursor: text; font-family: 'Courier New', monospace; font-weight: 600; transition: all 0.2s; display: inline-block; min-width: 80px; }
+        .editable-num:hover, .editable-text:hover { background: white; box-shadow: 0 0 0 2px var(--active-blue); }
+        .editable-text { cursor: text; border-bottom: 1px dashed #94a3b8; padding: 2px; }
+
+        .kpi-wrapper { display: flex; align-items: center; gap: 5px; width: 100%; }
+        .kpi-select { width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; background: white; font-size: 0.85rem; color: var(--text-dark); cursor: pointer; }
+        .custom-kpi-input { width: 100%; padding: 8px; border: 2px solid var(--active-blue); border-radius: 6px; font-size: 0.85rem; color: var(--text-dark); flex: 1; }
+        .reset-kpi-btn { background: #ef4444; color: white; border: none; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.2s; }
+        .reset-kpi-btn:hover { background: #dc2626; }
+
+        .row-ramadan { background: #eff6ff; }
+        .row-ramadan td:first-child { border-left: 4px solid var(--active-blue); color: var(--active-blue); background: #eff6ff; }
+        .row-friday { background: #fff7ed; }
+        .row-friday td:first-child { border-left: 4px solid #ea580c; color: #ea580c; background: #fff7ed; }
+        .row-total { background: var(--dark-header); color: white; }
+        .row-total td { color: white; font-weight: 800; font-size: 1.1rem; padding: 20px 15px; border: none; background: var(--dark-header); }
+
+        #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 4px; padding: 16px; position: fixed; z-index: 100; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 1rem; }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
+        /* --- IMPORT MODAL --- */
+        .modal {
+            display: none; position: fixed; z-index: 200; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background-color: white; margin: 10% auto; padding: 30px; border-radius: 12px;
+            width: 80%; max-width: 600px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .modal textarea {
+            width: 100%; height: 200px; margin-top: 15px; padding: 15px;
+            border: 1px solid #cbd5e1; border-radius: 8px; font-family: monospace; font-size: 0.85rem;
+        }
+        .modal-header { font-size: 1.2rem; font-weight: 700; color: var(--text-dark); margin-bottom: 10px; }
+        .modal-sub { font-size: 0.9rem; color: var(--text-light); margin-bottom: 15px; }
+        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close:hover { color: black; }
+
+        @media (max-width: 1024px) { .controls, .summary-grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 768px) {
+            aside { position: fixed; top: 0; left: 0; height: 100%; transform: translateX(-100%); width: 80%; max-width: 300px; }
+            aside.show-menu { transform: translateX(0); }
+            .sidebar-overlay.active { display: block; }
+            .menu-btn { display: block; }
+            .view-section { padding: 20px; }
+            .summary-grid, .controls { grid-template-columns: 1fr; }
+            .mix-control { flex-wrap: wrap; }
+            .mix-input { min-width: 45%; }
+            header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            h1 { font-size: 1.5rem; }
+            .subtitle { font-size: 0.8rem; }
+            .action-btn { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar-overlay" onclick="toggleMenu()"></div>
+
+    <aside id="appSidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="back-btn"><span class="arrow">←</span> Hub</a>
+            <img id="activeLogo" class="channel-logo" src="" alt="Logo">
+        </div>
+
+        <div class="brand">
+            <span class="brand-icon"></span> INHOUSE 2026
+            <span style="margin-left:auto; cursor:pointer; font-size:1.5rem; display:none;" onclick="toggleMenu()" class="close-mobile">×</span>
+        </div>
+
+        <div class="nav-section">DASHBOARD</div>
+        <div class="nav-item active" onclick="switchPage('summary', this); toggleMenu()"><span>🏠 Executive Summary</span></div>
+
+        <div class="nav-section">PLANNING</div>
+        <div class="nav-item" onclick="switchPage('total', this); toggleMenu()"><span>📊 Total Company</span><span class="tag">100%</span></div>
+        <div class="nav-item" onclick="switchPage('amazon', this); toggleMenu()"><span>📦 Amazon</span><span class="tag" id="tag-amazon">30%</span></div>
+        <div class="nav-item" onclick="switchPage('noon', this); toggleMenu()"><span>🟡 Noon</span><span class="tag" id="tag-noon">30%</span></div>
+        <div class="nav-item" onclick="switchPage('trendyol', this); toggleMenu()"><span>🟠 Trendyol</span><span class="tag" id="tag-trendyol">20%</span></div>
+        <div class="nav-item" onclick="switchPage('small', this); toggleMenu()"><span>🏢 Small Channels</span><span class="tag" id="tag-small">20%</span></div>
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div style="font-size: 0.7rem; color: #64748b; margin-bottom: 10px;">DATA ACTIONS</div>
+            <button class="action-btn btn-primary" onclick="saveData()" style="width:100%; justify-content:center;">💾 Save Work</button>
+            <div style="display: flex; gap: 5px; margin-top: 10px;">
+                <button class="action-btn" onclick="sendToGoogleSheet()" style="flex: 1; border:1px solid #10b981; color:#10b981; justify-content: center;">☁️ Sync</button>
+                <button class="action-btn" onclick="resetGoogleSheet()" style="flex: 1; border:1px solid #ef4444; color:#ef4444; justify-content: center;">🗑️ Reset</button>
+            </div>
+        </div>
+    </aside>
+
+    <main>
+        <!-- SUMMARY VIEW -->
+        <div id="view-summary" class="view-section active-view">
+            <header>
+                <div class="header-left">
+                    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+                    <div>
+                        <h1>Executive Overview</h1>
+                        <p class="subtitle">2026 Strategy & Financial Outlook</p>
+                    </div>
+                </div>
+                <button class="action-btn" onclick="window.print()">🖨️ Export PDF</button>
+            </header>
+            <div class="summary-grid">
+                <div class="card" style="border-left: 5px solid var(--active-blue);"><div class="card-label">Total 2026 Target</div><div class="card-value" id="sum-target">26,000,000</div><div class="card-sub">SAR Revenue</div></div>
+                <div class="card" style="border-left: 5px solid #10b981;"><div class="card-label">Projected Net Profit</div><div class="card-value" id="sum-profit">3,900,000</div><div class="card-sub positive">15% Margin Secured</div></div>
+                <div class="card" style="border-left: 5px solid #f59e0b;"><div class="card-label">Growth vs 2025</div><div style="margin-bottom: 5px; font-size: 0.8rem; color: #64748b;">2025 Actuals (Enter): <input type="number" id="lastYearActual" value="20000000" oninput="updateGrowth()" style="border:none; border-bottom:1px solid #ccc; width: 80px; font-weight:bold;"></div><div class="card-value" id="growth-metric">+30%</div><div class="card-sub">Year-over-Year</div></div>
+            </div>
+            <div class="card"><div class="card-label">Manager's Strategic Notes</div><textarea id="managerNotes" class="comment-box" placeholder="Write your summary here..."></textarea></div>
+        </div>
+
+        <!-- PLANNING VIEW -->
+        <div id="view-planning" class="view-section">
+            <header>
+                <div class="header-left">
+                    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+                    <div>
+                        <h1 id="plan-title">Total Company Target</h1>
+                        <p class="subtitle">Interactive Worksheet. Edit numbers & KPIs directly.</p>
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <button class="action-btn" onclick="openImportModal()" style="border:1px solid #3b82f6; color:#3b82f6;">📋 Import Data</button>
+                    <button class="action-btn" onclick="exportToExcel()">📥 Download Excel</button>
+                </div>
+            </header>
+            <div class="controls">
+                <div class="input-group"><label>Target (SAR)</label><input type="number" id="totalTarget" value="26000000" onchange="regenerateTable()"></div>
+                <div class="input-group"><label>Profit %</label><input type="number" id="profitMargin" value="15" onchange="regenerateTable()"></div>
+                <div class="input-group">
+                    <label>Mix % (Amz / Noon / Trendy / Small)</label>
+                    <div class="mix-control">
+                        <div class="mix-input"><input type="number" id="mixAmazon" value="30" onchange="regenerateTable()"></div>
+                        <div class="mix-input"><input type="number" id="mixNoon" value="30" onchange="regenerateTable()"></div>
+                        <div class="mix-input"><input type="number" id="mixTrendy" value="20" onchange="regenerateTable()"></div>
+                        <div class="mix-input"><input type="number" id="mixSmall" value="20" onchange="regenerateTable()"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="planningTable">
+                    <thead><tr><th style="width: 10%;">Month</th><th style="width: 25%;">Seasonality (Editable)</th><th style="width: 20%;">Sales Target</th><th style="width: 20%;">Profit Target</th><th style="width: 25%;">Strategic Focus</th></tr></thead>
+                    <tbody id="table-body"></tbody>
+                    <tfoot><tr class="row-total"><td>TOTAL</td><td>--</td><td id="grand-sales">0</td><td id="grand-profit">0</td><td></td></tr></tfoot>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- IMPORT MODAL -->
+    <div id="importModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeImportModal()">&times;</span>
+            <div class="modal-header">📋 Import Data from Excel</div>
+            <div class="modal-sub">Copy your 4 columns (Seasonality, Sales, Profit, Strategy) from Excel and paste them below. <strong>Do not include the Month column.</strong></div>
+            <textarea id="importText" placeholder="Paste your Excel data here...&#10;Example:&#10;Winter Clearance	600,000	90,000	Strategy 1&#10;Ramadan Rush	800,000	120,000	Strategy 2"></textarea>
+            <div style="text-align: right; margin-top: 15px;">
+                <button class="action-btn btn-primary" onclick="processImport()">Process Data</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast">Data Saved Successfully!</div>
+
+<script>
+    let currentView = 'summary'; 
+    let tableData = {}; 
+    const KPI_OPTIONS = ["Select KPI...", "Launch New SKUs (Content)", "Optimize Top 10 Listings", "High ROAS Ads (Marketing)", "Aggressive Clearance", "Inbound FBA/FBN", "Reduce Returns", "Influencer Campaign", "✎ Type Custom KPI..."];
+    const seasonality = [{ m: 'Jan', w: 0.07, note: 'Winter Clearance' }, { m: 'Feb', w: 0.11, note: 'RAMADAN RUSH 🌙' }, { m: 'Mar', w: 0.14, note: 'RAMADAN PEAK 🌙' }, { m: 'Apr', w: 0.06, note: 'Eid Slowdown' }, { m: 'May', w: 0.07, note: 'Regular Season' }, { m: 'Jun', w: 0.06, note: 'Summer Start' }, { m: 'Jul', w: 0.06, note: 'Summer/Travel' }, { m: 'Aug', w: 0.07, note: 'Back to School' }, { m: 'Sep', w: 0.08, note: 'National Day 🇸🇦' }, { m: 'Oct', w: 0.08, note: 'Pre-Winter' }, { m: 'Nov', w: 0.12, note: 'WHITE FRIDAY 🏷️' }, { m: 'Dec', w: 0.08, note: 'Year End' }];
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJIczNh4gh1ynYCXSh7q5KCpsvWoDP43DbweceBJmORpZOOtRnIYCZDTuVuYhKZHGn/exec"; 
+    const LOGOS = { amazon: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg", noon: "https://f.nooncdn.com/s/app/com/noon/design-system/logos/noon-logo-en.svg", trendyol: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Trendyol_Logo.svg/2560px-Trendyol_Logo.svg.png", small: "https://cdn-icons-png.flaticon.com/512/3081/3081559.png" };
+
+    function toggleMenu() { document.getElementById('appSidebar').classList.toggle('show-menu'); document.querySelector('.sidebar-overlay').classList.toggle('active'); }
+
+    function switchPage(pageId, element) {
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        if(element) element.classList.add('active');
+        document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
+        
+        const logoImg = document.getElementById('activeLogo');
+        if(LOGOS[pageId]) { logoImg.src = LOGOS[pageId]; logoImg.style.display = 'block'; } else { logoImg.style.display = 'none'; }
+
+        if (pageId === 'summary') {
+            document.getElementById('view-summary').classList.add('active-view');
+            updateSummaryData();
+        } else {
+            document.getElementById('view-planning').classList.add('active-view');
+            const titles = { 'total': 'Total Company Overview', 'amazon': 'Amazon Channel Target', 'noon': 'Noon Channel Target', 'trendyol': 'Trendyol Growth Plan', 'small': 'Home Center, Rugaib, Center Point, Retkom, Homzmart, Carrefour' };
+            document.getElementById('plan-title').innerText = titles[pageId];
+            currentView = pageId;
+            regenerateTable();
+        }
+    }
+
+    function formatNum(n) { return new Intl.NumberFormat('en-US').format(Math.round(n)); }
+    function parseNum(s) { return parseFloat(s.toString().replace(/,/g, '')) || 0; }
+
+    function updateGrowth() {
+        const target = parseNum(document.getElementById('sum-target').innerText);
+        const lastYear = parseFloat(document.getElementById('lastYearActual').value) || 0;
+        if(lastYear > 0) {
+            const growth = ((target - lastYear) / lastYear) * 100;
+            const el = document.getElementById('growth-metric');
+            el.innerText = (growth > 0 ? "+" : "") + growth.toFixed(1) + "%";
+            el.style.color = growth > 0 ? "#10b981" : "#ef4444";
+        }
+    }
+
+    function updateSummaryData() {
+        const total = document.getElementById('totalTarget').value;
+        const profitPct = document.getElementById('profitMargin').value / 100;
+        document.getElementById('sum-target').innerText = formatNum(total);
+        document.getElementById('sum-profit').innerText = formatNum(total * profitPct);
+        updateGrowth();
+    }
+
+    function regenerateTable() {
+        const total = parseFloat(document.getElementById('totalTarget').value);
+        const profitPct = parseFloat(document.getElementById('profitMargin').value) / 100;
+        const mix = { amazon: parseFloat(document.getElementById('mixAmazon').value)/100, noon: parseFloat(document.getElementById('mixNoon').value)/100, trendyol: parseFloat(document.getElementById('mixTrendy').value)/100, small: parseFloat(document.getElementById('mixSmall').value)/100 };
+        document.getElementById('tag-amazon').innerText = (mix.amazon * 100).toFixed(0) + "%";
+        document.getElementById('tag-noon').innerText = (mix.noon * 100).toFixed(0) + "%";
+        document.getElementById('tag-trendyol').innerText = (mix.trendyol * 100).toFixed(0) + "%";
+        document.getElementById('tag-small').innerText = (mix.small * 100).toFixed(0) + "%";
+        
+        let base = total;
+        if (currentView !== 'total') base = total * mix[currentView];
+        const savedViewData = tableData[currentView];
+        const tbody = document.getElementById('table-body');
+        tbody.innerHTML = '';
+
+        seasonality.forEach((m, idx) => {
+            let s, p, note, kpiVal;
+            if (savedViewData && savedViewData[idx]) {
+                s = savedViewData[idx].sales;
+                p = savedViewData[idx].profit;
+                note = savedViewData[idx].note;
+                kpiVal = savedViewData[idx].kpi;
+            } else {
+                s = base * m.w;
+                p = s * profitPct;
+                note = m.note;
+                kpiVal = m.kpi || "";
+            }
+            let cls = '';
+            if (note.toLowerCase().includes('ramadan')) cls = 'row-ramadan';
+            if (note.toLowerCase().includes('friday')) cls = 'row-friday';
+            const tr = `<tr class="${cls}"><td>${m.m}</td><td><div class="editable-text" contenteditable="true">${note}</div></td><td><div class="editable-num sales-cell" contenteditable="true" onblur="reFormat(this)" oninput="calcFooter()">${formatNum(s)}</div></td><td><div class="editable-num profit-cell" contenteditable="true" onblur="reFormat(this)" oninput="calcFooter()">${formatNum(p)}</div></td><td class="kpi-cell">${generateKPISelect(kpiVal)}</td></tr>`;
+            tbody.innerHTML += tr;
+        });
+        calcFooter();
+    }
+
+    function generateKPISelect(savedValue) {
+        if (savedValue && !KPI_OPTIONS.includes(savedValue)) {
+            return `<div class="kpi-wrapper"><input type="text" class="custom-kpi-input" value="${savedValue}" onblur="saveData()"><button class="reset-kpi-btn" onclick="restoreDropdown(this)">✖</button></div>`;
+        }
+        let html = `<div class="kpi-wrapper"><select class="kpi-select" onchange="checkCustomKPI(this)">`;
+        KPI_OPTIONS.forEach(opt => { let sel = (opt === savedValue) ? "selected" : ""; html += `<option value="${opt}" ${sel}>${opt}</option>`; });
+        html += `</select></div>`;
+        return html;
+    }
+
+    function checkCustomKPI(select) {
+        if (select.value.includes("Type Custom")) {
+            const parent = select.parentElement;
+            parent.innerHTML = `<input type="text" class="custom-kpi-input" placeholder="Type strategy..." autofocus onblur="saveData()"><button class="reset-kpi-btn" onclick="restoreDropdown(this)">✖</button>`;
+        }
+    }
+
+    function restoreDropdown(btn) {
+        const parent = btn.parentElement;
+        parent.innerHTML = `<select class="kpi-select" onchange="checkCustomKPI(this)">` + KPI_OPTIONS.map(opt => `<option value="${opt}">${opt}</option>`).join('') + `</select>`;
+        saveData();
+    }
+
+    function calcFooter() {
+        let s = 0, p = 0;
+        document.querySelectorAll('.sales-cell').forEach(c => s += parseNum(c.innerText));
+        document.querySelectorAll('.profit-cell').forEach(c => p += parseNum(c.innerText));
+        document.getElementById('grand-sales').innerText = formatNum(s);
+        document.getElementById('grand-profit').innerText = formatNum(p);
+    }
+
+    function reFormat(el) { el.innerText = formatNum(parseNum(el.innerText)); calcFooter(); }
+
+    function openImportModal() { document.getElementById('importModal').style.display = 'block'; }
+    function closeImportModal() { document.getElementById('importModal').style.display = 'none'; }
+
+    // --- IMPORT LOGIC ---
+    function processImport() {
+        const text = document.getElementById('importText').value;
+        const rows = text.split('\n');
+        const newData = [];
+
+        // Loop rows (Max 12)
+        for (let i = 0; i < Math.min(rows.length, 12); i++) {
+            if(!rows[i].trim()) continue; // Skip empty rows
+            const cols = rows[i].split('\t'); // Split by Tab (Excel copy)
+            
+            // Expected Format: Note | Sales | Profit | KPI
+            // Handle loose formatting
+            const note = cols[0] || "";
+            const sales = cols[1] ? parseNum(cols[1]) : 0;
+            const profit = cols[2] ? parseNum(cols[2]) : 0;
+            const kpi = cols[3] || "";
+
+            newData.push({ note, sales, profit, kpi });
+        }
+
+        if(newData.length > 0) {
+            tableData[currentView] = newData;
+            regenerateTable();
+            saveData();
+            closeImportModal();
+            showToast("Data Imported Successfully!");
+        } else {
+            alert("Could not parse data. Ensure you copied from Excel.");
+        }
+    }
+
+    // ... (Export, Save, Load, Sync, Reset functions same as before) ...
+    function exportToExcel() {
+        const data = []; data.push(["Month", "Seasonality", "Sales Target", "Profit Target", "Strategic Focus"]);
+        document.querySelectorAll("#table-body tr").forEach(row => {
+            const rowData = [row.cells[0].innerText, row.cells[1].innerText, row.cells[2].innerText, row.cells[3].innerText];
+            const select = row.cells[4].querySelector('select');
+            const input = row.cells[4].querySelector('input');
+            if (select) rowData.push(select.value); else if (input) rowData.push(input.value); else rowData.push("");
+            data.push(rowData);
+        });
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, currentView + "_Target");
+        XLSX.writeFile(wb, `Inhouse_2026_${currentView}.xlsx`);
+    }
+    function showToast(msg) { var x = document.getElementById("toast"); x.innerText = msg; x.className = "show"; setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000); }
+    function saveData() {
+        const rows = document.querySelectorAll("#table-body tr");
+        const currentData = [];
+        document.querySelectorAll("#table-body tr").forEach(row => {
+            let kpiVal = "";
+            const select = row.cells[4].querySelector('select');
+            const input = row.cells[4].querySelector('input');
+            if (select) kpiVal = select.value; else if (input) kpiVal = input.value;
+            currentData.push({ note: row.cells[1].innerText, sales: parseNum(row.cells[2].innerText), profit: parseNum(row.cells[3].innerText), kpi: kpiVal });
+        });
+        tableData[currentView] = currentData;
+        localStorage.setItem('managerNotes', document.getElementById('managerNotes').value);
+        localStorage.setItem('tableData', JSON.stringify(tableData));
+        showToast("Work Saved to Browser Memory!");
+    }
+    window.onload = function() {
+        if(localStorage.getItem('managerNotes')) document.getElementById('managerNotes').value = localStorage.getItem('managerNotes');
+        if(localStorage.getItem('tableData')) tableData = JSON.parse(localStorage.getItem('tableData'));
+        regenerateTable();
+    };
+    function sendToGoogleSheet() {
+        if (GOOGLE_SCRIPT_URL === "") { alert("⚠️ Error: Please paste your Google Web App URL in the code first."); return; }
+        const trs = document.querySelectorAll("#table-body tr");
+        if (trs.length === 0) { alert("⚠️ Error: No data found. Please refresh."); return; }
+        const tableRows = [];
+        trs.forEach(tr => {
+            const month = tr.cells[0].textContent.trim();
+            const note = tr.cells[1].textContent.trim();
+            const sales = tr.cells[2].textContent.trim();
+            const profit = tr.cells[3].textContent.trim();
+            let kpiValue = "";
+            const select = tr.querySelector("select");
+            const input = tr.querySelector("input");
+            if (select) kpiValue = select.value; else if (input) kpiValue = input.value; else kpiValue = tr.cells[4].textContent.trim();
+            tableRows.push({ month: month, seasonality: note, sales: sales, profit: profit, kpi: kpiValue });
+        });
+        const specificChannelTotal = document.getElementById('grand-sales').innerText;
+        const payload = { view: currentView, totalTarget: specificChannelTotal, tableRows: tableRows };
+        const btn = document.querySelector("button[onclick='sendToGoogleSheet()']");
+        const originalText = btn.innerText;
+        btn.innerText = "⏳ Sending...";
+        fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+        .then(response => { showToast("✅ Synced! Check Google Sheet."); btn.innerText = originalText; })
+        .catch(error => { console.error('Error:', error); alert("Failed to connect."); btn.innerText = originalText; });
+    }
+    function resetGoogleSheet() {
+        var password = prompt("🔒 RESTRICTED ACCESS\nEnter Admin Password to Reset Sheet:");
+        if (password !== "4321") { alert("❌ Access Denied: Incorrect Password."); return; }
+        if (!confirm("⚠️ WARNING: This will delete ALL data in the Google Sheet.\n\nAre you sure you want to proceed?")) return;
+        if (GOOGLE_SCRIPT_URL === "") { alert("Error: No Script URL found."); return; }
+        const btn = document.querySelector("button[onclick='resetGoogleSheet()']");
+        const originalText = btn.innerHTML;
+        btn.innerText = "⏳...";
+        fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: "reset" }) })
+        .then(response => { showToast("🗑️ Google Sheet Cleared!"); btn.innerHTML = originalText; })
+        .catch(error => { alert("Connection Failed"); btn.innerHTML = originalText; });
+    }
+</script>
+
+</body>
+</html>

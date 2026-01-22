@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task: Reconnect BFL | Inhouse</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* --- DESIGN THEME: CLEAN & BRIGHT --- */
+        :root {
+            --bg-color: #f8fafc; /* Ultra Light Blue-Grey */
+            --card-bg: #ffffff;
+            --primary: #4f46e5; /* Indigo */
+            --primary-light: #e0e7ff;
+            --text-main: #0f172a; /* Slate 900 */
+            --text-light: #64748b; /* Slate 500 */
+            --success: #10b981;
+            --radius: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container { max-width: 800px; margin: 0 auto; }
+
+        /* --- HEADER --- */
+        header { text-align: center; margin-bottom: 40px; }
+        
+        .badge {
+            background: #e0e7ff; color: #3730a3;
+            padding: 8px 16px; border-radius: 50px;
+            font-weight: 800; text-transform: uppercase; font-size: 0.8rem;
+            display: inline-block; margin-bottom: 15px;
+        }
+
+        h1 { font-size: 2.5rem; font-weight: 900; line-height: 1.2; margin-bottom: 10px; color: var(--text-main); }
+        .subtitle { color: var(--text-light); font-size: 1.1rem; }
+
+        /* --- CARDS --- */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+            border: 1px solid #e2e8f0;
+        }
+
+        h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .number { 
+            background: var(--text-main); color: white; 
+            width: 28px; height: 28px; border-radius: 8px; 
+            display: flex; align-items: center; justify-content: center; font-size: 0.9rem; 
+        }
+
+        /* --- CONFLICT BOX --- */
+        .conflict-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .opinion-box { padding: 15px; border-radius: 12px; font-size: 0.9rem; }
+        .bashir { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        .omar { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+
+        /* --- ACTION LIST --- */
+        .step { display: flex; gap: 15px; margin-bottom: 15px; background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #f1f5f9; }
+        .check { 
+            width: 24px; height: 24px; background: var(--primary-light); color: var(--primary); 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;
+        }
+        .step-content { flex: 1; }
+        .step-title { font-weight: 700; margin-bottom: 5px; font-size: 1rem; }
+        
+        .contact-box {
+            background: #eef2ff;
+            color: #4338ca;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 5px;
+            border: 1px solid #c7d2fe;
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+
+        /* --- MESSAGE BOX --- */
+        .msg-box {
+            background: #1e293b; color: #e2e8f0; padding: 25px; border-radius: 12px;
+            font-family: monospace; position: relative; line-height: 1.6;
+        }
+        .copy-btn {
+            position: absolute; top: 15px; right: 15px;
+            background: var(--primary); color: white; border: none;
+            padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;
+            font-family: sans-serif; transition: all 0.2s;
+        }
+        .copy-btn:hover { background: #4338ca; }
+
+        @media (max-width: 600px) {
+            .conflict-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <header>
+            <div class="badge">Priority Task</div>
+            <h1>Reconnect with BFL</h1>
+            <p class="subtitle">Brands For Less (BFL) • Relationship Recovery</p>
+        </header>
+
+        <!-- 1. THE SITUATION -->
+        <div class="card">
+            <h2><span class="number">1</span> The Confusion</h2>
+            <p style="color: var(--text-light); margin-bottom: 10px;">
+                Shukran, we have two different stories about this account. We need to find the truth.
+            </p>
+            
+            <div class="conflict-grid">
+                <div class="opinion-box bashir">
+                    <strong>Bashir says:</strong><br>
+                    "BFL returned ALL the stock. We have nothing left with them. The account is done."
+                </div>
+                <div class="opinion-box omar">
+                    <strong>Mr. Omar says:</strong><br>
+                    "We need to reconnect. We want to verify the status and find a way to <strong>restart the business</strong>."
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. YOUR MISSION -->
+        <div class="card">
+            <h2><span class="number">2</span> Your Mission</h2>
+            <p style="color: var(--text-main); font-weight: 500; margin-bottom: 10px;">
+                Contact the BFL Manager, <strong>Ms. Piyal</strong>.
+            </p>
+            <ul style="margin-top: 10px; margin-left: 20px; color: var(--primary); line-height: 1.6;">
+                <li><strong>Goal 1:</strong> Confirm "Officially" if Stock is 0 and Balance is 0.</li>
+                <li><strong>Goal 2:</strong> Tell her we want to start fresh and supply them again.</li>
+                <li><strong>Goal 3:</strong> Get a meeting date to discuss "Reconnection."</li>
+            </ul>
+        </div>
+
+        <!-- 3. ACTION STEPS -->
+        <div class="card">
+            <h2><span class="number">3</span> Action Steps</h2>
+            
+            <div class="step">
+                <div class="check">1</div>
+                <div class="step-content">
+                    <div class="step-title">Save the Contact</div>
+                    <div>Here is Ms. Piyal's direct number:</div>
+                    <div class="contact-box">+966 50 907 3486</div>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="check">2</div>
+                <div class="step-content">
+                    <div class="step-title">Send the Message</div>
+                    Use the template below. It is professional and focused on "Restarting Business."
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="check">3</div>
+                <div class="step-content">
+                    <div class="step-title">The Meeting</div>
+                    The purpose of the meeting is to <strong>Discuss Reconnection</strong>. We need to open the door again.
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. SCRIPT -->
+        <div class="card">
+            <h2><span class="number">4</span> Message to Ms. Piyal</h2>
+            <p style="margin-bottom: 10px; color: var(--text-light);">Copy this and send it via WhatsApp/Email:</p>
+            
+            <div class="msg-box">
+                <button class="copy-btn" onclick="copyText()">COPY TEXT</button>
+                <div id="msgText">Dear Ms. Piyal,
+
+I hope you are doing well. This is Shukran from Inhouse/Cotton Home.
+
+We are currently reviewing our past partnership. While there has been a gap in communication, our management (Mr. Omar) is very keen to reconnect with you.
+
+We would like to schedule a brief online meeting this week to:
+1. Formally confirm the status of our previous account (Stock/Balance).
+2. Discuss a plan to restart our partnership and supply stock for the coming season.
+
+Looking forward to hearing from you.
+
+Regards,
+Shukran</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function copyText() {
+            const text = document.getElementById('msgText').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.innerText = "COPIED ✅";
+                btn.style.background = "#10b981";
+                setTimeout(() => { 
+                    btn.innerText = "COPY TEXT"; 
+                    btn.style.background = "#4f46e5";
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
