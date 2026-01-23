@@ -481,14 +481,7 @@
             colors: ['#3b82f6'],
             fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.7, opacityTo: 0.1, stops: [0, 90, 100] } },
             xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], labels: { style: { colors: '#cbd5e1' } } },
-            annotations: { xaxis: [{ x: 'Nov', borderColor: '#fbbf24', label: {
-  text: 'White Friday Peak',
-  offsetY: 30,   // 👈 this is the only new line
-  style: {
-    color: '#000',
-    background: '#fbbf24'
-  }
-}] }
+            annotations: { xaxis: [{ x: 'Nov', borderColor: '#fbbf24', labels: { style: { colors: '#cbd5e1' } } }, annotations: { xaxis: [{ x: 'Nov', borderColor: '#fbbf24', label: { style: { color: '#000', background: '#fbbf24' }, text: 'White Friday Peak' } }] }
         }).render();
     </script>
 </body>
