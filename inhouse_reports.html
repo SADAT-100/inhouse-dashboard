@@ -152,27 +152,22 @@
         .chart-dot { width: 8px; height: 8px; background: var(--col-amazon); border-radius: 50%; display: inline-block; }
         .wide { grid-column: span 2; }
 
-        /* --- TABLE FIXES (Show Whole Table) --- */
+        /* --- TABLE FIX START --- */
         .table-card { 
             background: var(--card-glass); 
             border: 1px solid var(--border-glass); 
             padding: 30px; 
             border-radius: 16px; 
             margin-bottom: 40px; 
-        }
-        
-        .table-responsive {
+            /* Fixed: Removed overflow-x: auto from here so it doesn't scroll on desktop */
             width: 100%;
-            overflow-x: auto; /* Scroll only on small screens */
-            -webkit-overflow-scrolling: touch;
         }
-
         .main-table { 
             width: 100%; 
             border-collapse: collapse; 
-            min-width: 600px; /* Ensures text doesn't wrap awkwardly */
+            /* Fixed: Forces columns to fit width */
+            table-layout: fixed;
         }
-        
         .main-table th { 
             text-align: left; 
             padding: 15px; 
@@ -181,16 +176,17 @@
             text-transform: uppercase; 
             font-size: 0.8rem; 
             border-bottom: 1px solid var(--border-glass); 
-            white-space: nowrap; /* Keep headers on one line */
         }
-        
         .main-table td { 
             padding: 15px; 
             color: var(--text-body); 
             border-bottom: 1px solid rgba(255,255,255,0.05); 
             font-weight: 400; 
-            white-space: nowrap; /* Prevents rows from growing tall */
+            /* Fixed: Ensures text wraps if too long */
+            white-space: normal;
+            word-wrap: break-word;
         }
+        /* --- TABLE FIX END --- */
         
         .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
 
@@ -235,10 +231,23 @@
             .kpi-value { font-size: 1.8rem; }
             
             .charts-grid { grid-template-columns: 1fr; }
-            .table-card { padding: 15px; }
+            
+            /* --- MOBILE TABLE FIX START --- */
+            /* Re-enable scrolling ONLY for mobile */
+            .table-card { 
+                padding: 15px; 
+                overflow-x: auto; 
+            }
+            /* Allow table to expand and scroll on mobile */
+            .main-table {
+                table-layout: auto;
+                min-width: 600px; 
+            }
+            /* --- MOBILE TABLE FIX END --- */
             
             /* Alert Grid Stacking */
             .alert-grid { grid-template-columns: 1fr; }
+            
         }
     </style>
 </head>
@@ -406,6 +415,7 @@
             </div>
         </div>
         
+        
         <!-- Alerts -->
         <div class="alert-grid">
             <div class="alert-box">
@@ -414,7 +424,7 @@
             </div>
             <div class="alert-box warning">
                 <h4 style="color:#f59e0b">⚠️ FACTORY TRAFFIC JAM</h4>
-                <p>Small Channels missed Q4 targets because the factory prioritized Amazon. Action: Implement <strong>"October Lock-Down"</strong> to produce Small Channel stock before Amazon peak.</p>
+                <p>Small Channels missed Q4 targets because the factory prioritized other channels like Amazon etc. Action: Implement <strong>"October Lock-Down"</strong> to produce Small Channel stock before Amazon peak.</p>
             </div>
         </div>
 
@@ -447,7 +457,7 @@
             const fileLink = "#"; 
             
             if(fileLink === "#") {
-                alert("📂 LINK PENDING\n\nUpload your PDF report to Google Drive and paste the link in the code.");
+                alert("📂 LINK PENDING\n\n THE FILE NOT YET UPLOAD ...COMING SOON...");
             } else {
                 window.open(fileLink, '_blank');
             }
@@ -475,15 +485,42 @@
         }).render();
 
         // 3. Area Chart
-        new ApexCharts(document.querySelector("#chart-trend"), {
-            series: [{ name: 'Total Sales (M)', data: [1.2, 1.0, 1.4, 0.9, 1.0, 1.1, 1.5, 1.2, 1.3, 1.1, 2.8, 0.8] }],
-            chart: { type: 'area', height: 300, background: 'transparent' },
-            colors: ['#3b82f6'],
-            fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.7, opacityTo: 0.1, stops: [0, 90, 100] } },
-            xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], labels: { style: { colors: '#cbd5e1' } } },
-            annotations: { xaxis: [{ x: 'Nov', borderColor: '#fbbf24', labels: { style: { colors: '#cbd5e1' } } }, annotations: { xaxis: [{ x: 'Nov', borderColor: '#fbbf24', label: { style: { color: '#000', background: '#fbbf24' }, text: 'White Friday Peak' } }] }
-        }).render();
+new ApexCharts(document.querySelector("#chart-trend"), {
+    series: [{
+        name: 'Total Sales (M)',
+        data: [1.2, 1.0, 1.4, 0.9, 1.0, 1.1, 1.5, 1.2, 1.3, 1.1, 2.8, 0.8]
+    }],
+    chart: { type: 'area', height: 300, background: 'transparent' },
+    colors: ['#3b82f6'],
+    fill: {
+        type: 'gradient',
+        gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.7,
+            opacityTo: 0.1,
+            stops: [0, 90, 100]
+        }
+    },
+    xaxis: {
+        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        labels: { style: { colors: '#cbd5e1' } }
+    },
+    annotations: {
+        xaxis: [{
+            x: 'Nov',
+            borderColor: '#fbbf24',
+            label: {
+                text: 'White Friday Peak',
+                offsetY: 30, // 👈 pushed down
+                style: {
+                    color: '#000',
+                    background: '#fbbf24'
+                }
+            }
+        }]
+    }
+}).render();
+
     </script>
 </body>
 </html>
-
