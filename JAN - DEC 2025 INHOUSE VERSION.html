@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>2025 Monthly Deep Dive | INHOUSE</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    
+    <!-- IMPORTANT: Using xlsx-js-style for styling support -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.min.js"></script>
+
     <style>
         /* --- THEME: DARK LUXURY --- */
         :root {
@@ -75,11 +78,31 @@
 
         header { margin-bottom: 50px; border-bottom: 1px solid var(--border); padding-bottom: 20px; display: flex; flex-direction: column; gap: 10px; }
         
-        .header-top { display: flex; align-items: center; gap: 15px; }
+        .header-top { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+
         .menu-btn { display: none; background: none; border: none; font-size: 1.5rem; color: var(--text-main); cursor: pointer; }
 
         h1 { font-size: 2.5rem; font-weight: 900; letter-spacing: -1px; color: var(--text-main); }
         .subtitle { color: var(--text-muted); margin-top: 5px; }
+
+        /* EXCEL BUTTON */
+        .excel-btn {
+            background: #10b981;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        .excel-btn:hover { background: #059669; }
+        .excel-icon { font-size: 1.1rem; }
 
         /* --- MONTH SECTION --- */
         .month-section { margin-bottom: 80px; scroll-margin-top: 20px; }
@@ -126,6 +149,8 @@
 
         /* --- RESPONSIVE --- */
         @media (max-width: 768px) {
+            .header-top { flex-direction: column; align-items: flex-start; }
+            .excel-btn { width: 100%; justify-content: center; }
             aside {
                 position: fixed; top: 0; left: 0; height: 100%; transform: translateX(-100%);
                 width: 250px; z-index: 100;
@@ -162,8 +187,13 @@
     <main>
         <header>
             <div class="header-top">
-                <button class="menu-btn" onclick="toggleMenu()">☰</button>
-                <h1>2025 Financial Detail</h1>
+                <div class="header-left">
+                    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+                    <h1>2025 Financial Detail</h1>
+                </div>
+                <button class="excel-btn" onclick="exportExcel()">
+                    <span class="excel-icon">⇩</span> Download Excel Report
+                </button>
             </div>
             <p class="subtitle">Complete breakdown of Revenue, Cost, and Profit by Channel</p>
         </header>
@@ -174,42 +204,42 @@
     </main>
 
 <script>
-    // --- 1. REAL 2025 DATA SOURCE ---
+    // --- 1. REAL 2025 DATA SOURCE (Updated with Delivered Only Trendyol Data) ---
     const DB = {
         "Jan": [
             { ch: "Amazon", sales: 303381, cost: 227772, ads: 25158, profit: 50451, color: "var(--c-amazon)" },
             { ch: "Noon", sales: 238928, cost: 156811, ads: 0, profit: 82117, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 494653, cost: 360201, ads: 0, profit: 134452, color: "var(--c-trendyol)" },
+            { ch: "Trendyol", sales: 494653, cost: 360200, ads: 0, profit: 134453, color: "var(--c-trendyol)" },
             { ch: "Small Ch.", sales: 266597, cost: 160475, ads: 0, profit: 106122, color: "var(--c-small)" }
         ],
         "Feb": [
             { ch: "Amazon", sales: 407655, cost: 312689, ads: 55766, profit: 39200, color: "var(--c-amazon)" },
             { ch: "Noon", sales: 306351, cost: 206258, ads: 0, profit: 100093, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 176085, cost: 113301, ads: 0, profit: 62784, color: "var(--c-trendyol)" },
+            { ch: "Trendyol", sales: 174941, cost: 112473, ads: 0, profit: 62468, color: "var(--c-trendyol)" },
             { ch: "Small Ch.", sales: 262366, cost: 172306, ads: 0, profit: 90060, color: "var(--c-small)" }
         ],
         "Mar": [
             { ch: "Amazon", sales: 503612, cost: 404602, ads: 74763, profit: 24247, color: "var(--c-amazon)" },
             { ch: "Noon", sales: 400871, cost: 280220, ads: 0, profit: 120651, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 293668, cost: 212518, ads: 0, profit: 81150, color: "var(--c-trendyol)" },
+            { ch: "Trendyol", sales: 293390, cost: 212303, ads: 0, profit: 81087, color: "var(--c-trendyol)" },
             { ch: "Small Ch.", sales: 281319, cost: 196984, ads: 0, profit: 84335, color: "var(--c-small)" }
         ],
         "Apr": [
             { ch: "Amazon", sales: 310465, cost: 269060, ads: 38423, profit: 2982, color: "var(--c-amazon)" },
             { ch: "Noon", sales: 298171, cost: 200787, ads: 0, profit: 97384, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 92446, cost: 64560, ads: 0, profit: 27886, color: "var(--c-trendyol)" },
+            { ch: "Trendyol", sales: 92446, cost: 64559, ads: 0, profit: 27887, color: "var(--c-trendyol)" },
             { ch: "Small Ch.", sales: 132785, cost: 83921, ads: 0, profit: 48864, color: "var(--c-small)" }
         ],
         "May": [
             { ch: "Amazon", sales: 320677, cost: 256133, ads: 39679, profit: 24865, color: "var(--c-amazon)" },
             { ch: "Noon", sales: 367050, cost: 252576, ads: 0, profit: 114474, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 111077, cost: 77989, ads: 0, profit: 33088, color: "var(--c-trendyol)" },
+            { ch: "Trendyol", sales: 111078, cost: 77988, ads: 0, profit: 33090, color: "var(--c-trendyol)" },
             { ch: "Small Ch.", sales: 165011, cost: 106490, ads: 0, profit: 58521, color: "var(--c-small)" }
         ],
         "Jun": [
             { ch: "Amazon", sales: 331208, cost: 272754, ads: 42429, profit: 16025, color: "var(--c-amazon)" },
             { ch: "Noon", sales: 222440, cost: 140997, ads: 0, profit: 81443, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 124482, cost: 90850, ads: 0, profit: 33632, color: "var(--c-trendyol)" },
+            { ch: "Trendyol", sales: 124158, cost: 90571, ads: 0, profit: 33587, color: "var(--c-trendyol)" },
             { ch: "Small Ch.", sales: 116782, cost: 67003, ads: 0, profit: 49779, color: "var(--c-small)" }
         ],
         "Jul": [
@@ -221,13 +251,13 @@
         "Aug": [
             { ch: "Amazon", sales: 423798, cost: 354044, ads: 44869, profit: 24885, color: "var(--c-amazon)" },
             { ch: "Noon", sales: 235315, cost: 155138, ads: 0, profit: 80177, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 425394, cost: 363690, ads: 0, profit: 61704, color: "var(--c-trendyol)" },
+            { ch: "Trendyol", sales: 425394, cost: 363689, ads: 0, profit: 61705, color: "var(--c-trendyol)" },
             { ch: "Small Ch.", sales: 143198, cost: 91603, ads: 0, profit: 51595, color: "var(--c-small)" }
         ],
         "Sep": [
             { ch: "Amazon", sales: 433087, cost: 358155, ads: 58816, profit: 16116, color: "var(--c-amazon)" },
             { ch: "Noon", sales: 167806, cost: 105883, ads: 0, profit: 61923, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 207398, cost: 162140, ads: 0, profit: 45258, color: "var(--c-trendyol)" },
+            { ch: "Trendyol", sales: 206688, cost: 161589, ads: 0, profit: 45099, color: "var(--c-trendyol)" },
             { ch: "Small Ch.", sales: 138987, cost: 83962, ads: 0, profit: 55025, color: "var(--c-small)" }
         ],
         "Oct": [
@@ -239,7 +269,7 @@
         "Nov": [
             { ch: "Amazon", sales: 1770108, cost: 1347988, ads: 78122, profit: 343998, color: "var(--c-amazon)" },
             { ch: "Noon", sales: 201461, cost: 142845, ads: 0, profit: 58616, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 405005, cost: 354074, ads: 0, profit: 50931, color: "var(--c-trendyol)" },
+            { ch: "Trendyol", sales: 381481, cost: 333977, ads: 0, profit: 47504, color: "var(--c-trendyol)" },
             { ch: "Small Ch.", sales: 131516, cost: 83476, ads: 0, profit: 48040, color: "var(--c-small)" }
         ],
         "Dec": [
@@ -274,7 +304,6 @@
             link.innerText = month + " 2025";
             link.onclick = () => {
                 document.getElementById(`sec-${month}`).scrollIntoView();
-                // Close mobile menu if open
                 document.querySelector('aside').classList.remove('active');
                 document.querySelector('.sidebar-overlay').classList.remove('active');
             };
@@ -352,6 +381,140 @@
             `;
             main.appendChild(section);
         });
+    }
+
+    // --- EXCEL EXPORT FUNCTIONALITY ---
+    function exportExcel() {
+        const wb = XLSX.utils.book_new();
+        let rows = [];
+
+        // Define Styles
+        const styleTitle = { 
+            font: { bold: true, color: { rgb: "FFFFFF" }, sz: 16 }, 
+            fill: { fgColor: { rgb: "020617" } },
+            alignment: { horizontal: "center" }
+        };
+        const styleMonthHeader = { 
+            font: { bold: true, color: { rgb: "FFFFFF" }, sz: 12 }, 
+            fill: { fgColor: { rgb: "0F172A" } },
+            border: { top: {style: "thin"}, bottom: {style: "thin"} }
+        };
+        const styleColHeader = { 
+            font: { bold: true, color: { rgb: "000000" } }, 
+            fill: { fgColor: { rgb: "E2E8F0" } },
+            border: { top: {style: "thin"}, bottom: {style: "thin"}, left: {style: "thin"}, right: {style: "thin"} }
+        };
+        const styleData = {
+            border: { top: {style: "thin"}, bottom: {style: "thin"}, left: {style: "thin"}, right: {style: "thin"} },
+            numFmt: "#,##0"
+        };
+        const styleDataPct = {
+            border: { top: {style: "thin"}, bottom: {style: "thin"}, left: {style: "thin"}, right: {style: "thin"} },
+            numFmt: "0.0%"
+        };
+        const styleTotal = {
+            font: { bold: true, color: { rgb: "B45309" } },
+            fill: { fgColor: { rgb: "FEF3C7" } },
+            border: { top: {style: "medium"} },
+            numFmt: "#,##0"
+        };
+        const styleTotalPct = {
+            font: { bold: true, color: { rgb: "B45309" } },
+            fill: { fgColor: { rgb: "FEF3C7" } },
+            border: { top: {style: "medium"} },
+            numFmt: "0.0%"
+        };
+
+        // 1. Add Main Title
+        rows.push([ { v: "EXECUTIVE PERFORMANCE REPORT 2025", s: styleTitle } ]);
+        rows.push([""]); // Spacer
+
+        // 2. Loop through Months
+        monthsList.forEach(month => {
+            const data = DB[month];
+            
+            // Calculate Totals for the Month
+            let tSales = 0, tProfit = 0, tAds = 0;
+            data.forEach(r => { tSales += r.sales; tProfit += r.profit; tAds += r.ads; });
+            const tMargin = tSales ? (tProfit / tSales) : 0;
+
+            // Month Header
+            rows.push([ { v: month + " 2025", s: styleMonthHeader }, "", "", "", "", "" ]);
+            
+            // Column Headers
+            rows.push([
+                { v: "Channel", s: styleColHeader },
+                { v: "Revenue", s: styleColHeader },
+                { v: "COGS & Fees", s: styleColHeader },
+                { v: "Ad Spend", s: styleColHeader },
+                { v: "Net Profit", s: styleColHeader },
+                { v: "Net Margin", s: styleColHeader }
+            ]);
+
+            // Data Rows
+            data.forEach(r => {
+                const margin = r.sales ? (r.profit / r.sales) : 0;
+                rows.push([
+                    { v: r.ch, s: styleData },
+                    { v: r.sales, s: styleData, t: 'n' },
+                    { v: r.cost, s: styleData, t: 'n' },
+                    { v: r.ads, s: styleData, t: 'n' },
+                    { v: r.profit, s: styleData, t: 'n' },
+                    { v: margin, s: styleDataPct, t: 'n' }
+                ]);
+            });
+
+            // Total Row
+            rows.push([
+                { v: "TOTAL", s: styleTotal },
+                { v: tSales, s: styleTotal, t: 'n' },
+                { v: "-", s: styleTotal },
+                { v: tAds, s: styleTotal, t: 'n' },
+                { v: tProfit, s: styleTotal, t: 'n' },
+                { v: tMargin, s: styleTotalPct, t: 'n' }
+            ]);
+
+            // Spacer Row
+            rows.push([""]);
+        });
+
+        // 3. Create Worksheet
+        const ws = XLSX.utils.aoa_to_sheet([]); // Initialize empty
+        
+        // 4. Manually add cells (aoa_to_sheet strips styles in some versions, manual is safer for styled cells)
+        // Actually, xlsx-js-style allows aoa_to_sheet with objects. Let's try direct assignment.
+        XLSX.utils.sheet_add_aoa(ws, rows, { origin: "A1" });
+
+        // 5. Set Column Widths
+        ws['!cols'] = [
+            { wpx: 120 }, // Channel
+            { wpx: 100 }, // Rev
+            { wpx: 100 }, // Cost
+            { wpx: 100 }, // Ads
+            { wpx: 100 }, // Profit
+            { wpx: 80 }   // Margin
+        ];
+
+        // 6. Merge Month Headers (A to F)
+        const merges = [];
+        let currentRow = 0;
+        // Need to calculate where the month headers are to merge them
+        // Title is row 0. Spacer row 1.
+        // For every month: Header(1) + ColHead(1) + 4 Data rows + Total(1) + Spacer(1) = 8 rows/month
+        // Title (1) + Spacer (1) = Start at index 2
+        
+        merges.push({ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }); // Main Title Merge
+
+        let rIndex = 2; 
+        monthsList.forEach(m => {
+            merges.push({ s: { r: rIndex, c: 0 }, e: { r: rIndex, c: 5 } }); // Month Header Merge
+            rIndex += (DB[m].length + 4); // Header + ColHead + DataLength + Total + Spacer
+        });
+        ws['!merges'] = merges;
+
+        // 7. Write File
+        XLSX.utils.book_append_sheet(wb, ws, "2025 Financials");
+        XLSX.writeFile(wb, "INHOUSE_2025_Executive_Report.xlsx");
     }
 
     // Init
