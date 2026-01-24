@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>INHOUSE | Executive Performance Reports 2025</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- CHARTS LIB -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- EXCEL STYLING LIB -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.min.js"></script>
     
     <style>
         /* --- 🎨 REFINED PALETTE --- */
@@ -107,10 +111,17 @@
 
         /* Download Button */
         .download-btn {
-            width: 100%; padding: 12px; background: var(--col-amazon); color: white; border: none; font-weight: 700; border-radius: 8px; cursor: pointer; margin-top: auto; transition: 0.3s;
+            width: 100%; padding: 12px; background: #10b981; color: white; border: none; font-weight: 700; border-radius: 8px; cursor: pointer; margin-top: 10px; transition: 0.3s;
             display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .download-btn:hover { background: #2563eb; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+        .download-btn:hover { background: #059669; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+        
+        /* PDF Button (Ghost Style) */
+        .pdf-btn {
+            width: 100%; padding: 12px; background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1); font-weight: 600; border-radius: 8px; cursor: pointer; margin-top: auto; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .pdf-btn:hover { background: rgba(255,255,255,0.1); color: white; }
 
         /* --- CONTENT --- */
         .content { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; }
@@ -159,13 +170,11 @@
             padding: 30px; 
             border-radius: 16px; 
             margin-bottom: 40px; 
-            /* Fixed: Removed overflow-x: auto from here so it doesn't scroll on desktop */
             width: 100%;
         }
         .main-table { 
             width: 100%; 
             border-collapse: collapse; 
-            /* Fixed: Forces columns to fit width */
             table-layout: fixed;
         }
         .main-table th { 
@@ -182,7 +191,6 @@
             color: var(--text-body); 
             border-bottom: 1px solid rgba(255,255,255,0.05); 
             font-weight: 400; 
-            /* Fixed: Ensures text wraps if too long */
             white-space: normal;
             word-wrap: break-word;
         }
@@ -196,9 +204,6 @@
         .alert-box.warning { background: rgba(245, 158, 11, 0.1); border-color: #f59e0b; }
         .alert-box h4 { color: #f1f5f9; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; font-size: 0.9rem; }
         .alert-box p { font-size: 0.9rem; color: #cbd5e1; line-height: 1.5; }
-
-        .print-btn { width: 100%; padding: 12px; background: var(--col-amazon); color: white; border: none; font-weight: 700; border-radius: 8px; cursor: pointer; margin-top: auto; transition: 0.3s; }
-        .print-btn:hover { background: #2563eb; }
 
         /* --- RESPONSIVE MEDIA QUERIES --- */
         @media (max-width: 1024px) { 
@@ -232,22 +237,10 @@
             
             .charts-grid { grid-template-columns: 1fr; }
             
-            /* --- MOBILE TABLE FIX START --- */
-            /* Re-enable scrolling ONLY for mobile */
-            .table-card { 
-                padding: 15px; 
-                overflow-x: auto; 
-            }
-            /* Allow table to expand and scroll on mobile */
-            .main-table {
-                table-layout: auto;
-                min-width: 600px; 
-            }
-            /* --- MOBILE TABLE FIX END --- */
+            .table-card { padding: 15px; overflow-x: auto; }
+            .main-table { table-layout: auto; min-width: 600px; }
             
-            /* Alert Grid Stacking */
             .alert-grid { grid-template-columns: 1fr; }
-            
         }
     </style>
 </head>
@@ -270,26 +263,23 @@
         <!-- 2025 GROUP -->
         <div class="report-group">
             <div class="nav-label">2025 Reports</div>
-            
-            <!-- Active Report -->
             <div class="report-item active">Annual Performance</div>
-            
-            <!-- Child Link -->
-            <a href="JAN - DEC 2025 INHOUSE VERSION.html" class="sub-btn">
-                ↳ View Financial Detail
-            </a>
+            <a href="JAN - DEC 2025 INHOUSE VERSION.html" class="sub-btn">↳ View Financial Detail</a>
         </div>
 
-        <!-- 2026 GROUP (Placeholder for Future) -->
+        <!-- 2026 GROUP -->
         <div class="report-group">
             <div class="nav-label" style="opacity:0.5;">2026 Reports</div>
             <div class="report-item" style="opacity:0.5; cursor:not-allowed;">Q1 Performance</div>
         </div>
         
         <div style="margin-top:auto">
-            <!-- DOWNLOAD PDF BUTTON -->
-            <button class="download-btn" onclick="downloadPDF()">
-                📥 Download PDF
+            <!-- NEW EXCEL BUTTON -->
+            <button class="download-btn" onclick="exportAnnualReportExcel()">
+                📊 Download Excel
+            </button>
+            <button class="pdf-btn" onclick="downloadPDF()" style="margin-top:10px;">
+                📄 Download PDF
             </button>
         </div>
     </nav>
@@ -375,46 +365,21 @@
             </div>
         </div>
 
-        <!-- Detailed Table (Fixed Scroll) -->
+        <!-- Detailed Table -->
         <div class="table-card">
             <h3>Channel Performance Breakdown</h3>
             <div class="table-responsive">
                 <table class="main-table">
                     <thead><tr><th>Channel</th><th>Total Sales</th><th>Total Profit</th><th>Margin</th><th>Status</th></tr></thead>
                     <tbody>
-                        <tr>
-                            <td><span class="status-dot" style="background:var(--col-amazon);"></span>Amazon</td>
-                            <td>5,730,469</td>
-                            <td>~600,000</td>
-                            <td>10.5%</td>
-                            <td style="color:#ef4444; font-weight:700;">PROFIT RISK</td>
-                        </tr>
-                        <tr>
-                            <td><span class="status-dot" style="background:var(--col-noon);"></span>Noon</td>
-                            <td>3,018,120</td>
-                            <td>1,002,850</td>
-                            <td>33.2%</td>
-                            <td style="color:var(--col-small); font-weight:700;">EXCELLENT</td>
-                        </tr>
-                        <tr>
-                            <td><span class="status-dot" style="background:var(--col-trendyol);"></span>Trendyol</td>
-                            <td>2,803,946</td>
-                            <td>602,265</td>
-                            <td>21.5%</td>
-                            <td style="color:var(--col-noon); font-weight:700;">VOLATILE</td>
-                        </tr>
-                        <tr>
-                            <td><span class="status-dot" style="background:var(--col-small);"></span>Small Ch.</td>
-                            <td>2,595,224</td>
-                            <td>758,084</td>
-                            <td>29.2%</td>
-                            <td style="color:var(--col-small); font-weight:700;">STABLE</td>
-                        </tr>
+                        <tr><td><span class="status-dot" style="background:var(--col-amazon);"></span>Amazon</td><td>5,730,469</td><td>~600,000</td><td>10.5%</td><td style="color:#ef4444; font-weight:700;">PROFIT RISK</td></tr>
+                        <tr><td><span class="status-dot" style="background:var(--col-noon);"></span>Noon</td><td>3,018,120</td><td>1,002,850</td><td>33.2%</td><td style="color:var(--col-small); font-weight:700;">EXCELLENT</td></tr>
+                        <tr><td><span class="status-dot" style="background:var(--col-trendyol);"></span>Trendyol</td><td>2,803,946</td><td>602,265</td><td>21.5%</td><td style="color:var(--col-noon); font-weight:700;">VOLATILE</td></tr>
+                        <tr><td><span class="status-dot" style="background:var(--col-small);"></span>Small Ch.</td><td>2,595,224</td><td>758,084</td><td>29.2%</td><td style="color:var(--col-small); font-weight:700;">STABLE</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
-        
         
         <!-- Alerts -->
         <div class="alert-grid">
@@ -427,101 +392,186 @@
                 <p>Small Channels missed Q4 targets because the factory prioritized other channels like Amazon etc. Action: Implement <strong>"October Lock-Down"</strong> to produce Small Channel stock before Amazon peak.</p>
             </div>
         </div>
-
     </main>
 
-    <!-- CHARTS JS -->
+    <!-- JS LOGIC -->
     <script>
         const colors = ['#3b82f6', '#fbbf24', '#f472b6', '#2dd4bf'];
-        
-        const commonOptions = {
-            chart: { background: 'transparent', toolbar: { show: false }, animations: { enabled: true, easing: 'easeinout', speed: 800 } },
-            theme: { mode: 'dark' },
-            dataLabels: { enabled: false },
-            grid: { borderColor: '#1e293b' },
-            stroke: { curve: 'smooth', width: 3 },
-            tooltip: { theme: 'dark' }
-        };
 
         // Mobile Responsive Toggle
         function toggleMenu() {
-            const sidebar = document.getElementById('appSidebar');
-            const overlay = document.querySelector('.sidebar-overlay');
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
+            document.getElementById('appSidebar').classList.toggle('active');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
         }
 
-        // DOWNLOAD PDF FUNCTION
+        // PDF Function
         function downloadPDF() {
-            // Replace with your Google Drive Link
-            const fileLink = "#"; 
-            
-            if(fileLink === "#") {
-                alert("📂 LINK PENDING\n\n THE FILE NOT YET UPLOADED ...COMING SOON...");
-            } else {
-                window.open(fileLink, '_blank');
-            }
+            alert("📂 LINK PENDING\n\n THE FILE NOT YET UPLOADED ...COMING SOON...");
         }
 
-        // 1. Pie Chart
+        // --- EXCEL EXPORT FUNCTION (PROFESSIONAL EXECUTIVE STYLE) ---
+        function exportAnnualReportExcel() {
+            const wb = XLSX.utils.book_new();
+            
+            // --- STYLES DEFINITION ---
+            const styles = {
+                title: {
+                    font: { bold: true, color: { rgb: "AC975B" }, sz: 18, name: "Calibri" },
+                    fill: { fgColor: { rgb: "0F172A" } },
+                    alignment: { horizontal: "center", vertical: "center" }
+                },
+                subtitle: {
+                    font: { color: { rgb: "94A3B8" }, sz: 12, italic: true },
+                    fill: { fgColor: { rgb: "0F172A" } },
+                    alignment: { horizontal: "center", vertical: "top" }
+                },
+                sectionHead: {
+                    font: { bold: true, color: { rgb: "FFFFFF" }, sz: 12 },
+                    fill: { fgColor: { rgb: "AC975B" } }, // Gold Brand Color
+                    border: { top: {style: "thin"}, bottom: {style: "thin"} },
+                    alignment: { horizontal: "left", indent: 1 }
+                },
+                summaryCard: {
+                    font: { color: { rgb: "FFFFFF" }, sz: 11 },
+                    fill: { fgColor: { rgb: "1E293B" } }, // Dark Card Color
+                    alignment: { wrapText: true, vertical: "top", horizontal: "left" },
+                    border: { left: {style: "medium", color: {rgb:"AC975B"}}, top:{style:"thin",color:{rgb:"334155"}}, right:{style:"thin",color:{rgb:"334155"}}, bottom:{style:"thin",color:{rgb:"334155"}} }
+                },
+                kpiBox: {
+                    fill: { fgColor: { rgb: "1E293B" } },
+                    border: { top: {style: "thin", color:{rgb:"475569"}}, bottom: {style: "thin", color:{rgb:"475569"}}, left: {style: "thin", color:{rgb:"475569"}}, right: {style: "thin", color:{rgb:"475569"}} },
+                    alignment: { horizontal: "center", vertical: "center" }
+                },
+                kpiLabel: { font: { color: { rgb: "94A3B8" }, sz: 10, bold: true }, alignment: { horizontal: "center" } },
+                kpiValue: { font: { color: { rgb: "FFFFFF" }, sz: 20, bold: true }, alignment: { horizontal: "center" } },
+                kpiSub: { font: { color: { rgb: "AC975B" }, sz: 9 }, alignment: { horizontal: "center" } },
+                
+                tableHeader: {
+                    font: { bold: true, color: { rgb: "000000" } },
+                    fill: { fgColor: { rgb: "CBD5E1" } },
+                    alignment: { horizontal: "center" },
+                    border: { bottom: {style: "medium"} }
+                },
+                cellData: {
+                    font: { color: { rgb: "000000" } },
+                    alignment: { horizontal: "center" },
+                    border: { bottom: {style: "thin", color:{rgb:"CBD5E1"}} }
+                }
+            };
+
+            // --- DATA CONSTRUCTION ---
+            let rows = [];
+
+            // 1. HEADER SECTION
+            rows.push([ {v: "INHOUSE | 2025 ANNUAL REPORT", s: styles.title}, "", "", "" ]); 
+            rows.push([ {v: "FY 2025 Performance Analysis & Strategic Review", s: styles.subtitle}, "", "", "" ]);
+            rows.push(["", "", "", ""]); // Spacer
+
+            // 2. EXECUTIVE SUMMARY
+            rows.push([ {v: "EXECUTIVE SUMMARY", s: styles.sectionHead}, "", "", "" ]);
+            const summaryText = "2025 Revenue closed at 14.15 Million SAR.\n\nWins: Noon delivered a 33% Net Margin (Profit Engine).\nRisks: Amazon generated 40% of revenue but faced Q4 profit collapse due to returns.";
+            rows.push([ {v: summaryText, s: styles.summaryCard}, "", "", "" ]);
+            rows.push(["", "", "", ""]); // Spacer to simulate card height
+            rows.push(["", "", "", ""]); // Spacer
+            rows.push(["", "", "", ""]); // Spacer
+
+            // 3. KPI SECTION
+            rows.push([ {v: "KEY PERFORMANCE INDICATORS", s: styles.sectionHead}, "", "", "" ]);
+            // Row 1: KPI Labels
+            rows.push([
+                {v: "TOTAL REVENUE", s: {...styles.kpiBox, ...styles.kpiLabel}},
+                {v: "NET PROFIT", s: {...styles.kpiBox, ...styles.kpiLabel}},
+                {v: "TOP VOLUME", s: {...styles.kpiBox, ...styles.kpiLabel}},
+                {v: "TOP MARGIN", s: {...styles.kpiBox, ...styles.kpiLabel}}
+            ]);
+            // Row 2: KPI Values
+            rows.push([
+                {v: "14.15 M", s: {...styles.kpiBox, ...styles.kpiValue}},
+                {v: "2.96 M", s: {...styles.kpiBox, ...styles.kpiValue}},
+                {v: "Amazon", s: {...styles.kpiBox, ...styles.kpiValue, font:{color:{rgb:"3B82F6"}, sz:16, bold:true}}},
+                {v: "Noon", s: {...styles.kpiBox, ...styles.kpiValue, font:{color:{rgb:"FBBF24"}, sz:16, bold:true}}}
+            ]);
+            // Row 3: KPI Subtitles
+            rows.push([
+                {v: "SAR (Actuals)", s: {...styles.kpiBox, ...styles.kpiSub}},
+                {v: "~21% Avg Margin", s: {...styles.kpiBox, ...styles.kpiSub}},
+                {v: "5.7 Million", s: {...styles.kpiBox, ...styles.kpiSub}},
+                {v: "33.2% Profitability", s: {...styles.kpiBox, ...styles.kpiSub}}
+            ]);
+            rows.push(["", "", "", ""]); // Spacer
+
+            // 4. CHANNEL TABLE
+            rows.push([ {v: "CHANNEL PERFORMANCE BREAKDOWN", s: styles.sectionHead}, "", "", "" ]);
+            rows.push([
+                {v: "Channel", s: styles.tableHeader},
+                {v: "Total Sales", s: styles.tableHeader},
+                {v: "Net Profit", s: styles.tableHeader},
+                {v: "Margin %", s: styles.tableHeader}
+            ]);
+
+            const tableData = [
+                ["Amazon", 5730469, 600000, 0.105],
+                ["Noon", 3018120, 1002850, 0.332],
+                ["Trendyol", 2803946, 602265, 0.215],
+                ["Small Ch.", 2595224, 758084, 0.292]
+            ];
+
+            tableData.forEach(row => {
+                rows.push([
+                    {v: row[0], s: {...styles.cellData, font: {bold:true}}},
+                    {v: row[1], s: styles.cellData, t:'n', z:'#,##0'},
+                    {v: row[2], s: styles.cellData, t:'n', z:'#,##0'},
+                    {v: row[3], s: styles.cellData, t:'n', z:'0.0%'}
+                ]);
+            });
+
+            // --- BUILD SHEET ---
+            const ws = XLSX.utils.aoa_to_sheet(rows);
+
+            // --- LAYOUT & MERGES ---
+            ws['!cols'] = [ {wpx: 180}, {wpx: 150}, {wpx: 150}, {wpx: 150} ]; // 4 Fixed Columns
+            ws['!rows'] = [ 
+                {hpx: 40}, {hpx: 20}, {hpx: 15}, // Header
+                {hpx: 25}, {hpx: 80}, // Summary
+                {hpx: 15}, {hpx: 25}, // KPIs Header
+                {hpx: 30}, {hpx: 40}, {hpx: 20} // KPI Boxes
+            ];
+
+            ws['!merges'] = [
+                {s:{r:0,c:0}, e:{r:0,c:3}}, // Title Span
+                {s:{r:1,c:0}, e:{r:1,c:3}}, // Subtitle Span
+                {s:{r:3,c:0}, e:{r:3,c:3}}, // Exec Summary Header Span
+                {s:{r:4,c:0}, e:{r:6,c:3}}, // Exec Summary Text Span (3 rows deep)
+                {s:{r:8,c:0}, e:{r:8,c:3}}, // KPI Header Span
+                {s:{r:12,c:0}, e:{r:12,c:3}} // Table Header Span
+            ];
+
+            XLSX.utils.book_append_sheet(wb, ws, "2025 Executive Report");
+            XLSX.writeFile(wb, "Annual_Report_2025.xlsx");
+        }
+
+        // --- CHARTS INITIALIZATION ---
         new ApexCharts(document.querySelector("#chart-share"), {
-            series: [5.7, 3.0, 2.8, 2.6],
-            labels: ['Amazon', 'Noon', 'Trendyol', 'Small Ch.'],
-            chart: { type: 'donut', height: 300, background: 'transparent' },
-            colors: colors,
+            series: [5.7, 3.0, 2.8, 2.6], labels: ['Amazon', 'Noon', 'Trendyol', 'Small Ch.'],
+            chart: { type: 'donut', height: 300, background: 'transparent' }, colors: colors,
             legend: { position: 'bottom', labels: { colors: '#cbd5e1' } },
-            plotOptions: { pie: { donut: { size: '70%', labels: { show: true, total: { show: true, color: '#fff', label: 'Total Revenue', formatter: () => '14.1 M' } } } } }
+            plotOptions: { pie: { donut: { size: '70%', labels: { show: true, total: { show: true, color: '#fff', label: 'Total', formatter: () => '14.1 M' } } } } }
         }).render();
 
-        // 2. Bar Chart
         new ApexCharts(document.querySelector("#chart-efficiency"), {
             series: [{ name: 'Margin %', data: [10.5, 33.2, 21.5, 29.2] }],
             chart: { type: 'bar', height: 300, background: 'transparent' },
-            fill: { type: 'gradient', gradient: { shade: 'dark', type: 'vertical', shadeIntensity: 0.5, gradientToColors: ['#60a5fa', '#fcd34d', '#fbcfe8', '#5eead4'], opacityFrom: 1, opacityTo: 1 } },
-            colors: colors,
-            xaxis: { categories: ['Amazon', 'Noon', 'Trendyol', 'Small Ch.'], labels: { style: { colors: '#cbd5e1' } } },
-            plotOptions: { bar: { borderRadius: 6, columnWidth: '50%', distributed: true } },
-            legend: { show: false }
+            colors: colors, xaxis: { categories: ['Amazon', 'Noon', 'Trendyol', 'Small Ch.'], labels: { style: { colors: '#cbd5e1' } } },
+            plotOptions: { bar: { borderRadius: 6, columnWidth: '50%', distributed: true } }, legend: { show: false }
         }).render();
 
-        // 3. Area Chart
-new ApexCharts(document.querySelector("#chart-trend"), {
-    series: [{
-        name: 'Total Sales (M)',
-        data: [1.2, 1.0, 1.4, 0.9, 1.0, 1.1, 1.5, 1.2, 1.3, 1.1, 2.8, 0.8]
-    }],
-    chart: { type: 'area', height: 300, background: 'transparent' },
-    colors: ['#3b82f6'],
-    fill: {
-        type: 'gradient',
-        gradient: {
-            shadeIntensity: 1,
-            opacityFrom: 0.7,
-            opacityTo: 0.1,
-            stops: [0, 90, 100]
-        }
-    },
-    xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        labels: { style: { colors: '#cbd5e1' } }
-    },
-    annotations: {
-        xaxis: [{
-            x: 'Nov',
-            borderColor: '#fbbf24',
-            label: {
-                text: 'White Friday Peak',
-                offsetY: 30, // 👈 pushed down
-                style: {
-                    color: '#000',
-                    background: '#fbbf24'
-                }
-            }
-        }]
-    }
-}).render();
+        new ApexCharts(document.querySelector("#chart-trend"), {
+            series: [{ name: 'Sales (M)', data: [1.2, 1.0, 1.4, 0.9, 1.0, 1.1, 1.5, 1.2, 1.3, 1.1, 2.8, 0.8] }],
+            chart: { type: 'area', height: 300, background: 'transparent' }, colors: ['#3b82f6'],
+            fill: { type: 'gradient', gradient: { opacityFrom: 0.7, opacityTo: 0.1 } },
+            xaxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], labels: { style: { colors: '#cbd5e1' } } }
+        }).render();
 
     </script>
 </body>
 </html>
-
