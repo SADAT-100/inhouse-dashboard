@@ -3,543 +3,644 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2025 Monthly Deep Dive | INHOUSE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    
-    <!-- IMPORTANT: Using xlsx-js-style for styling support -->
+    <title>INHOUSE | Amazon 2025 Financials</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.min.js"></script>
-
     <style>
-        /* --- THEME: DARK LUXURY --- */
+        /* --- THEME DEFINITION --- */
         :root {
-            --bg-dark: #020617;
-            --bg-panel: #0f172a;
-            --accent-gold: #fbbf24;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: rgba(255, 255, 255, 0.1);
+            --bg-body: #02040a;       
+            --bg-card: #0F172A;       
             
-            /* Channel Colors */
-            --c-amazon: #3b82f6;
-            --c-noon: #fcd34d;
-            --c-trendyol: #f97316;
-            --c-small: #10b981;
+            --c-brand: #AC975B;       /* Gold */
+            --c-amazon: #3B82F6;      /* Amazon Blue */
+            --c-noon: #FBBF24;        /* Noon Yellow */
+            --c-trendyol: #F97316;    /* Trendyol Orange */
+            
+            --c-text-main: #F8FAFC;
+            --c-text-muted: #64748B;
+            --border: rgba(255, 255, 255, 0.05);
+
+            --c-success: #10B981;
+            --c-danger: #EF4444;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
+            background-color: var(--bg-body);
+            color: var(--c-text-main);
             display: flex;
             height: 100vh;
             overflow: hidden;
         }
 
-        /* --- SIDEBAR NAVIGATION --- */
+        /* --- MOBILE MENU OVERLAY --- */
+        .overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index: 40; backdrop-filter: blur(4px); }
+        .overlay.active { display: block; }
+
+        /* --- SIDEBAR --- */
         aside {
-            width: 200px;
-            background: var(--bg-panel);
+            width: 260px;
+            background: #000205;
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            padding: 20px;
-            overflow-y: auto;
-            flex-shrink: 0;
+            padding: 25px 15px;
             z-index: 50;
+            flex-shrink: 0;
             transition: transform 0.3s ease;
         }
 
         .back-btn {
-            color: var(--text-muted); text-decoration: none; font-size: 0.8rem; font-weight: 700;
+            color: var(--c-text-muted); text-decoration: none; font-size: 0.8rem; font-weight: 700;
             margin-bottom: 30px; display: flex; align-items: center; gap: 5px; transition: 0.2s;
         }
-        .back-btn:hover { color: var(--accent-gold); }
+        .back-btn:hover { color: var(--c-brand); transform: translateX(-3px); }
 
-        .nav-title { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; font-weight: 700; }
+        .brand-box { margin-bottom: 40px; padding-left: 10px; border-left: 4px solid var(--c-brand); }
+        .brand-title { font-size: 1.6rem; font-weight: 900; color: var(--c-text-main); letter-spacing: -0.5px; line-height: 1; }
+        .brand-sub { font-size: 0.75rem; color: var(--c-brand); font-weight: 600; letter-spacing: 2px; margin-top: 5px; text-transform: uppercase; }
 
-        .month-link {
-            padding: 10px 15px; border-radius: 6px; color: var(--text-main); cursor: pointer;
-            margin-bottom: 5px; font-size: 0.9rem; transition: all 0.2s; border-left: 2px solid transparent;
+        .nav-menu { display: flex; flex-direction: column; gap: 8px; }
+
+        .nav-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 15px; border-radius: 8px; cursor: pointer;
+            color: var(--c-text-muted); font-size: 0.9rem; font-weight: 500;
+            text-decoration: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
         }
-        .month-link:hover { background: rgba(255,255,255,0.05); }
-        .month-link.active { background: rgba(251, 191, 36, 0.1); border-left-color: var(--accent-gold); color: var(--accent-gold); font-weight: 700; }
 
-        /* --- MOBILE OVERLAY --- */
-        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 40; }
+        .nav-item:hover { background: rgba(255,255,255,0.03); color: var(--c-text-main); padding-left: 20px; }
+        .nav-item.active-amazon { background: rgba(59, 130, 246, 0.1); color: var(--c-amazon); border-color: rgba(59, 130, 246, 0.2); font-weight: 700; }
+        .nav-item.brand-noon { color: var(--c-noon); } 
+        .nav-item.brand-trendyol { color: var(--c-trendyol); } 
 
-        /* --- MAIN CONTENT --- */
+        .arrow { transition: transform 0.3s ease; font-size: 0.8rem; }
+        
+        .submenu {
+            max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, opacity 0.3s ease;
+            opacity: 0; margin-left: 15px; padding-left: 15px; border-left: 1px solid var(--border);
+        }
+        .submenu.open { max-height: 300px; opacity: 1; margin-top: 5px; margin-bottom: 10px; }
+
+        .sub-link {
+            display: block; padding: 8px 0; color: var(--c-text-muted); font-size: 0.85rem; text-decoration: none; transition: 0.2s;
+        }
+        .sub-link:hover { color: var(--c-brand); transform: translateX(5px); }
+
+        /* --- MAIN AREA --- */
         main {
-            flex: 1;
-            padding: 40px;
-            overflow-y: auto;
-            scroll-behavior: smooth;
+            flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column;
+            background: radial-gradient(circle at top right, #101929 0%, transparent 40%);
+            position: relative;
         }
 
-        header { margin-bottom: 50px; border-bottom: 1px solid var(--border); padding-bottom: 20px; display: flex; flex-direction: column; gap: 10px; }
+        header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 50px; }
+        .page-title h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 5px; }
+        .page-title p { color: var(--c-text-muted); }
         
-        .header-top { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
-        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-top-mobile { display: none; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .menu-btn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
 
-        .menu-btn { display: none; background: none; border: none; font-size: 1.5rem; color: var(--text-main); cursor: pointer; }
-
-        h1 { font-size: 2.5rem; font-weight: 900; letter-spacing: -1px; color: var(--text-main); }
-        .subtitle { color: var(--text-muted); margin-top: 5px; }
-
-        /* EXCEL BUTTON */
-        .excel-btn {
-            background: #10b981;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: background 0.2s;
+        .btn-download {
+            background: var(--c-success); color: white; border: none; padding: 12px 24px;
+            border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;
+            transition: 0.3s; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
         }
-        .excel-btn:hover { background: #059669; }
-        .excel-icon { font-size: 1.1rem; }
+        .btn-download:hover { background: #059669; transform: translateY(-2px); }
 
-        /* --- MONTH SECTION --- */
-        .month-section { margin-bottom: 80px; scroll-margin-top: 20px; }
+        /* --- MONTH CARD --- */
+        .month-wrapper { margin-bottom: 50px; animation: fadeInUp 0.5s ease-out forwards; opacity: 0; }
+        .section-header {
+            display: flex; align-items: center; margin-bottom: 15px;
+            border-left: 4px solid var(--c-brand); padding-left: 15px;
+        }
+        .section-title { font-size: 1.5rem; font-weight: 700; color: var(--c-text-main); }
+        .dashboard-card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+            padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        /* KPI ROW */
+        .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 25px; }
+        .mini-kpi { background: #020617; border: 1px solid var(--border); border-radius: 8px; padding: 15px; }
+        .mk-label { font-size: 0.7rem; color: var(--c-text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+        .mk-value { font-size: 1.4rem; font-weight: 700; color: var(--c-text-main); }
+
+        /* TABLE */
+        .table-responsive { overflow-x: auto; }
+        .styled-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 800px; /* Force scroll on small screens */ }
         
-        .month-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-        .month-title { font-size: 1.8rem; font-weight: 700; color: var(--text-main); border-left: 4px solid var(--accent-gold); padding-left: 15px; }
+        .styled-table th {
+            text-align: right; color: var(--c-text-muted); font-size: 0.75rem; text-transform: uppercase;
+            padding: 15px; border-bottom: 1px solid var(--border); font-weight: 600;
+        }
+        .styled-table th:first-child { text-align: left; padding-left: 10px; }
+        .styled-table td {
+            text-align: right; padding: 15px; border-bottom: 1px solid var(--border);
+            color: var(--c-text-main); vertical-align: middle;
+        }
+        .styled-table td:first-child { text-align: left; padding-left: 10px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+        .styled-table tr:last-child td { border-bottom: none; }
         
-        /* Summary Cards */
-        .month-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
-        .m-card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px; border: 1px solid var(--border); }
-        .m-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
-        .m-val { font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-top: 5px; }
-
-        /* --- TABLE --- */
-        .table-container {
-            background: var(--bg-panel); border-radius: 12px; border: 1px solid var(--border);
-            overflow-x: auto; /* Horizontal scroll for mobile */
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        }
-        
-        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 600px; /* Force width on mobile */ }
-        
-        th { 
-            background: #0b1120; color: var(--text-muted); font-weight: 600; text-align: right; 
-            padding: 15px; text-transform: uppercase; font-size: 0.75rem; 
-        }
-        th:first-child { text-align: left; padding-left: 20px; position: sticky; left: 0; background: #0b1120; z-index: 10; }
-
-        td { 
-            padding: 15px; border-bottom: 1px solid var(--border); text-align: right; 
-            color: var(--text-main); vertical-align: middle; 
-        }
-        td:first-child { 
-            text-align: left; padding-left: 20px; font-weight: 600; display: flex; align-items: center; gap: 10px;
-            position: sticky; left: 0; background: var(--bg-panel); z-index: 5; border-right: 1px solid var(--border);
-        }
-        tr:last-child td { border-bottom: none; }
-
         .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-        .margin-bar-bg { width: 80px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; display: inline-block; margin-left: 10px; }
-        .margin-bar-fill { height: 100%; border-radius: 3px; }
-        .row-total { background: rgba(251, 191, 36, 0.05); font-weight: 800; }
-        .row-total td { color: var(--accent-gold); border-top: 2px solid var(--border); }
+        .row-shipped .dot { background: var(--c-amazon); }
+        .row-return .dot { background: var(--c-danger); }
+        .row-retail .dot { background: var(--c-brand); }
+        
+        .row-net { background: rgba(59, 130, 246, 0.08); font-weight: 700; }
+        .row-net td { color: #60a5fa; border-top: 1px solid rgba(59, 130, 246, 0.2); }
+        .row-net .dot { background: #60a5fa; box-shadow: 0 0 10px #60a5fa; }
+        .prog-track { width: 60px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; display: inline-block; margin-left: 10px; vertical-align: middle; }
+        .prog-fill { height: 100%; border-radius: 2px; }
 
-        /* --- RESPONSIVE --- */
+        /* --- SUMMARY FOOTER (NOT FIXED) --- */
+        .summary-footer {
+            margin-top: 40px; margin-bottom: 20px;
+            background: #111827;
+            border: 1px solid #374151;
+            border-radius: 12px;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr); /* Added QTY */
+            gap: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .sf-item { display: flex; flex-direction: column; gap: 5px; padding-right: 20px; border-right: 1px solid rgba(255,255,255,0.1); }
+        .sf-item:last-child { border-right: none; }
+
+        .sf-label { font-size: 0.75rem; color: #9CA3AF; letter-spacing: 0.5px; text-transform: uppercase; font-weight: 600; }
+        .sf-val { font-size: 1.6rem; font-weight: 900; color: #F9FAFB; letter-spacing: -0.5px; }
+        .sf-sub { font-size: 0.8rem; color: #3B82F6; font-weight: 500; }
+        
+        /* Floating Insight Button */
+        .fab-insight {
+            position: fixed; bottom: 30px; right: 30px;
+            width: 60px; height: 60px; border-radius: 50%;
+            background: #FBBF24; color: #000;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; box-shadow: 0 10px 30px rgba(251, 191, 36, 0.4);
+            cursor: pointer; z-index: 90; transition: 0.3s;
+            border: none; animation: pulse 2s infinite;
+        }
+        .fab-insight:hover { transform: scale(1.1); background: #FFF; }
+
+        /* INSIGHT MODAL */
+        .insight-modal {
+            display: none; position: fixed; bottom: 100px; right: 30px;
+            width: 350px; background: #1E293B; border: 1px solid var(--c-brand);
+            border-radius: 16px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            z-index: 95; animation: slideUp 0.3s ease-out;
+        }
+        .insight-modal.active { display: block; }
+        .im-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .im-title { font-weight: 800; color: var(--c-brand); text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; }
+        .im-close { cursor: pointer; color: #FFF; font-size: 1.2rem; }
+        
+        .insight-item { display: flex; gap: 12px; margin-bottom: 15px; }
+        .ii-icon { font-size: 1.2rem; min-width: 25px; }
+        .ii-text h4 { font-size: 0.9rem; color: #FFF; margin-bottom: 4px; }
+        .ii-text p { font-size: 0.8rem; color: #94A3B8; line-height: 1.4; }
+
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(251, 191, 36, 0); } 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- MOBILE RESPONSIVENESS --- */
+        @media (max-width: 1024px) {
+            .summary-footer { grid-template-columns: repeat(3, 1fr); gap: 30px; }
+            .sf-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        }
+
         @media (max-width: 768px) {
-            .header-top { flex-direction: column; align-items: flex-start; }
-            .excel-btn { width: 100%; justify-content: center; }
             aside {
                 position: fixed; top: 0; left: 0; height: 100%; transform: translateX(-100%);
-                width: 250px; z-index: 100;
+                width: 280px; z-index: 100;
             }
             aside.active { transform: translateX(0); }
-            .sidebar-overlay.active { display: block; }
             
-            .menu-btn { display: block; }
+            .header-top-mobile { display: flex; }
+            header { flex-direction: column; align-items: flex-start; gap: 20px; }
+            .page-title h1 { font-size: 1.8rem; }
+            .btn-download { width: 100%; justify-content: center; }
+            
             main { padding: 20px; }
-            h1 { font-size: 1.8rem; }
-            .month-summary { grid-template-columns: 1fr 1fr; } /* 2x2 grid */
             
-            td:first-child { min-width: 120px; } 
+            .kpi-row { grid-template-columns: 1fr 1fr; }
+            
+            .summary-footer { grid-template-columns: 1fr; } 
+            .sf-val { font-size: 2rem; }
+            
+            .insight-modal { width: 90%; right: 5%; bottom: 100px; }
         }
 
         /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-dark); }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg-body); }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
     </style>
 </head>
 <body>
 
-    <div class="sidebar-overlay" onclick="toggleMenu()"></div>
+    <!-- Mobile Overlay -->
+    <div class="overlay" onclick="toggleMenu()"></div>
+
+    <!-- Mobile Header -->
+    <div class="header-top-mobile" style="position: absolute; top: 20px; left: 20px; z-index: 40;">
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+    </div>
 
     <aside id="sidebar">
+        <!-- BACK BUTTON -->
         <a href="inhouse_reports.html" class="back-btn">← Back to Report</a>
-        <div class="nav-title">Jump to Month</div>
-        <div id="nav-container">
-            <!-- JS will populate links -->
+
+        <div class="brand-box">
+            <div class="brand-title" style="color:#FFF">INHOUSE<span style="color:var(--c-brand)">.</span></div>
+            <div class="brand-sub">Channel Manager</div>
+        </div>
+
+        <div class="nav-menu">
+            <a href="#" class="nav-item active-amazon">
+                <span>Amazon</span>
+            </a>
+            <a href="#" class="nav-item brand-noon">
+                <span>Noon</span>
+            </a>
+            <a href="#" class="nav-item brand-trendyol">
+                <span>Trendyol</span>
+            </a>
+            
+            <div class="nav-item" onclick="toggleSmallChannels(this)">
+                <span>Small Channels</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="submenu" id="sm-submenu">
+                <a href="#" class="sub-link">Home Center</a>
+                <a href="#" class="sub-link">Al-Rugaib</a>
+                <a href="#" class="sub-link">Centerpoint</a>
+                <a href="#" class="sub-link">Retkom</a>
+                <a href="#" class="sub-link">Homzmart</a>
+                <a href="#" class="sub-link">Carrefour</a>
+            </div>
         </div>
     </aside>
 
     <main>
         <header>
-            <div class="header-top">
-                <div class="header-left">
-                    <button class="menu-btn" onclick="toggleMenu()">☰</button>
-                    <h1>2025 Financial Detail</h1>
-                </div>
-                <button class="excel-btn" onclick="exportExcel()">
-                    <span class="excel-icon">⇩</span> Download Excel Report
-                </button>
+            <div class="page-title" style="margin-left: 40px;"> 
+                <h1>Amazon 2025 Deep Dive</h1>
+                <p>Detailed breakdown of Shipping, Returns, Retail, and Net Performance</p>
             </div>
-            <p class="subtitle">Complete breakdown of Revenue, Cost, and Profit by Channel</p>
+            <button class="btn-download" onclick="exportAmazonFullExcel()">
+                Download Full Report ⇩
+            </button>
         </header>
 
-        <div id="months-container">
-            <!-- JS will generate 12 tables here -->
+        <div id="content-area">
+            <!-- JS Will Inject Month Cards Here -->
         </div>
+
+        <!-- SUMMARY FOOTER (Collapsible Target) -->
+        <div class="summary-footer" id="footer-summary">
+            <div class="sf-item">
+                <div class="sf-label">Total Net Qty</div>
+                <div class="sf-val" id="year-qty" style="color:#A78BFA">0</div>
+                <div class="sf-sub">Units Sold</div>
+            </div>
+            <div class="sf-item">
+                <div class="sf-label">Total Sales (Price)</div>
+                <div class="sf-val" id="year-sales" style="color:#FFF">0</div>
+                <div class="sf-sub">Gross Sales</div>
+            </div>
+            <div class="sf-item">
+                <div class="sf-label">Total Net Revenue</div>
+                <div class="sf-val" id="year-rev">0</div>
+                <div class="sf-sub">SAR (Actuals)</div>
+            </div>
+            <div class="sf-item">
+                <div class="sf-label">Total Net Cost</div>
+                <div class="sf-val" id="year-cost">0</div>
+                <div class="sf-sub">COGS + Fees</div>
+            </div>
+            <div class="sf-item">
+                <div class="sf-label">Total Ad Spend</div>
+                <div class="sf-val" id="year-ads" style="color:#EF4444">0</div>
+                <div class="sf-sub">Direct Marketing</div>
+            </div>
+            <div class="sf-item">
+                <div class="sf-label">Net Profit</div>
+                <div class="sf-val" id="year-profit">0</div>
+                <div class="sf-sub">Realized Earnings</div>
+            </div>
+            <div class="sf-item">
+                <div class="sf-label">YTD Margin</div>
+                <div class="sf-val" id="year-margin" style="color:var(--c-amazon)">0%</div>
+                <div class="sf-sub">Efficiency</div>
+            </div>
+        </div>
+
     </main>
 
+    <!-- Floating Insight Button -->
+    <button class="fab-insight" onclick="toggleInsight()" title="Profit Analysis">
+        💡
+    </button>
+
+    <!-- Insight Modal -->
+    <div class="insight-modal" id="insight-modal">
+        <div class="im-header">
+            <div class="im-title">PROFIT ANALYSIS</div>
+            <div class="im-close" onclick="toggleInsight()">×</div>
+        </div>
+        
+        <div class="insight-item">
+            <div class="ii-icon">⚠️</div>
+            <div class="ii-text">
+                <h4>Ad Spend Drain (1:1 Ratio)</h4>
+                <p>We are spending 1 SAR on Ads for every 1 SAR kept in profit. ACOS is eating margins.</p>
+            </div>
+        </div>
+
+        <div class="insight-item">
+            <div class="ii-icon">📉</div>
+            <div class="ii-text">
+                <h4>December Return Impact</h4>
+                <p>Post-White Friday returns (-157k) wiped out December revenue, incurring extra fees.</p>
+            </div>
+        </div>
+
+        <div class="insight-item">
+            <div class="ii-icon">🚀</div>
+            <div class="ii-text">
+                <h4>Recommended Action</h4>
+                <p><strong>1. Kill Bleeding SKUs:</strong> Stop ads on high-return items.<br><strong>2. Price Hike:</strong> Increase prices by 5-10% to cover FBA fees.</p>
+            </div>
+        </div>
+    </div>
+
 <script>
-    // --- 1. REAL 2025 DATA SOURCE (Updated with Delivered Only Trendyol Data) ---
-    const DB = {
+    // --- 1. DATA SOURCE (Full Jan-Dec) ---
+    const rawData = {
         "Jan": [
-            { ch: "Amazon", sales: 303381, cost: 227772, ads: 25158, profit: 50451, color: "var(--c-amazon)" },
-            { ch: "Noon", sales: 238928, cost: 156811, ads: 0, profit: 82117, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 494653, cost: 360200, ads: 0, profit: 134453, color: "var(--c-trendyol)" },
-            { ch: "Small Ch.", sales: 266597, cost: 160475, ads: 0, profit: 106122, color: "var(--c-small)" }
+            { s: "Shipped", q: 1813, p: 371472, g: 313183, r: 272333, c: 200873, pf: 71461, ret: 0, ads: -25158 },
+            { s: "Return", q: 236, p: 58033, g: 48956, r: 42570, c: 32970, pf: 9601, ret: -4361, ads: 0 },
+            { s: "Retail", q: 145, p: 93034, g: 84661, r: 73619, c: 62922, pf: 21739, ret: -3629, ads: 0 },
+            { s: "Net", q: 1722, p: 406473, g: 319369, r: 303381, c: 230825, pf: 50451, ret: 0, ads: 0 } 
         ],
         "Feb": [
-            { ch: "Amazon", sales: 407655, cost: 312689, ads: 55766, profit: 39200, color: "var(--c-amazon)" },
-            { ch: "Noon", sales: 306351, cost: 206258, ads: 0, profit: 100093, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 174941, cost: 112473, ads: 0, profit: 62468, color: "var(--c-trendyol)" },
-            { ch: "Small Ch.", sales: 262366, cost: 172306, ads: 0, profit: 90060, color: "var(--c-small)" }
+            { s: "Shipped", q: 2559, p: 524112, g: 438436, r: 381248, c: 287627, pf: 93621, ret: 0, ads: -55766 },
+            { s: "Return", q: 229, p: 48879, g: 40998, r: 35661, c: 27152, pf: 8509, ret: -3914, ads: 0 },
+            { s: "Retail", q: 125, p: 78438, g: 71378, r: 62068, c: 53671, pf: 17707, ret: -3939, ads: 0 },
+            { s: "Net", q: 2455, p: 553671, g: 409136, r: 407655, c: 314146, pf: 39200, ret: 0, ads: 0 }
         ],
         "Mar": [
-            { ch: "Amazon", sales: 503612, cost: 404602, ads: 74763, profit: 24247, color: "var(--c-amazon)" },
-            { ch: "Noon", sales: 400871, cost: 280220, ads: 0, profit: 120651, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 293390, cost: 212303, ads: 0, profit: 81087, color: "var(--c-trendyol)" },
-            { ch: "Small Ch.", sales: 281319, cost: 196984, ads: 0, profit: 84335, color: "var(--c-small)" }
+            { s: "Shipped", q: 3674, p: 721035, g: 592169, r: 514930, c: 407406, pf: 107524, ret: 0, ads: -74763 },
+            { s: "Return", q: 402, p: 62338, g: 51055, r: 44395, c: 35928, pf: 8467, ret: -5918, ads: 0 },
+            { s: "Retail", q: 67, p: 41801, g: 38039, r: 33078, c: 28406, pf: 9633, ret: -3761, ads: 0 },
+            { s: "Net", q: 3339, p: 700497, g: 498473, r: 503612, c: 399884, pf: 24247, ret: 0, ads: 0 }
         ],
         "Apr": [
-            { ch: "Amazon", sales: 310465, cost: 269060, ads: 38423, profit: 2982, color: "var(--c-amazon)" },
-            { ch: "Noon", sales: 298171, cost: 200787, ads: 0, profit: 97384, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 92446, cost: 64559, ads: 0, profit: 27887, color: "var(--c-trendyol)" },
-            { ch: "Small Ch.", sales: 132785, cost: 83921, ads: 0, profit: 48864, color: "var(--c-small)" }
+            { s: "Shipped", q: 2331, p: 571393, g: 469531, r: 408288, c: 329358, pf: 78930, ret: 0, ads: -38423 },
+            { s: "Return", q: 395, p: 140244, g: 116892, r: 101645, c: 76087, pf: 25558, ret: -9688, ads: 0 },
+            { s: "Retail", q: 8, p: 4831, g: 4396, r: 3823, c: 3317, pf: 1079, ret: -3357, ads: 0 },
+            { s: "Net", q: 1944, p: 435980, g: 308923, r: 310465, c: 256588, pf: 2982, ret: 0, ads: 0 }
         ],
         "May": [
-            { ch: "Amazon", sales: 320677, cost: 256133, ads: 39679, profit: 24865, color: "var(--c-amazon)" },
-            { ch: "Noon", sales: 367050, cost: 252576, ads: 0, profit: 114474, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 111078, cost: 77988, ads: 0, profit: 33090, color: "var(--c-trendyol)" },
-            { ch: "Small Ch.", sales: 165011, cost: 106490, ads: 0, profit: 58521, color: "var(--c-small)" }
+            { s: "Shipped", q: 1602, p: 480528, g: 411462, r: 357793, c: 277331, pf: 80462, ret: 0, ads: -39679 },
+            { s: "Return", q: 179, p: 58859, g: 49612, r: 43141, c: 33558, pf: 9583, ret: -4401, ads: 0 },
+            { s: "Retail", q: 13, p: 7614, g: 6929, r: 6025, c: 5169, pf: 1760, ret: -3694, ads: 0 },
+            { s: "Net", q: 1436, p: 429283, g: 324698, r: 320677, c: 248942, pf: 24865, ret: 0, ads: 0 }
         ],
         "Jun": [
-            { ch: "Amazon", sales: 331208, cost: 272754, ads: 42429, profit: 16025, color: "var(--c-amazon)" },
-            { ch: "Noon", sales: 222440, cost: 140997, ads: 0, profit: 81443, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 124158, cost: 90571, ads: 0, profit: 33587, color: "var(--c-trendyol)" },
-            { ch: "Small Ch.", sales: 116782, cost: 67003, ads: 0, profit: 49779, color: "var(--c-small)" }
+            { s: "Shipped", q: 1813, p: 483504, g: 405065, r: 352230, c: 281359, pf: 70871, ret: 0, ads: -42429 },
+            { s: "Return", q: 188, p: 36990, g: 31168, r: 27103, c: 21238, pf: 5865, ret: -3231, ads: 0 },
+            { s: "Retail", q: 13, p: 7684, g: 6992, r: 6080, c: 5246, pf: 1746, ret: -5067, ads: 0 },
+            { s: "Net", q: 1638, p: 454198, g: 335229, r: 331208, c: 265367, pf: 16025, ret: 0, ads: 0 }
         ],
         "Jul": [
-            { ch: "Amazon", sales: 593876, cost: 505621, ads: 57054, profit: 31201, color: "var(--c-amazon)" },
-            { ch: "Noon", sales: 285799, cost: 188403, ads: 0, profit: 97396, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 151741, cost: 126597, ads: 0, profit: 25144, color: "var(--c-trendyol)" },
-            { ch: "Small Ch.", sales: 227476, cost: 159000, ads: 0, profit: 68476, color: "var(--c-small)" }
+            { s: "Shipped", q: 2833, p: 844805, g: 720673, r: 626672, c: 518859, pf: 107813, ret: 0, ads: -57054 },
+            { s: "Return", q: 231, p: 49225, g: 41124, r: 35760, c: 27062, pf: 8698, ret: -4272, ads: 0 },
+            { s: "Retail", q: 6, p: 3746, g: 3409, r: 2964, c: 2531, pf: 878, ret: -7465, ads: 0 },
+            { s: "Net", q: 2608, p: 799326, g: 621631, r: 593876, c: 494328, pf: 31201, ret: 0, ads: 0 }
         ],
         "Aug": [
-            { ch: "Amazon", sales: 423798, cost: 354044, ads: 44869, profit: 24885, color: "var(--c-amazon)" },
-            { ch: "Noon", sales: 235315, cost: 155138, ads: 0, profit: 80177, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 425394, cost: 363689, ads: 0, profit: 61705, color: "var(--c-trendyol)" },
-            { ch: "Small Ch.", sales: 143198, cost: 91603, ads: 0, profit: 51595, color: "var(--c-small)" }
+            { s: "Shipped", q: 2524, p: 661507, g: 553957, r: 481702, c: 389304, pf: 92398, ret: 0, ads: -44869 },
+            { s: "Return", q: 309, p: 82985, g: 70562, r: 61358, c: 50020, pf: 11338, ret: -6602, ads: 0 },
+            { s: "Retail", q: 7, p: 4366, g: 3973, r: 3455, c: 2977, pf: 996, ret: -5700, ads: 0 },
+            { s: "Net", q: 2222, p: 582888, g: 435897, r: 423798, c: 342261, pf: 24885, ret: 0, ads: 0 }
         ],
         "Sep": [
-            { ch: "Amazon", sales: 433087, cost: 358155, ads: 58816, profit: 16116, color: "var(--c-amazon)" },
-            { ch: "Noon", sales: 167806, cost: 105883, ads: 0, profit: 61923, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 206688, cost: 161589, ads: 0, profit: 45099, color: "var(--c-trendyol)" },
-            { ch: "Small Ch.", sales: 138987, cost: 83962, ads: 0, profit: 55025, color: "var(--c-small)" }
+            { s: "Shipped", q: 2461, p: 668018, g: 548730, r: 477157, c: 391960, pf: 85196, ret: 7693, ads: -58816 },
+            { s: "Return", q: 238, p: 67878, g: 57079, r: 49629, c: 40429, pf: 9200, ret: -5756, ads: 0 },
+            { s: "Retail", q: 10, p: 7025, g: 6393, r: 5559, c: 4627, pf: 1766, ret: -4767, ads: 0 },
+            { s: "Net", q: 2233, p: 607165, g: 433472, r: 433087, c: 356159, pf: 16116, ret: 0, ads: 0 }
         ],
         "Oct": [
-            { ch: "Amazon", sales: 355072, cost: 319673, ads: 32101, profit: 3298, color: "var(--c-amazon)" },
-            { ch: "Noon", sales: 150848, cost: 95314, ads: 0, profit: 55534, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 192279, cost: 169956, ads: 0, profit: 22323, color: "var(--c-trendyol)" },
-            { ch: "Small Ch.", sales: 104874, cost: 63724, ads: 0, profit: 41150, color: "var(--c-small)" }
+            { s: "Shipped", q: 2447, p: 590563, g: 455108, r: 395746, c: 344111, pf: 51635, ret: 0, ads: -32101 },
+            { s: "Return", q: 291, p: 63809, g: 50821, r: 44192, c: 36446, pf: 7746, ret: -6648, ads: 0 },
+            { s: "Retail", q: 8, p: 4445, g: 4045, r: 3517, c: 3104, pf: 941, ret: -2783, ads: 0 },
+            { s: "Net", q: 2164, p: 531198, g: 369584, r: 355072, c: 310769, pf: 3298, ret: 0, ads: 0 }
         ],
         "Nov": [
-            { ch: "Amazon", sales: 1770108, cost: 1347988, ads: 78122, profit: 343998, color: "var(--c-amazon)" },
-            { ch: "Noon", sales: 201461, cost: 142845, ads: 0, profit: 58616, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 381481, cost: 333977, ads: 0, profit: 47504, color: "var(--c-trendyol)" },
-            { ch: "Small Ch.", sales: 131516, cost: 83476, ads: 0, profit: 48040, color: "var(--c-small)" }
+            { s: "Shipped", q: 6937, p: 2420445, g: 2086640, r: 1814470, c: 2022517, pf: -208048, ret: 645172, ads: -78122 },
+            { s: "Return", q: 256, p: 70256, g: 55582, r: 48333, c: 41279, pf: 7054, ret: -6449, ads: 0 },
+            { s: "Retail", q: 8, p: 5018, g: 4566, r: 3970, c: 3368, pf: 1198, ret: -2700, ads: 0 },
+            { s: "Net", q: 6689, p: 2355206, g: 1951053, r: 1770108, c: 1984606, pf: 343998, ret: 0, ads: 0 }
         ],
         "Dec": [
-            { ch: "Amazon", sales: -22470, cost: -48536, ads: 29246, profit: -3180, color: "var(--c-amazon)" },
-            { ch: "Noon", sales: 143074, cost: 90039, ads: 0, profit: 53035, color: "var(--c-noon)" },
-            { ch: "Trendyol", sales: 129714, cost: 105807, ads: 0, profit: 23907, color: "var(--c-trendyol)" },
-            { ch: "Small Ch.", sales: 145756, cost: 89639, ads: 0, profit: 56117, color: "var(--c-small)" }
+            { s: "Shipped", q: 1830, p: 156781, g: 122852, r: 106828, c: 104194, pf: 2634, ret: 29348, ads: -29246 },
+            { s: "Return", q: 622, p: 196775, g: 168453, r: 146481, c: 157698, pf: -11217, ret: -19598, ads: 0 },
+            { s: "Retail", q: 34, p: 21714, g: 19760, r: 17183, c: 14541, pf: 5219, ret: -2754, ads: 0 },
+            { s: "Net", q: 1242, p: -18279, g: -74684, r: -22470, c: -38963, pf: -3180, ret: 0, ads: 0 }
         ]
     };
 
-    const monthsList = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
+    // --- 2. UTILITY FUNCTIONS ---
+    const format = (num) => new Intl.NumberFormat('en-US').format(Math.round(num));
+    
     function toggleMenu() {
-        document.querySelector('aside').classList.toggle('active');
-        document.querySelector('.sidebar-overlay').classList.toggle('active');
+        document.getElementById('sidebar').classList.toggle('active');
+        document.querySelector('.overlay').classList.toggle('active');
     }
 
-    function format(num) {
-        return new Intl.NumberFormat('en-US').format(Math.round(num));
+    function toggleSmallChannels(el) {
+        el.classList.toggle('dropdown-active');
+        document.getElementById('sm-submenu').classList.toggle('open');
     }
 
-    function renderPage() {
-        const nav = document.getElementById('nav-container');
-        const main = document.getElementById('months-container');
+    function scrollToStats() {
+        document.getElementById('footer-summary').scrollIntoView({ behavior: 'smooth' });
+    }
 
-        monthsList.forEach(month => {
-            const data = DB[month];
+    function toggleInsight() {
+        document.getElementById('insight-modal').classList.toggle('active');
+    }
+
+    // --- 3. RENDER LOGIC ---
+    function renderDashboard() {
+        const container = document.getElementById('content-area');
+        const months = Object.keys(rawData);
+        
+        let annualRev = 0, annualCost = 0, annualProfit = 0, annualAds = 0, annualSales = 0, annualQty = 0;
+
+        months.forEach((month, index) => {
+            const data = rawData[month];
             
-            // Sidebar Link
-            const link = document.createElement('div');
-            link.className = 'month-link';
-            link.innerText = month + " 2025";
-            link.onclick = () => {
-                document.getElementById(`sec-${month}`).scrollIntoView();
-                document.querySelector('aside').classList.remove('active');
-                document.querySelector('.sidebar-overlay').classList.remove('active');
-            };
-            nav.appendChild(link);
-
-            // Calculate Totals
-            let tSales = 0, tProfit = 0, tAds = 0;
-            data.forEach(r => { tSales += r.sales; tProfit += r.profit; tAds += r.ads; });
-            const tMargin = tSales !== 0 ? (tProfit / tSales) * 100 : 0;
-
-            // HTML Section
-            const section = document.createElement('section');
-            section.className = 'month-section';
-            section.id = `sec-${month}`;
+            // Extract Summaries
+            const netRow = data.find(r => r.s === 'Net') || {};
+            const shippedRow = data.find(r => r.s === 'Shipped') || {}; 
             
-            let rowsHTML = "";
+            const mRev = netRow.r || 0;
+            const mCost = netRow.c || 0;
+            const mProfit = netRow.pf || 0;
+            const mMargin = mRev !== 0 ? (mProfit / mRev) * 100 : 0;
+            const mAds = shippedRow.ads || 0; 
+            const mSales = netRow.p || 0; 
+            const mQty = netRow.q || 0;
+
+            // Accumulate Annual
+            annualRev += mRev;
+            annualCost += mCost;
+            annualProfit += mProfit;
+            annualAds += mAds;
+            annualSales += mSales;
+            annualQty += mQty;
+
+            // Generate Table Rows
+            let rowsHTML = '';
             data.forEach(row => {
-                const margin = row.sales !== 0 ? (row.profit / row.sales) * 100 : 0;
-                const marginColor = margin < 10 ? '#ef4444' : (margin > 25 ? '#10b981' : '#f59e0b');
+                const isNet = row.s === 'Net';
+                const rowClass = isNet ? 'row-net' : 
+                                 (row.s === 'Shipped' ? 'row-shipped' : 
+                                 (row.s === 'Return' ? 'row-return' : 'row-retail'));
                 
                 rowsHTML += `
-                    <tr>
-                        <td><div class="dot" style="background:${row.color}"></div> ${row.ch}</td>
-                        <td>${format(row.sales)}</td>
-                        <td>${format(row.cost)}</td>
-                        <td>${format(row.ads)}</td>
-                        <td>${format(row.profit)}</td>
-                        <td>
-                            ${margin.toFixed(1)}% 
-                            <div class="margin-bar-bg">
-                                <div class="margin-bar-fill" style="width:${Math.max(0, margin)}%; background:${marginColor}"></div>
-                            </div>
-                        </td>
+                    <tr class="${rowClass}">
+                        <td><div class="dot"></div>${row.s}</td>
+                        <td>${format(row.q)}</td>
+                        <td>${format(row.p)}</td>
+                        <td>${format(row.g)}</td>
+                        <td>${format(row.r)}</td>
+                        <td>${format(row.c)}</td>
+                        <td style="color:${row.pf >= 0 ? 'var(--c-success)' : 'var(--c-danger)'}">${format(row.pf)}</td>
+                        <td>${row.ret !== 0 ? format(row.ret) : '-'}</td>
+                        <td style="color:var(--c-danger)">${row.ads !== 0 ? format(row.ads) : '-'}</td>
                     </tr>
                 `;
             });
 
-            section.innerHTML = `
-                <div class="month-header">
-                    <div class="month-title">${month} 2025</div>
-                </div>
+            const marginColor = mMargin >= 15 ? '#10B981' : (mMargin > 5 ? '#FBBF24' : '#EF4444');
 
-                <div class="month-summary">
-                    <div class="m-card"><div class="m-label">Total Revenue</div><div class="m-val">${format(tSales)}</div></div>
-                    <div class="m-card"><div class="m-label">Total Profit</div><div class="m-val" style="color:#10b981">${format(tProfit)}</div></div>
-                    <div class="m-card"><div class="m-label">Net Margin</div><div class="m-val">${tMargin.toFixed(1)}%</div></div>
-                    <div class="m-card"><div class="m-label">Ad Spend</div><div class="m-val" style="color:#ef4444">${format(tAds)}</div></div>
-                </div>
+            const html = `
+                <div class="month-wrapper" style="animation-delay: ${index * 0.1}s">
+                    <div class="section-header">
+                        <div class="section-title">${month} 2025</div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="kpi-row">
+                            <div class="mini-kpi">
+                                <div class="mk-label">Total Revenue</div>
+                                <div class="mk-value">${format(mRev)}</div>
+                            </div>
+                            <div class="mini-kpi">
+                                <div class="mk-label">Net Profit</div>
+                                <div class="mk-value" style="color:${mProfit>=0?'#10B981':'#EF4444'}">${format(mProfit)}</div>
+                            </div>
+                            <div class="mini-kpi">
+                                <div class="mk-label">Net Margin</div>
+                                <div class="mk-value" style="color:${marginColor}">
+                                    ${mMargin.toFixed(1)}%
+                                    <div class="prog-track"><div class="prog-fill" style="width:${Math.max(0, Math.min(100, mMargin))}%; background:${marginColor}"></div></div>
+                                </div>
+                            </div>
+                            <div class="mini-kpi">
+                                <div class="mk-label">Ad Spend</div>
+                                <div class="mk-value" style="color:#EF4444">${format(mAds)}</div>
+                            </div>
+                        </div>
 
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Channel</th>
-                                <th>Revenue (SAR)</th>
-                                <th>COGS & Fees</th>
-                                <th>Ad Spend</th>
-                                <th>Net Profit</th>
-                                <th>Net Margin %</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${rowsHTML}
-                            <tr class="row-total">
-                                <td>TOTAL</td>
-                                <td>${format(tSales)}</td>
-                                <td>--</td>
-                                <td>${format(tAds)}</td>
-                                <td>${format(tProfit)}</td>
-                                <td>${tMargin.toFixed(1)}%</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                        <div class="table-responsive">
+                            <table class="styled-table">
+                                <thead>
+                                    <tr>
+                                        <th>Status</th>
+                                        <th>Qty</th>
+                                        <th>Price</th>
+                                        <th>GMV</th>
+                                        <th>Revenue</th>
+                                        <th>Cost</th>
+                                        <th>Profit</th>
+                                        <th>Ret Fees</th>
+                                        <th>Ads</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${rowsHTML}</tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             `;
-            main.appendChild(section);
+            container.innerHTML += html;
         });
+
+        // Update Footer Stats
+        const annualMargin = annualRev !== 0 ? (annualProfit / annualRev) * 100 : 0;
+        document.getElementById('year-qty').innerText = format(annualQty); // New Qty
+        document.getElementById('year-sales').innerText = format(annualSales);
+        document.getElementById('year-rev').innerText = format(annualRev);
+        document.getElementById('year-cost').innerText = format(annualCost);
+        document.getElementById('year-ads').innerText = format(annualAds);
+        document.getElementById('year-profit').innerText = format(annualProfit);
+        document.getElementById('year-margin').innerText = annualMargin.toFixed(2) + "%";
     }
 
-    // --- EXCEL EXPORT FUNCTIONALITY ---
-    function exportExcel() {
+    // --- 4. EXCEL EXPORT ---
+    function exportAmazonFullExcel() {
         const wb = XLSX.utils.book_new();
         let rows = [];
 
-        // Define Styles
-        const styleTitle = { 
-            font: { bold: true, color: { rgb: "FFFFFF" }, sz: 16 }, 
-            fill: { fgColor: { rgb: "020617" } },
-            alignment: { horizontal: "center" }
-        };
-        const styleMonthHeader = { 
-            font: { bold: true, color: { rgb: "FFFFFF" }, sz: 12 }, 
-            fill: { fgColor: { rgb: "0F172A" } },
-            border: { top: {style: "thin"}, bottom: {style: "thin"} }
-        };
-        const styleColHeader = { 
-            font: { bold: true, color: { rgb: "000000" } }, 
-            fill: { fgColor: { rgb: "E2E8F0" } },
-            border: { top: {style: "thin"}, bottom: {style: "thin"}, left: {style: "thin"}, right: {style: "thin"} }
-        };
-        const styleData = {
-            border: { top: {style: "thin"}, bottom: {style: "thin"}, left: {style: "thin"}, right: {style: "thin"} },
-            numFmt: "#,##0"
-        };
-        const styleDataPct = {
-            border: { top: {style: "thin"}, bottom: {style: "thin"}, left: {style: "thin"}, right: {style: "thin"} },
-            numFmt: "0.0%"
-        };
-        const styleTotal = {
-            font: { bold: true, color: { rgb: "B45309" } },
-            fill: { fgColor: { rgb: "FEF3C7" } },
-            border: { top: {style: "medium"} },
-            numFmt: "#,##0"
-        };
-        const styleTotalPct = {
-            font: { bold: true, color: { rgb: "B45309" } },
-            fill: { fgColor: { rgb: "FEF3C7" } },
-            border: { top: {style: "medium"} },
-            numFmt: "0.0%"
-        };
+        const sTitle = { font: { sz: 14, bold: true, color:{rgb:"FFFFFF"} }, fill: { fgColor: { rgb: "000000" } } };
+        const sMonth = { font: { bold: true, color: { rgb: "AC975B" } }, fill: { fgColor: { rgb: "111111" } } };
+        const sHead = { font: { bold: true }, fill: { fgColor: { rgb: "DDDDDD" } }, border: { bottom: { style: "thin" } } };
+        
+        rows.push([{ v: "AMAZON 2025 FULL FINANCIAL REPORT", s: sTitle }]);
+        rows.push([""]);
 
-        // 1. Add Main Title
-        rows.push([ { v: "EXECUTIVE PERFORMANCE REPORT 2025", s: styleTitle } ]);
-        rows.push([""]); // Spacer
-
-        // 2. Loop through Months
-        monthsList.forEach(month => {
-            const data = DB[month];
-            
-            // Calculate Totals for the Month
-            let tSales = 0, tProfit = 0, tAds = 0;
-            data.forEach(r => { tSales += r.sales; tProfit += r.profit; tAds += r.ads; });
-            const tMargin = tSales ? (tProfit / tSales) : 0;
-
-            // Month Header
-            rows.push([ { v: month + " 2025", s: styleMonthHeader }, "", "", "", "", "" ]);
-            
-            // Column Headers
+        Object.keys(rawData).forEach(m => {
+            rows.push([{ v: m + " 2025", s: sMonth }]);
             rows.push([
-                { v: "Channel", s: styleColHeader },
-                { v: "Revenue", s: styleColHeader },
-                { v: "COGS & Fees", s: styleColHeader },
-                { v: "Ad Spend", s: styleColHeader },
-                { v: "Net Profit", s: styleColHeader },
-                { v: "Net Margin", s: styleColHeader }
+                {v:"Status",s:sHead}, {v:"Qty",s:sHead}, {v:"Price",s:sHead}, {v:"GMV",s:sHead},
+                {v:"Revenue",s:sHead}, {v:"Cost",s:sHead}, {v:"Profit",s:sHead}, {v:"Ret Fees",s:sHead}, {v:"Ads",s:sHead}
             ]);
 
-            // Data Rows
-            data.forEach(r => {
-                const margin = r.sales ? (r.profit / r.sales) : 0;
+            rawData[m].forEach(r => {
+                let fontStyle = {};
+                if(r.s === "Net") fontStyle = { bold: true, color: { rgb: "3B82F6" } };
+                if(r.s === "Return") fontStyle = { color: { rgb: "EF4444" } };
+
                 rows.push([
-                    { v: r.ch, s: styleData },
-                    { v: r.sales, s: styleData, t: 'n' },
-                    { v: r.cost, s: styleData, t: 'n' },
-                    { v: r.ads, s: styleData, t: 'n' },
-                    { v: r.profit, s: styleData, t: 'n' },
-                    { v: margin, s: styleDataPct, t: 'n' }
+                    { v: r.s, s: { font: fontStyle } },
+                    { v: r.q, t:'n' }, { v: r.p, t:'n', z:'#,##0' }, { v: r.g, t:'n', z:'#,##0' },
+                    { v: r.r, t:'n', z:'#,##0' }, { v: r.c, t:'n', z:'#,##0' }, { v: r.pf, t:'n', z:'#,##0' },
+                    { v: r.ret, t:'n', z:'#,##0' }, { v: r.ads, t:'n', z:'#,##0' }
                 ]);
             });
-
-            // Total Row
-            rows.push([
-                { v: "TOTAL", s: styleTotal },
-                { v: tSales, s: styleTotal, t: 'n' },
-                { v: "-", s: styleTotal },
-                { v: tAds, s: styleTotal, t: 'n' },
-                { v: tProfit, s: styleTotal, t: 'n' },
-                { v: tMargin, s: styleTotalPct, t: 'n' }
-            ]);
-
-            // Spacer Row
             rows.push([""]);
         });
 
-        // 3. Create Worksheet
-        const ws = XLSX.utils.aoa_to_sheet([]); // Initialize empty
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        ws['!cols'] = [{wpx:80}, {wpx:60}, {wpx:80}, {wpx:80}, {wpx:80}, {wpx:80}, {wpx:80}, {wpx:80}, {wpx:80}];
         
-        // 4. Manually add cells (aoa_to_sheet strips styles in some versions, manual is safer for styled cells)
-        // Actually, xlsx-js-style allows aoa_to_sheet with objects. Let's try direct assignment.
-        XLSX.utils.sheet_add_aoa(ws, rows, { origin: "A1" });
-
-        // 5. Set Column Widths
-        ws['!cols'] = [
-            { wpx: 120 }, // Channel
-            { wpx: 100 }, // Rev
-            { wpx: 100 }, // Cost
-            { wpx: 100 }, // Ads
-            { wpx: 100 }, // Profit
-            { wpx: 80 }   // Margin
-        ];
-
-        // 6. Merge Month Headers (A to F)
-        const merges = [];
-        let currentRow = 0;
-        // Need to calculate where the month headers are to merge them
-        // Title is row 0. Spacer row 1.
-        // For every month: Header(1) + ColHead(1) + 4 Data rows + Total(1) + Spacer(1) = 8 rows/month
-        // Title (1) + Spacer (1) = Start at index 2
-        
-        merges.push({ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }); // Main Title Merge
-
-        let rIndex = 2; 
-        monthsList.forEach(m => {
-            merges.push({ s: { r: rIndex, c: 0 }, e: { r: rIndex, c: 5 } }); // Month Header Merge
-            rIndex += (DB[m].length + 4); // Header + ColHead + DataLength + Total + Spacer
-        });
-        ws['!merges'] = merges;
-
-        // 7. Write File
-        XLSX.utils.book_append_sheet(wb, ws, "2025 Financials");
-        XLSX.writeFile(wb, "INHOUSE_2025_Executive_Report.xlsx");
+        XLSX.utils.book_append_sheet(wb, ws, "Amazon Detailed");
+        XLSX.writeFile(wb, "INHOUSE_Amazon_2025.xlsx");
     }
 
-    // Init
-    renderPage();
-
-    // Scroll Spy for Sidebar Active State
-    const contentBox = document.querySelector("main");
-    const sections = document.querySelectorAll(".month-section");
-    const links = document.querySelectorAll(".month-link");
-
-    contentBox.addEventListener("scroll", () => {
-        let current = "";
-        sections.forEach(sec => {
-            const top = sec.offsetTop - contentBox.offsetTop;
-            if (contentBox.scrollTop >= top - 100) {
-                current = sec.getAttribute("id");
-            }
-        });
-        links.forEach(li => {
-            li.classList.remove("active");
-            if (li.getAttribute("onclick").includes(current)) {
-                li.classList.add("active");
-            }
-        });
-    });
+    renderDashboard();
 
 </script>
 
