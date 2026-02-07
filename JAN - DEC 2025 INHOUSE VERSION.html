@@ -145,6 +145,27 @@
         }
         .btn-download:hover { background: #059669; transform: translateY(-2px); }
 
+        /* NEW RAW DATA BUTTON */
+        .btn-raw-data {
+            background: transparent;
+            color: var(--c-brand);
+            border: 1px solid var(--c-brand);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+        .btn-raw-data:hover {
+            background: var(--c-brand);
+            color: #000;
+            transform: translateY(-2px);
+        }
+
         /* THEME TOGGLE SWITCH */
         .theme-switch {
             position: relative; width: 60px; height: 30px;
@@ -290,9 +311,20 @@
             
             .header-top-mobile { display: flex; }
             header { flex-direction: column; align-items: flex-start; gap: 20px; }
-            .header-actions { width: 100%; justify-content: space-between; }
+            
+            /* UPDATED: Mobile Header Actions */
+            .header-actions { 
+                width: 100%; 
+                justify-content: space-between; 
+                flex-wrap: wrap; 
+                gap: 10px; 
+            }
+            .btn-download, .btn-raw-data { 
+                width: 100%; 
+                justify-content: center; 
+            }
+            
             .page-title h1 { font-size: 1.8rem; }
-            .btn-download { width: 100%; justify-content: center; }
             
             main { padding: 20px; }
             
@@ -368,6 +400,12 @@
                 <div class="theme-switch" onclick="toggleTheme()" title="Switch Light/Dark Mode">
                     <div class="switch-handle">☀</div>
                 </div>
+                
+                <!-- NEW BUTTON HERE -->
+                <a href="amazon_raw_data.html" class="btn-raw-data">
+                    OPEN RAW DATA ↗
+                </a>
+
                 <button class="btn-download" onclick="exportAmazonFullExcel()">
                     Download Full Report ⇩
                 </button>
