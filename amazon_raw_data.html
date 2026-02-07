@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>INHOUSE | Amazon Data Pro</title>
+    <!-- FAVICON -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230F172A'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='900' font-size='42' fill='%23AC975B'%3EI%3C/text%3E%3C/svg%3E">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.min.js"></script>
+
+    <style>
+        /* --- THEME VARIABLES --- */
+        :root {
+            /* DARK THEME (Default) */
+            --bg-body: #02040a;
+            --bg-sidebar: #000205;
+            --bg-panel: #0F172A;
+            --bg-input: #1E293B;
+            --bg-hover: rgba(255, 255, 255, 0.05);
+            
+            --c-brand: #AC975B;
+            --c-text: #F8FAFC;
+            --c-muted: #94a3b8;
+            --c-heading: #FFFFFF;
+            
+            --border: rgba(255, 255, 255, 0.1);
+            --header-bg: #0b1120;
+            
+            --c-blue: #3B82F6;
+            --c-green: #10B981;
+            --c-red: #EF4444;
+            
+            --sidebar-width: 60px;
+            --sidebar-width-hover: 240px;
+
+            /* Browser Native Controls Theme */
+            color-scheme: dark; 
+        }
+
+        /* LIGHT THEME OVERRIDES */
+        [data-theme="light"] {
+            --bg-body: #F1F5F9;
+            --bg-sidebar: #FFFFFF;
+            --bg-panel: #FFFFFF;
+            --bg-input: #F8FAFC;
+            --bg-hover: rgba(0, 0, 0, 0.05);
+            
+            --c-brand: #B45309;
+            --c-text: #334155;
+            --c-muted: #64748B;
+            --c-heading: #0F172A;
+            
+            --border: #E2E8F0;
+            --header-bg: #FFFFFF;
+
+            color-scheme: light;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--c-text);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* --- MOBILE OVERLAY --- */
+        .sidebar-overlay { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.5); z-index: 40; backdrop-filter: blur(2px);
+        }
+        .sidebar-overlay.active { display: block; }
+
+        /* --- SIDEBAR --- */
+        aside {
+            width: var(--sidebar-width);
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 50;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        /* Desktop Hover Expand */
+        @media (min-width: 769px) {
+            aside:hover { width: var(--sidebar-width-hover); box-shadow: 5px 0 20px rgba(0,0,0,0.1); }
+            aside:hover .brand-text, aside:hover .nav-label { opacity: 1; transition-delay: 0.1s; }
+        }
+
+        .brand-icon { 
+            height: 60px; display: flex; align-items: center; padding-left: 18px; 
+            border-bottom: 1px solid var(--border); margin-bottom: 10px;
+            white-space: nowrap; overflow: hidden;
+        }
+        .brand-text { font-weight: 900; font-size: 1.2rem; margin-left: 10px; color: var(--c-heading); opacity: 0; transition: 0.2s; }
+
+        .nav-item {
+            display: flex; align-items: center; padding: 12px 18px;
+            color: var(--c-muted); text-decoration: none;
+            transition: 0.2s; white-space: nowrap; cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+        .nav-item:hover, .nav-item.active { background: var(--bg-hover); color: var(--c-text); }
+        .nav-item.active { border-left-color: var(--c-brand); color: var(--c-brand); font-weight: 600; }
+        
+        .nav-icon { width: 24px; text-align: center; font-size: 1.1rem; }
+        .nav-label { margin-left: 15px; font-weight: 500; font-size: 0.9rem; opacity: 0; transition: 0.2s; }
+
+        /* --- MAIN CONTENT --- */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            width: 100%;
+            overflow: hidden; 
+            transition: background 0.3s;
+        }
+
+        /* --- TOP BAR --- */
+        .top-bar {
+            border-bottom: 1px solid var(--border);
+            background: var(--header-bg);
+            backdrop-filter: blur(10px);
+            display: flex; flex-wrap: wrap; gap: 15px;
+            align-items: center; padding: 10px 20px;
+            z-index: 40;
+        }
+
+        .menu-toggle { 
+            display: none; background: none; border: none; font-size: 1.5rem; 
+            color: var(--c-text); cursor: pointer; margin-right: 10px; padding: 5px;
+        }
+
+        .page-header { display: flex; flex-direction: column; justify-content: center; }
+        .page-header h1 { font-size: 1.1rem; font-weight: 700; color: var(--c-heading); white-space: nowrap; }
+        .page-header p { font-size: 0.75rem; color: var(--c-muted); }
+
+        .search-container { flex: 1; position: relative; min-width: 200px; }
+        .search-box {
+            width: 100%; background: var(--bg-input); border: 1px solid var(--border);
+            padding: 8px 15px 8px 35px; border-radius: 6px;
+            color: var(--c-text); font-size: 0.9rem; outline: none; transition: 0.3s;
+        }
+        .search-box:focus { border-color: var(--c-brand); }
+        .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--c-muted); pointer-events: none; }
+
+        /* Filters Group */
+        .filters-container { display: flex; gap: 8px; align-items: center; }
+        
+        .filter-select {
+            background: var(--bg-input); border: 1px solid var(--border);
+            color: var(--c-text); font-size: 0.8rem; font-weight: 500;
+            padding: 6px 12px; border-radius: 20px; 
+            outline: none; cursor: pointer; transition: 0.2s;
+            appearance: none; padding-right: 25px;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px top 50%;
+            background-size: 8px auto;
+        }
+        .filter-select:hover { border-color: var(--c-brand); background-color: var(--bg-hover); }
+        
+        /* FIX FOR DARK MODE DROPDOWNS */
+        .filter-select option {
+            background-color: var(--bg-panel);
+            color: var(--c-text);
+        }
+
+        .btn-icon {
+            width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--border);
+            background: var(--bg-input); color: var(--c-text); cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: 0.2s;
+            flex-shrink: 0;
+        }
+        .btn-icon:hover { background: var(--c-brand); color: #000; border-color: var(--c-brand); }
+        
+        .btn-text {
+            padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;
+            background: var(--c-brand); color: #000; border: none; cursor: pointer;
+            white-space: nowrap;
+        }
+        .btn-text:hover { opacity: 0.9; }
+
+        .theme-switch {
+            background: var(--bg-input); border: 1px solid var(--border);
+            width: 32px; height: 32px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: var(--c-text); font-size: 1rem; flex-shrink: 0;
+        }
+
+        /* --- STATS BAR --- */
+        .stats-bar {
+            display: flex; gap: 30px; padding: 10px 20px;
+            background: var(--bg-sidebar); border-bottom: 1px solid var(--border);
+            overflow-x: auto; flex-shrink: 0;
+            -webkit-overflow-scrolling: touch; /* Smooth scroll on mobile */
+            scrollbar-width: none; /* Hide scrollbar Firefox */
+        }
+        .stats-bar::-webkit-scrollbar { display: none; } /* Hide scrollbar Chrome/Safari */
+        
+        .stat { display: flex; align-items: baseline; gap: 8px; white-space: nowrap; }
+        .stat-label { font-size: 0.7rem; color: var(--c-muted); text-transform: uppercase; font-weight: 700; }
+        .stat-val { font-size: 0.95rem; font-weight: 700; color: var(--c-text); font-family: monospace; }
+
+        /* --- TABLE --- */
+        .table-container {
+            flex: 1; 
+            overflow: auto; 
+            position: relative;
+            background: var(--bg-body);
+            width: 100%;
+            -webkit-overflow-scrolling: touch; /* Smooth mobile scroll */
+        }
+        
+        table { 
+            width: max-content; /* Critical for horizontal scroll integrity */
+            min-width: 100%; 
+            border-collapse: collapse; 
+            font-size: 0.8rem; 
+            white-space: nowrap; 
+        }
+        
+        thead th {
+            position: sticky; top: 0; z-index: 10;
+            background: var(--bg-panel); color: var(--c-brand);
+            padding: 10px 12px; text-align: left;
+            font-size: 0.7rem; text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        tbody td {
+            padding: 8px 12px; border-bottom: 1px solid var(--border);
+            color: var(--c-muted);
+        }
+
+        /* Padding for scrolling */
+        thead th:last-child, tbody td:last-child { padding-right: 25px; }
+        
+        tbody tr:hover td { background: var(--bg-hover); color: var(--c-text); }
+        
+        .clickable-cell { 
+            cursor: pointer; position: relative; 
+            max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            transition: color 0.2s;
+        }
+        .clickable-cell:hover { color: var(--c-brand); text-decoration: underline; }
+
+        .money { text-align: right; font-family: monospace; font-weight: 500; }
+        .center { text-align: center; }
+        .neg { color: var(--c-red); }
+        .pos { color: var(--c-green); }
+        .status-cell { font-weight: 600; font-size: 0.7rem; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; }
+        .st-shipped { color: var(--c-green); background: rgba(16, 185, 129, 0.1); }
+        .st-return { color: var(--c-red); background: rgba(239, 68, 68, 0.1); }
+        .st-pending { color: #FBBF24; }
+
+        /* --- FOOTER --- */
+        .footer { height: 60px; flex-shrink: 0; border-top: 1px solid var(--border); background: var(--bg-panel); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 20; }
+        .jump-box { background: var(--bg-input); border: 1px solid var(--border); color: var(--c-text); width: 60px; padding: 5px; text-align: center; border-radius: 4px; margin: 0 10px; }
+
+        /* --- MODAL --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal-box { background: var(--bg-panel); width: 90%; max-width: 500px; padding: 25px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 20px 50px rgba(0,0,0,0.5); animation: popIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+        .modal-header { display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .modal-title { font-size: 1rem; font-weight: 700; color: var(--c-brand); text-transform: uppercase; }
+        .modal-close { cursor: pointer; font-size: 1.5rem; color: var(--c-muted); line-height: 1; }
+        .modal-content { font-size: 1rem; color: var(--c-text); line-height: 1.6; word-wrap: break-word; max-height: 300px; overflow-y: auto; }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* --- LOADER --- */
+        .loader-overlay {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.85); z-index: 200;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .spinner { width: 50px; height: 50px; border: 4px solid var(--border); border-top-color: var(--c-brand); border-radius: 50%; animation: spin 1s infinite linear; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* --- MOBILE MEDIA QUERIES --- */
+        @media (max-width: 768px) {
+            aside {
+                position: fixed; top: 0; left: 0; height: 100%; width: 0;
+                padding: 0; border: none; overflow: hidden;
+            }
+            aside.active { width: 260px; padding: 25px 15px; border-right: 1px solid var(--border); box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
+            aside.active .brand-text, aside.active .nav-label { opacity: 1; } 
+
+            main { width: 100%; }
+            .menu-toggle { display: block; }
+            
+            /* Responsive Top Bar */
+            .top-bar { 
+                padding: 15px; 
+                flex-direction: column; 
+                align-items: stretch; 
+                gap: 15px; 
+                height: auto; 
+            }
+            
+            .header-mobile-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+            .search-container { width: 100%; }
+
+            /* Scrollable Filters */
+            .filters-container { 
+                overflow-x: auto; 
+                padding-bottom: 5px; 
+                justify-content: flex-start;
+                -webkit-overflow-scrolling: touch;
+            }
+            /* Hide scrollbar on filters */
+            .filters-container::-webkit-scrollbar { display: none; }
+            
+            .footer { padding: 0 15px; font-size: 0.8rem; }
+        }
+        
+    </style>
+</head>
+<body data-theme="dark">
+
+    <div class="loader-overlay" id="loader">
+        <div class="spinner"></div>
+        <p style="margin-top:15px; font-size:0.9rem; color:var(--c-text)">Syncing Amazon Data...</p>
+    </div>
+
+    <!-- DETAIL MODAL -->
+    <div class="modal-overlay" id="detailModal" onclick="closeModal()">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <span class="modal-title">Full Details</span>
+                <span class="modal-close" onclick="closeModal()">×</span>
+            </div>
+            <div class="modal-content" id="modalText"></div>
+        </div>
+    </div>
+
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar">
+        <div class="brand-icon">
+            <span style="color:var(--c-brand); font-size:1.5rem;">●</span>
+            <span class="brand-text">INHOUSE</span>
+        </div>
+        
+        <a href="index.html" class="nav-item">
+            <div class="nav-icon">←</div><div class="nav-label">Dashboard</div>
+        </a>
+        <div class="nav-item active">
+            <div class="nav-icon">📊</div><div class="nav-label">Raw Data</div>
+        </div>
+    </aside>
+
+    <main>
+        <!-- TOP TOOLBAR -->
+        <div class="top-bar">
+            <!-- Mobile Row: Menu + Title + Theme -->
+            <div class="header-mobile-row">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                    <div class="page-header">
+                        <h1>Amazon 2025</h1>
+                        <p>Real-Time Data</p>
+                    </div>
+                </div>
+                <!-- Controls that fit on top row mobile -->
+                <div style="display:flex; gap:10px;">
+                    <button class="theme-switch" onclick="toggleTheme()" title="Toggle Theme">☀</button>
+                </div>
+            </div>
+
+            <!-- Search Bar (Full width on mobile) -->
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" class="search-box" placeholder="Order ID, SKU, ASIN..." onkeyup="applyFilters()">
+            </div>
+
+            <!-- Filters (Scrollable on mobile) -->
+            <div class="filters-container">
+                <select id="filterMonth" class="filter-select" onchange="applyFilters()">
+                    <option value="All">Month: All</option>
+                </select>
+                <select id="filterStatus" class="filter-select" onchange="applyFilters()">
+                    <option value="All">Status: All</option>
+                </select>
+                <select id="filterCat" class="filter-select" onchange="applyFilters()">
+                    <option value="All">Cat: All</option>
+                </select>
+                
+                <button class="btn-text" onclick="fetchData()">Sync</button>
+                <button class="btn-icon" onclick="exportToExcel()" title="Export Excel">⇩</button>
+            </div>
+        </div>
+
+        <!-- SLIM STATS BAR -->
+        <div class="stats-bar">
+            <div class="stat"><span class="stat-label">Rows</span> <span class="stat-val" id="st-count">0</span></div>
+            <div class="stat"><span class="stat-label">Rev</span> <span class="stat-val" style="color:var(--c-green)" id="st-rev">0</span></div>
+            <div class="stat"><span class="stat-label">Profit</span> <span class="stat-val" id="st-profit">0</span></div>
+            <div class="stat"><span class="stat-label">Qty</span> <span class="stat-val" style="color:var(--c-blue)" id="st-qty">0</span></div>
+        </div>
+
+        <!-- DATA TABLE -->
+        <div class="table-container">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Date</th>
+                        <th>Month</th>
+                        <th>Product</th>
+                        <th>SKU</th>
+                        <th>ASIN</th>
+                        <th class="center">Qty</th>
+                        <th class="money">Price</th>
+                        <th>Cat</th>
+                        <th class="money">Cost</th>
+                        <th class="money">GMV</th>
+                        <th class="money">Revenue</th>
+                        <th class="money">Profit</th>
+                        <th class="money">Margin</th>
+                        <th>Status</th>
+                        <th class="money">New Cost</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <!-- FOOTER PAGINATION -->
+        <div class="footer">
+            <span id="pageInfo" style="color:var(--c-muted)">Loading...</span>
+            
+            <div style="display:flex; align-items:center; gap:5px;">
+                <button class="btn-icon" onclick="changePage(-1)">❮</button>
+                
+                <!-- Jump to Page Input -->
+                <span style="font-size:0.8rem; color:var(--c-muted); margin-left:10px;">Page</span>
+                <input type="number" id="jumpPage" class="jump-box" min="1" onchange="jumpTo(this.value)">
+                
+                <button class="btn-icon" onclick="changePage(1)">❯</button>
+            </div>
+        </div>
+    </main>
+
+<script>
+    // --- CONFIGURATION ---
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwhRxyp2LCtmVl_ebkoZpL-P1ahX2MTJZsOfVMi7qFW3Zt_cC91CtRKb4BE7JgZX01ZLw/exec';
+    
+    let allData = [], filteredData = [], currentPage = 1;
+    const rowsPerPage = 100;
+
+    // --- UTILS ---
+    const fmt = (n) => new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+    const clean = (v) => parseFloat(String(v).replace(/,/g, '').replace(/%/g, '')) || 0;
+
+    // --- UI FUNCTIONS ---
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.querySelector('.sidebar-overlay').classList.toggle('active');
+    }
+
+    function toggleTheme() {
+        const body = document.body;
+        const next = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        body.setAttribute('data-theme', next);
+        
+        const btn = document.querySelector('.theme-switch');
+        btn.innerText = next === 'light' ? '☾' : '☀';
+        
+        localStorage.setItem('theme', next);
+    }
+
+    if(localStorage.getItem('theme') === 'light') toggleTheme();
+
+    // --- DATA FETCHING ---
+    async function fetchData() {
+        document.getElementById('loader').style.display = 'flex';
+        try {
+            const res = await fetch(SCRIPT_URL);
+            const json = await res.json();
+            if(json.length) {
+                allData = json;
+                populateFilters();
+                applyFilters();
+            } else { alert("No Data Found"); }
+        } catch(e) { console.error(e); alert("Connection Failed"); }
+        finally { document.getElementById('loader').style.display = 'none'; }
+    }
+
+    // --- LOGIC ---
+    function populateFilters() {
+        const getUnique = (k) => [...new Set(allData.map(d => findVal(d, k)))].filter(Boolean).sort();
+        
+        fillSelect('filterMonth', getUnique('month'), 'Month');
+        fillSelect('filterStatus', getUnique('status'), 'Status');
+        fillSelect('filterCat', getUnique('cat', 'CAT'), 'Cat');
+    }
+
+    function fillSelect(id, items, label) {
+        const s = document.getElementById(id);
+        const v = s.value;
+        s.innerHTML = `<option value="All">${label}: All</option>`;
+        items.forEach(i => s.innerHTML += `<option value="${i}">${i}</option>`);
+        if(items.includes(v)) s.value = v;
+    }
+
+    function applyFilters() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        const fm = document.getElementById('filterMonth').value;
+        const fs = document.getElementById('filterStatus').value;
+        const fc = document.getElementById('filterCat').value;
+
+        filteredData = allData.filter(r => {
+            const m = findVal(r, 'month');
+            const s = findVal(r, 'status');
+            const c = findVal(r, 'cat', 'CAT');
+            
+            // Expanded Search (Order ID, SKU, Product Name, ASIN)
+            const searchTerms = [
+                findVal(r, 'amazon-order-id'),
+                findVal(r, 'sku'),
+                findVal(r, 'product-name'),
+                findVal(r, 'asin')
+            ].join(' ').toLowerCase();
+
+            return (fm === 'All' || m === fm) &&
+                   (fs === 'All' || s === fs) &&
+                   (fc === 'All' || c === fc) &&
+                   (searchTerms.includes(q));
+        });
+
+        currentPage = 1;
+        updateStats();
+        renderTable();
+    }
+
+    function updateStats() {
+        let r=0, p=0, q=0;
+        filteredData.forEach(d => {
+            r += clean(findVal(d, 'revenue', 'Revenue'));
+            p += clean(findVal(d, 'profit', 'Profit'));
+            q += clean(findVal(d, 'qty', 'QTY'));
+        });
+        document.getElementById('st-count').innerText = new Intl.NumberFormat().format(filteredData.length);
+        document.getElementById('st-rev').innerText = fmt(r);
+        document.getElementById('st-profit').innerText = fmt(p);
+        document.getElementById('st-qty').innerText = new Intl.NumberFormat().format(q);
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        const start = (currentPage - 1) * rowsPerPage;
+        const chunk = filteredData.slice(start, start + rowsPerPage);
+
+        chunk.forEach(r => {
+            const tr = document.createElement('tr');
+            
+            const p = clean(findVal(r, 'profit'));
+            const pClass = p < 0 ? 'neg money' : 'pos money';
+            
+            const s = findVal(r, 'status').toLowerCase();
+            const sCls = s.includes('ship') ? 'st-shipped' : (s.includes('return') ? 'st-return' : 'st-pending');
+
+            const v = (...k) => findVal(r, ...k);
+
+            tr.innerHTML = `
+                <td>${v('amazon-order-id', 'order-id')}</td>
+                <td>${String(v('date')).substring(0,10)}</td>
+                <td>${v('month')}</td>
+                <td class="clickable-cell" onclick="viewCell(this.innerText)">${v('product-name')}</td>
+                <td>${v('sku')}</td>
+                <td>${v('asin')}</td>
+                <td class="center">${v('qty', 'QTY')}</td>
+                <td class="money">${fmt(clean(v('price')))}</td>
+                <td>${v('cat', 'CAT')}</td>
+                <td class="money">${fmt(clean(v('cost')))}</td>
+                <td class="money">${fmt(clean(v('gmv')))}</td>
+                <td class="money" style="color:var(--c-text);font-weight:700">${fmt(clean(v('revenue')))}</td>
+                <td class="${pClass}">${fmt(p)}</td>
+                <td class="money">${fmt(clean(v('margin')))}%</td>
+                <td><span class="status-cell ${sCls}">${v('status')}</span></td>
+                <td class="money">${fmt(clean(v('new cost')))}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        const total = filteredData.length;
+        document.getElementById('pageInfo').innerText = `Rows ${start+1}-${Math.min(start + rowsPerPage, total)} of ${total}`;
+        
+        const max = Math.ceil(total / rowsPerPage) || 1;
+        const jumpInput = document.getElementById('jumpPage');
+        jumpInput.value = currentPage;
+        jumpInput.max = max;
+    }
+
+    // --- MODAL & HELPERS ---
+    function viewCell(text) {
+        document.getElementById('modalText').innerText = text;
+        document.getElementById('detailModal').style.display = 'flex';
+    }
+    function closeModal() { document.getElementById('detailModal').style.display = 'none'; }
+
+    function findVal(o, ...keys) {
+        for(let k of keys) {
+            // Exact match
+            if (o[k] !== undefined) return o[k];
+            // Case insensitive check
+            const f = Object.keys(o).find(ok => ok.toLowerCase() === k.toLowerCase());
+            if(f) return o[f];
+        }
+        return '';
+    }
+
+    function changePage(d) {
+        const max = Math.ceil(filteredData.length / rowsPerPage);
+        if (currentPage + d > 0 && currentPage + d <= max) { currentPage += d; renderTable(); }
+    }
+
+    function jumpTo(val) {
+        const p = parseInt(val);
+        const max = Math.ceil(filteredData.length / rowsPerPage);
+        if (p >= 1 && p <= max) { currentPage = p; renderTable(); }
+        else { document.getElementById('jumpPage').value = currentPage; }
+    }
+
+    function exportToExcel() {
+        if(!filteredData.length) return alert("No data");
+        const ws = XLSX.utils.json_to_sheet(filteredData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "RawData");
+        XLSX.writeFile(wb, "Amazon_Export.xlsx");
+    }
+
+    // Init
+    if(!SCRIPT_URL.includes("PASTE")) fetchData();
+
+</script>
+</body>
+</html>
