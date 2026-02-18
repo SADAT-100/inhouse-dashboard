@@ -18,6 +18,7 @@
             --accent-green: #10b981;
             --accent-orange: #f59e0b;
             --accent-cyan: #06b6d4;
+            --accent-red: #ef4444; /* New Accent for Daily Report */
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
         }
@@ -124,6 +125,15 @@
         .bfl { --accent-color: var(--accent-purple); }
         .pricing { --accent-color: var(--accent-green); }
         .forecast { --accent-color: var(--accent-orange); }
+        
+        /* New Daily Report Card Style */
+        .daily { 
+            --accent-color: var(--accent-red); 
+            border: 1px solid rgba(239, 68, 68, 0.2); /* Subtle red border highlight */
+        }
+        .daily:hover {
+            box-shadow: 0 20px 50px -10px rgba(239, 68, 68, 0.15);
+        }
 
         .lock-icon { font-size: 1rem; opacity: 0.5; }
 
@@ -149,7 +159,16 @@
 
         <div class="grid">
             
-            <!-- 1. MAIN PLANNER -->
+            <!-- 1. DAILY REPORT TRACKER (NEW - CEO PRIORITY) -->
+            <a href="Daily_report.html" class="card daily">
+                <div class="icon">📈</div>
+                <h2>Daily Report Tracker</h2>
+                <p>Critical: Track -"Daily Multi-Channel Sales & MTD Growth Report"
+.</p>
+                <div class="btn">View Daily Stats →</div>
+            </a>
+
+            <!-- 2. MAIN PLANNER -->
             <a href="2026_Manager_App_Final.html" class="card planner">
                 <div class="icon">📊</div>
                 <h2>2026 Strategy Planner</h2>
@@ -157,7 +176,7 @@
                 <div class="btn">Launch Dashboard →</div>
             </a>
 
-            <!-- 2. INHOUSE REPORTS -->
+            <!-- 3. INHOUSE REPORTS -->
             <a href="inhouse_reports.html" class="card reports">
                 <div class="icon">📑</div>
                 <h2>Inhouse Reports</h2>
@@ -165,7 +184,7 @@
                 <div class="btn">View Reports →</div>
             </a>
 
-            <!-- 3. BFL RECOVERY (PASSWORD PROTECTED) -->
+            <!-- 4. BFL RECOVERY (PASSWORD PROTECTED) -->
             <div onclick="checkPassword()" class="card bfl">
                 <div class="icon">🤝</div>
                 <h2>BFL Recovery Task <span class="lock-icon">🔒</span></h2>
@@ -173,7 +192,7 @@
                 <div class="btn">Open Task Guide →</div>
             </div>
 
-            <!-- 4. PRICING TOOL -->
+            <!-- 5. PRICING TOOL -->
             <a href="Pricing_Calculator.html" class="card pricing">
                 <div class="icon">💰</div>
                 <h2>Pricing Calculator</h2>
@@ -181,7 +200,7 @@
                 <div class="btn">Open Calculator →</div>
             </a>
 
-            <!-- 5. RAMADAN FORECAST (Placeholder) -->
+            <!-- 6. RAMADAN FORECAST (Placeholder) -->
             <div class="card forecast" style="opacity: 0.6; cursor: not-allowed;">
                 <div class="icon">🌙</div>
                 <h2>Ramadan Forecast</h2>
