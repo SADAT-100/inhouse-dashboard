@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inhouse Daily Report</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f3f4f6; }
+        .stat-card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .loading-spinner { border: 4px solid rgba(0, 0, 0, 0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: #3b82f6; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900">Real-Time Daily Report</h1>
+                <p id="last-updated" class="text-slate-500 italic text-sm">Waiting for sync...</p>
+            </div>
+            <div id="loader" class="hidden flex items-center gap-2">
+                <div class="loading-spinner"></div>
+                <span class="text-blue-600 font-semibold">Fetching Data...</span>
+            </div>
+        </div>
+
+        <!-- KPI Row -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="stat-card border-b-4 border-blue-500">
+                <p class="text-slate-500 text-sm font-semibold uppercase">Total Sales MTD</p>
+                <h2 id="total-sales" class="text-3xl font-bold text-slate-800">SAR 0</h2>
+            </div>
+            <div class="stat-card border-b-4 border-green-500">
+                <p class="text-slate-500 text-sm font-semibold uppercase">Units Sold</p>
+                <h2 id="total-units" class="text-3xl font-bold text-slate-800">0</h2>
+            </div>
+            <div class="stat-card border-b-4 border-orange-500">
+                <p class="text-slate-500 text-sm font-semibold uppercase">Overall Growth</p>
+                <h2 id="total-growth" class="text-3xl font-bold text-slate-800">0%</h2>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Graph Area -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm">
+                <h3 class="text-lg font-bold mb-4 text-slate-700">Sales vs Last Year (Full Month)</h3>
+                <canvas id="salesChart" height="200"></canvas>
+            </div>
+
+            <!-- Insights / Notes -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm">
+                <h3 class="text-lg font-bold mb-4 text-slate-700">Manager Alerts & Suggestions</h3>
+                <div id="insight-container" class="space-y-4">
+                    <!-- Dynamic Alerts will appear here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Table -->
+        <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-slate-50 border-b border-slate-100">
+                    <tr>
+                        <th class="p-4 font-semibold text-slate-600">Channel</th>
+                        <th class="p-4 font-semibold text-slate-600">Units</th>
+                        <th class="p-4 font-semibold text-slate-600">Sales MTD</th>
+                        <th class="p-4 font-semibold text-slate-600">Growth %</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body" class="divide-y divide-slate-100">
+                    <!-- Data rows loaded via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // 1. PASTE YOUR DEPLOYED APPS SCRIPT URL HERE
+        const API_URL = "Phttps://script.google.com/a/macros/regalinhouse.com/s/AKfycbxAjyQ-RHokvcEDZT6gIhOrlE48jRSxYBtWceD0scFVqUS6lkOcGTFXTt178OmV3brZNA/exec";
+
+        let salesChart;
+
+        async function fetchData() {
+            const loader = document.getElementById('loader');
+            loader.classList.remove('hidden');
+
+            try {
+                // Fetch data from the Google Script API
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                updateUI(data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                alert("Failed to connect to Google Sheet. Check your API URL and permissions.");
+            } finally {
+                loader.classList.add('hidden');
+            }
+        }
+
+        function updateUI(data) {
+            // Update KPIs
+            document.getElementById('total-sales').innerText = `SAR ${data.summary.totalSales.toLocaleString()}`;
+            document.getElementById('total-units').innerText = data.summary.totalUnits.toLocaleString();
+            document.getElementById('total-growth').innerText = `${data.summary.overallGrowth}%`;
+            document.getElementById('last-updated').innerText = `Last Updated: ${data.timestamp}`;
+
+            // Update Table and Collect Chart Data
+            const tbody = document.getElementById('table-body');
+            const insightContainer = document.getElementById('insight-container');
+            tbody.innerHTML = '';
+            insightContainer.innerHTML = '';
+
+            const labels = [];
+            const mtdValues = [];
+            const lyValues = [];
+
+            data.channels.forEach(ch => {
+                labels.push(ch.channel);
+                mtdValues.push(ch.salesMTD);
+                lyValues.push(ch.lastYear);
+
+                // Add Table Row
+                const row = `<tr class="hover:bg-slate-50 transition">
+                    <td class="p-4 font-bold text-slate-700">${ch.channel}</td>
+                    <td class="p-4 text-slate-600">${ch.units.toLocaleString()}</td>
+                    <td class="p-4 font-semibold">SAR ${ch.salesMTD.toLocaleString()}</td>
+                    <td class="p-4">
+                        <span class="px-2 py-1 rounded text-xs font-bold ${ch.growth > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                            ${ch.growth}%
+                        </span>
+                    </td>
+                </tr>`;
+                tbody.innerHTML += row;
+
+                // Simple Logic-based Suggestion
+                if(ch.growth < 5 && ch.growth != 0) {
+                    insightContainer.innerHTML += `
+                        <div class="p-3 bg-red-50 border-l-4 border-red-400 text-red-700 text-sm">
+                            <strong>⚠️ Action Required:</strong> ${ch.channel} is underperforming. Review current promotions.
+                        </div>`;
+                } else if (ch.growth > 25) {
+                    insightContainer.innerHTML += `
+                        <div class="p-3 bg-green-50 border-l-4 border-green-400 text-green-700 text-sm">
+                            <strong>🚀 High Performance:</strong> ${ch.channel} is booming! Ensure stock availability.
+                        </div>`;
+                }
+            });
+
+            if(insightContainer.innerHTML === "") {
+                insightContainer.innerHTML = "<p class='text-slate-400 text-sm italic'>No major alerts for today.</p>";
+            }
+
+            renderChart(labels, mtdValues, lyValues);
+        }
+
+        function renderChart(labels, mtd, ly) {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            if(salesChart) salesChart.destroy();
+
+            salesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Sales MTD', data: mtd, backgroundColor: '#3b82f6', borderRadius: 5 },
+                        { label: 'Last Year (Full)', data: ly, backgroundColor: '#e2e8f0', borderRadius: 5 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom' } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        // Run fetch on load
+        fetchData();
+        // Refresh every 5 minutes automatically
+        setInterval(fetchData, 300000);
+    </script>
+</body>
+</html>
