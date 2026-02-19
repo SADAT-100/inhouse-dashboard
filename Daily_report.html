@@ -1,51 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inhouse Daily Report</title>
-    <!-- Tailwind CSS for modern styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js for graphs -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f3f4f6; }
-        .stat-card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: transform 0.2s; }
-        .stat-card:hover { transform: translateY(-5px); }
-        .loading-spinner { border: 4px solid rgba(0, 0, 0, 0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: #3b82f6; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        /* Back Button Style */
-.back-hub-link {
-    position: absolute; /* Keeps it top-left */
-    top: 20px;
-    left: 20px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    color: #94a3b8; /* Muted text */
-    font-family: 'Inter', sans-serif;
-    font-weight: 700;
-    font-size: 0.9rem;
-    background: rgba(15, 23, 42, 0.8); /* Semi-transparent dark bg */
-    padding: 8px 16px;
-    border-radius: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(5px);
-    transition: all 0.3s ease;
-    z-index: 1000; /* Ensures it sits on top of everything */
-}
 
-.back-hub-link:hover {
-    color: #AC975B; /* INHOUSE Gold */
-    border-color: #AC975B;
-    transform: translateX(-5px); /* Slide effect */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-}
-    </style>
-</head>
-<body class="p-4 md:p-8">
 
     <!-- MAINTENANCE LOCK SCREEN (Remove this block to unlock) -->
 <!-- <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #020617; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; text-align: center;">
@@ -61,80 +14,191 @@
 </div>
 <script>document.body.style.overflow = "hidden";</script> -->
 <!-- END MAINTENANCE LOCK -->
-<a href="index.html" class="back-hub-link">
-    <span>←</span> Main Hub
-</a>
-    <div class="max-w-7xl mx-auto">
-        <!-- Header -->
-        <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4">
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inhouse Executive Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+        
+        :root {
+            --bg-dark: #020617;
+            --bg-panel: #0f172a;
+            --card-glass: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-gold: #fbbf24;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        .light-theme {
+            --bg-dark: #f8fafc;
+            --bg-panel: #ffffff;
+            --card-glass: rgba(241, 245, 249, 0.8);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: rgba(0, 0, 0, 0.1);
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-dark); 
+            color: var(--text-main);
+            transition: all 0.3s ease;
+        }
+
+        .sidebar { width: 260px; background: var(--bg-panel); border-right: 1px solid var(--border); }
+        .glass-card { background: var(--card-glass); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 16px; }
+        .gold-text { color: var(--accent-gold); }
+        .label-caps { font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; color: var(--text-muted); }
+        
+        /* Background Glows */
+        .glow { position: fixed; width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%); z-index: -1; }
+        
+        .nav-item { transition: all 0.2s; border-radius: 8px; margin-bottom: 4px; cursor: pointer; }
+        .nav-item:hover, .nav-item.active { background: var(--accent-blue); color: white; }
+        
+        .loading-overlay { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.8); z-index: 100; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    </style>
+</head>
+<body class="flex min-h-screen">
+
+    <div class="glow top-0 right-0"></div>
+    <div class="glow bottom-0 left-0" style="background: radial-gradient(circle, rgba(251, 191, 36, 0.05) 0%, transparent 70%);"></div>
+
+    <div id="loader" class="loading-overlay"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar flex-shrink-0 flex flex-col p-6 hidden md:flex">
+        <div class="flex items-center gap-3 mb-10">
+            <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center font-black text-white">IH</div>
+            <h1 class="text-lg font-black tracking-tighter uppercase">Inhouse Hub</h1>
+        </div>
+
+        <p class="label-caps mb-4">Daily Reporting</p>
+        <nav class="flex-grow space-y-1" id="month-nav">
+            <!-- Navigation items generated by JS -->
+        </nav>
+
+        <div class="mt-auto pt-6 border-t border-slate-800">
+            <button onclick="toggleTheme()" class="flex items-center gap-3 text-sm font-semibold opacity-70 hover:opacity-100">
+                <i data-lucide="sun-moon" class="w-5 h-5"></i> Switch Theme
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-grow p-6 md:p-10 overflow-y-auto">
+        <header class="flex justify-between items-center mb-8">
             <div>
-                <h1 class="text-3xl font-bold text-slate-900">Real-Time Daily Report</h1>
-                <p id="last-updated" class="text-slate-500 italic text-sm">Waiting for sync...</p>
+                <h2 class="text-3xl font-black" id="header-title">Executive Dashboard</h2>
+                <p id="last-sync" class="text-sm font-medium text-slate-500 uppercase tracking-widest mt-1">Syncing Live Data...</p>
             </div>
-            <div id="loader" class="hidden flex items-center gap-2">
-                <div class="loading-spinner"></div>
-                <span class="text-blue-600 font-semibold">Fetching Data...</span>
+            <div class="flex items-center gap-4">
+                <button onclick="fetchData()" class="p-3 glass-card hover:bg-blue-600 transition"><i data-lucide="refresh-cw" class="w-5 h-5"></i></button>
             </div>
-        </div>
+        </header>
 
-        <!-- KPI Row -->
+        <!-- KPI Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="stat-card border-b-4 border-blue-500">
-                <p class="text-slate-500 text-sm font-semibold uppercase">Total Sales MTD</p>
-                <h2 id="total-sales" class="text-3xl font-bold text-slate-800">SAR 0</h2>
+            <div class="glass-card p-6">
+                <p class="label-caps mb-1">Total MTD Revenue</p>
+                <h3 id="kpi-sales" class="text-4xl font-black gold-text tracking-tight">SAR 0</h3>
             </div>
-            <div class="stat-card border-b-4 border-green-500">
-                <p class="text-slate-500 text-sm font-semibold uppercase">Units Sold</p>
-                <h2 id="total-units" class="text-3xl font-bold text-slate-800">0</h2>
+            <div class="glass-card p-6">
+                <p class="label-caps mb-1">Units Distributed</p>
+                <h3 id="kpi-units" class="text-4xl font-black tracking-tight">0</h3>
             </div>
-            <div class="stat-card border-b-4 border-orange-500">
-                <p class="text-slate-500 text-sm font-semibold uppercase">Overall Growth</p>
-                <h2 id="total-growth" class="text-3xl font-bold text-slate-800">0%</h2>
+            <div class="glass-card p-6">
+                <p class="label-caps mb-1">Sheet Sync Status</p>
+                <h3 id="kpi-status" class="text-4xl font-black text-emerald-500 tracking-tight">Live</h3>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <!-- Graph Area -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm">
-                <h3 class="text-lg font-bold mb-4 text-slate-700">Sales vs Last Year (Full Month)</h3>
-                <canvas id="salesChart" height="200"></canvas>
-            </div>
-
-            <!-- Insights / Notes -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm">
-                <h3 class="text-lg font-bold mb-4 text-slate-700">Manager Alerts & Suggestions</h3>
-                <div id="insight-container" class="space-y-4">
-                    <!-- Dynamic Alerts will appear here -->
+        <!-- Charts & Alerts Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="glass-card p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <p class="label-caps">Marketplace vs Last Year</p>
+                    <i data-lucide="trending-up" class="w-5 h-5 text-blue-500"></i>
                 </div>
+                <div class="h-64"><canvas id="mainChart"></canvas></div>
+            </div>
+            <div class="glass-card p-6">
+                <p class="label-caps mb-4">AI Business Insights</p>
+                <div id="alerts-container" class="space-y-4"></div>
             </div>
         </div>
 
-        <!-- Detailed Table -->
-        <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-            <table class="w-full text-left">
-                <thead class="bg-slate-50 border-b border-slate-100">
-                    <tr>
-                        <th class="p-4 font-semibold text-slate-600">Channel</th>
-                        <th class="p-4 font-semibold text-slate-600">Units</th>
-                        <th class="p-4 font-semibold text-slate-600">Sales MTD</th>
-                        <th class="p-4 font-semibold text-slate-600">Growth %</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body" class="divide-y divide-slate-100">
-                    <!-- Data rows loaded via JS -->
-                </tbody> 
-            </table>
+        <!-- Table -->
+        <div class="glass-card overflow-hidden">
+            <div class="p-6 bg-[#0b1120] border-b border-slate-800">
+                <p class="label-caps">Channel Breakdown</p>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-[#0b1120]/50 sticky top-0">
+                        <tr>
+                            <th class="p-4 label-caps">Channel</th>
+                            <th class="p-4 label-caps">Units</th>
+                            <th class="p-4 label-caps">Sales (MTD)</th>
+                            <th class="p-4 label-caps">Growth Context</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body" class="divide-y divide-slate-800"></tbody>
+                </table>
+            </div>
         </div>
-    </div>
+    </main>
 
     <script>
-        // 1. PASTE YOUR DEPLOYED APPS SCRIPT URL HERE
-        const API_URL = "https://script.google.com/macros/s/AKfycbxAjyQ-RHokvcEDZT6gIhOrlE48jRSxYBtWceD0scFVqUS6lkOcGTFXTt178OmV3brZNA/exec";
+        // 1. YOUR APPS SCRIPT URL HERE
+        const API_BASE = "https://script.google.com/macros/s/AKfycbxAjyQ-RHokvcEDZT6gIhOrlE48jRSxYBtWceD0scFVqUS6lkOcGTFXTt178OmV3brZNA/exec";
+        
+        let currentMonth = "02-2026";
+        let mainChart;
 
-        let salesChart;
+        const months = [
+            { id: "01-2026", label: "JAN - 2026" },
+            { id: "02-2026", label: "FEB - 2026" },
+            { id: "03-2026", label: "MAR - 2026" },
+            { id: "04-2026", label: "APR - 2026" }
+        ];
 
-        // --- REPLACE THE OLD FUNCTION WITH THIS NEW ONE ---
-    async function fetchData() {
+        function init() {
+            lucide.createIcons();
+            renderNav();
+            fetchData();
+        }
+
+        function renderNav() {
+            const nav = document.getElementById('month-nav');
+            nav.innerHTML = months.map(m => `
+                <div onclick="switchMonth('${m.id}')" class="nav-item p-3 flex items-center gap-3 font-semibold ${currentMonth === m.id ? 'active' : ''}">
+                    <i data-lucide="calendar" class="w-4 h-4"></i> ${m.label}
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function switchMonth(id) {
+            currentMonth = id;
+            renderNav();
+            fetchData();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+        }
+
+        async function fetchData() {
     document.getElementById('loader').style.display = 'flex';
     
     // Ensure the URL is clean and includes the month parameter
@@ -162,87 +226,63 @@
         document.getElementById('loader').style.display = 'none';
     }
 }
+
         function updateUI(data) {
-            // Update KPIs
-            document.getElementById('total-sales').innerText = `SAR ${data.summary.totalSales.toLocaleString()}`;
-            document.getElementById('total-units').innerText = data.summary.totalUnits.toLocaleString();
-            document.getElementById('total-growth').innerText = `${data.summary.overallGrowth}%`;
-            document.getElementById('last-updated').innerText = `Last Updated: ${data.timestamp}`;
+            document.getElementById('header-title').innerText = `${months.find(m => m.id === currentMonth).label} Report`;
+            document.getElementById('kpi-sales').innerText = `SAR ${data.summary.totalSales.toLocaleString()}`;
+            document.getElementById('kpi-units').innerText = data.summary.totalUnits.toLocaleString();
+            document.getElementById('last-sync').innerText = `Synced: ${data.timestamp}`;
 
-            // Update Table and Collect Chart Data
             const tbody = document.getElementById('table-body');
-            const insightContainer = document.getElementById('insight-container');
-            tbody.innerHTML = '';
-            insightContainer.innerHTML = '';
-
-            const labels = [];
-            const mtdValues = [];
-            const lyValues = [];
+            const alerts = document.getElementById('alerts-container');
+            tbody.innerHTML = ''; alerts.innerHTML = '';
+            
+            const labels = []; const mtd = []; const ly = [];
 
             data.channels.forEach(ch => {
-                labels.push(ch.channel);
-                mtdValues.push(ch.salesMTD);
-                lyValues.push(ch.lastYear);
+                labels.push(ch.channel); mtd.push(ch.salesMTD); ly.push(ch.lastYear);
+                
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-800/40 transition">
+                        <td class="p-4 font-black">${ch.channel}</td>
+                        <td class="p-4 font-medium text-slate-400">${ch.units.toLocaleString()}</td>
+                        <td class="p-4 font-black gold-text">SAR ${ch.salesMTD.toLocaleString()}</td>
+                        <td class="p-4"><span class="px-2 py-1 glass-card text-[10px] font-black uppercase text-blue-400 border-blue-500/30">${ch.contribution}% Contribution</span></td>
+                    </tr>
+                `;
 
-                // Add Table Row
-                const row = `<tr class="hover:bg-slate-50 transition">
-                    <td class="p-4 font-bold text-slate-700">${ch.channel}</td>
-                    <td class="p-4 text-slate-600">${ch.units.toLocaleString()}</td>
-                    <td class="p-4 font-semibold">SAR ${ch.salesMTD.toLocaleString()}</td>
-                    <td class="p-4">
-                        <span class="px-2 py-1 rounded text-xs font-bold ${ch.growth > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
-                            ${ch.growth}%
-                        </span>
-                    </td>
-                </tr>`;
-                tbody.innerHTML += row;
-
-                // Simple Logic-based Suggestion
-                if(ch.growth < 5 && ch.growth != 0) {
-                    insightContainer.innerHTML += `
-                        <div class="p-3 bg-red-50 border-l-4 border-red-400 text-red-700 text-sm">
-                            <strong>⚠️ Action Required:</strong> ${ch.channel} is underperforming. Review current promotions.
-                        </div>`;
-                } else if (ch.growth > 25) {
-                    insightContainer.innerHTML += `
-                        <div class="p-3 bg-green-50 border-l-4 border-green-400 text-green-700 text-sm">
-                            <strong>🚀 High Performance:</strong> ${ch.channel} is booming! Ensure stock availability.
-                        </div>`;
+                if(ch.salesMTD > ch.lastYear && ch.lastYear > 0) {
+                    alerts.innerHTML += `<div class="p-4 glass-card border-l-4 border-emerald-500 flex gap-3"><i data-lucide="check-circle" class="text-emerald-500 w-5 h-5"></i> <p class="text-sm font-semibold">${ch.channel} has exceeded Last Year's full month performance.</p></div>`;
                 }
             });
-
-            if(insightContainer.innerHTML === "") {
-                insightContainer.innerHTML = "<p class='text-slate-400 text-sm italic'>No major alerts for today.</p>";
-            }
-
-            renderChart(labels, mtdValues, lyValues);
+            
+            if(!alerts.innerHTML) alerts.innerHTML = '<p class="text-slate-500 italic text-center py-10">All systems operational. No critical alerts for this period.</p>';
+            
+            renderChart(labels, mtd, ly);
+            lucide.createIcons();
         }
 
         function renderChart(labels, mtd, ly) {
-            const ctx = document.getElementById('salesChart').getContext('2d');
-            if(salesChart) salesChart.destroy();
-
-            salesChart = new Chart(ctx, {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            if(mainChart) mainChart.destroy();
+            mainChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [
-                        { label: 'Sales MTD', data: mtd, backgroundColor: '#3b82f6', borderRadius: 5 },
-                        { label: 'Last Year (Full)', data: ly, backgroundColor: '#e2e8f0', borderRadius: 5 }
+                        { label: 'MTD (Actual)', data: mtd, backgroundColor: '#3b82f6', borderRadius: 4 },
+                        { label: 'LY (Target)', data: ly, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 4 }
                     ]
                 },
                 options: {
-                    responsive: true,
-                    plugins: { legend: { position: 'bottom' } },
-                    scales: { y: { beginAtZero: true } }
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10, weight: 'bold' } } } }
                 }
             });
         }
 
-        // Run fetch on load
-        fetchData();
-        // Refresh every 5 minutes automatically
-        setInterval(fetchData, 300000);
+        window.onload = init;
     </script>
 </body>
 </html>
