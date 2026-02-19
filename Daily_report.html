@@ -198,57 +198,38 @@
             document.body.classList.toggle('light-theme');
         }
 
-        async function fetchData() {
+       async function fetchData() {
     const loader = document.getElementById('loader');
     loader.style.display = 'flex';
     
-    // Ensure the URL is clean
-    const apiUrl = `${API_BASE}?month=${currentMonth}`;
+    // Construct the URL
+    const fetchUrl = `${API_BASE}?month=${currentMonth}`;
+    console.log("Fetching from:", fetchUrl);
 
     try {
-        // We use a longer timeout and simple fetch
-        const response = await fetch(apiUrl);
-        
-        if (!response.ok) throw new Error('Google Script not responding');
+        const response = await fetch(fetchUrl, {
+            method: "GET",
+            mode: "cors", // Required for Google Scripts
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP Status: ${response.status}`);
+        }
 
         const result = await response.json();
         
         if (result.error) {
-            alert("Sheet Error: " + result.error);
+            alert("Google Sheet Error: " + result.error);
             return;
         }
 
-        // Update the UI using the new 'result' object structure
-        document.getElementById('kpi-sales').innerText = `SAR ${result.summary.totalSales.toLocaleString()}`;
-        document.getElementById('kpi-units').innerText = result.summary.totalUnits.toLocaleString();
-        document.getElementById('last-sync').innerText = `Synced: ${result.timestamp}`;
-
-        const tbody = document.getElementById('table-body');
-        tbody.innerHTML = '';
-        
-        const labels = []; const sales = []; const lastYear = [];
-
-        result.data.forEach(item => {
-            labels.push(item.name);
-            sales.push(item.sales);
-            lastYear.push(item.lastYear);
-
-            tbody.innerHTML += `
-                <tr class="hover:bg-slate-800/40 border-b border-slate-800 transition">
-                    <td class="p-4 font-black text-white">${item.name}</td>
-                    <td class="p-4 text-slate-400 font-medium">${item.units.toLocaleString()}</td>
-                    <td class="p-4 font-black gold-text">SAR ${item.sales.toLocaleString()}</td>
-                    <td class="p-4"><span class="px-2 py-1 glass-card text-[10px] font-black uppercase text-blue-400 border-blue-500/30">${item.contribution}% Share</span></td>
-                </tr>
-            `;
-        });
-
-        renderChart(labels, sales, lastYear);
-        lucide.createIcons();
+        updateUI(result);
 
     } catch (error) {
-        console.error("Dashboard Error:", error);
-        alert("Connection Error. Please check the Browser Console (F12) for details.");
+        console.error("Detailed Error:", error);
+        // THIS WILL SHOW YOU THE EXACT PROBLEM
+        alert("CRITICAL ERROR: \n" + error.message + 
+              "\n\nCommon Fixes: \n1. Check if the URL in the code matches your /exec link. \n2. Make sure you chose 'Anyone' in Deployment.");
     } finally {
         loader.style.display = 'none';
     }
