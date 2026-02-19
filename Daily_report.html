@@ -235,40 +235,62 @@
     }
 }
         function updateUI(data) {
-            document.getElementById('header-title').innerText = `${months.find(m => m.id === currentMonth).label} Report`;
-            document.getElementById('kpi-sales').innerText = `SAR ${data.summary.totalSales.toLocaleString()}`;
-            document.getElementById('kpi-units').innerText = data.summary.totalUnits.toLocaleString();
-            document.getElementById('last-sync').innerText = `Synced: ${data.timestamp}`;
+    // 1. Update Title and KPIs
+    // We use .toFixed(0) to remove the messy decimals like .267
+    document.getElementById('kpi-sales').innerText = `SAR ${data.summary.totalSales.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
+    document.getElementById('kpi-units').innerText = data.summary.totalUnits.toLocaleString();
+    document.getElementById('last-sync').innerText = `Synced: ${data.timestamp}`;
 
-            const tbody = document.getElementById('table-body');
-            const alerts = document.getElementById('alerts-container');
-            tbody.innerHTML = ''; alerts.innerHTML = '';
-            
-            const labels = []; const mtd = []; const ly = [];
+    // 2. Clear previous data
+    const tbody = document.getElementById('table-body');
+    const insightContainer = document.getElementById('alerts-container');
+    tbody.innerHTML = '';
+    insightContainer.innerHTML = '';
 
-            data.channels.forEach(ch => {
-                labels.push(ch.channel); mtd.push(ch.salesMTD); ly.push(ch.lastYear);
-                
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-800/40 transition">
-                        <td class="p-4 font-black">${ch.channel}</td>
-                        <td class="p-4 font-medium text-slate-400">${ch.units.toLocaleString()}</td>
-                        <td class="p-4 font-black gold-text">SAR ${ch.salesMTD.toLocaleString()}</td>
-                        <td class="p-4"><span class="px-2 py-1 glass-card text-[10px] font-black uppercase text-blue-400 border-blue-500/30">${ch.contribution}% Contribution</span></td>
-                    </tr>
-                `;
+    const labels = [];
+    const mtdValues = [];
+    const lyValues = [];
 
-                if(ch.salesMTD > ch.lastYear && ch.lastYear > 0) {
-                    alerts.innerHTML += `<div class="p-4 glass-card border-l-4 border-emerald-500 flex gap-3"><i data-lucide="check-circle" class="text-emerald-500 w-5 h-5"></i> <p class="text-sm font-semibold">${ch.channel} has exceeded Last Year's full month performance.</p></div>`;
-                }
-            });
-            
-            if(!alerts.innerHTML) alerts.innerHTML = '<p class="text-slate-500 italic text-center py-10">All systems operational. No critical alerts for this period.</p>';
-            
-            renderChart(labels, mtd, ly);
-            lucide.createIcons();
+    // 3. Populate Table and Chart Data
+    data.channels.forEach(ch => {
+        labels.push(ch.channel);
+        mtdValues.push(ch.salesMTD);
+        lyValues.push(ch.lastYear);
+
+        // Build Table Row
+        const row = `
+            <tr class="hover:bg-slate-800/40 border-b border-slate-800 transition">
+                <td class="p-4 font-black text-white text-sm">${ch.channel}</td>
+                <td class="p-4 text-slate-400 font-medium text-sm">${ch.units.toLocaleString()}</td>
+                <td class="p-4 font-black gold-text text-sm">SAR ${ch.salesMTD.toLocaleString()}</td>
+                <td class="p-4">
+                    <span class="px-2 py-1 glass-card text-[10px] font-black uppercase text-blue-400 border-blue-500/30">
+                        ${ch.contribution}% Share
+                    </span>
+                </td>
+            </tr>`;
+        tbody.innerHTML += row;
+
+        // 4. Generate AI Insights
+        if (ch.salesMTD > ch.lastYear && ch.lastYear > 0) {
+            insightContainer.innerHTML += `
+                <div class="p-4 glass-card border-l-4 border-emerald-500 flex gap-3 animate-pulse">
+                    <i data-lucide="zap" class="text-emerald-500 w-5 h-5"></i>
+                    <p class="text-sm font-semibold text-white">
+                        <span class="gold-text">${ch.channel}</span> has already exceeded its last year benchmark!
+                    </p>
+                </div>`;
         }
+    });
 
+    if (insightContainer.innerHTML === "") {
+        insightContainer.innerHTML = '<p class="text-slate-500 italic text-center py-10">Tracking market performance. No critical alerts.</p>';
+    }
+
+    // 5. Render Chart
+    renderChart(labels, mtdValues, lyValues);
+    lucide.createIcons();
+}
         function renderChart(labels, mtd, ly) {
             const ctx = document.getElementById('mainChart').getContext('2d');
             if(mainChart) mainChart.destroy();
