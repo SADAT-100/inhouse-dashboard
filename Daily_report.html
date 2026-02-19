@@ -199,34 +199,49 @@
         }
 
         async function fetchData() {
-    document.getElementById('loader').style.display = 'flex';
+    const loader = document.getElementById('loader');
+    loader.style.display = 'flex';
     
-    // Ensure the URL is clean and includes the month parameter
-    const fetchUrl = `${API_BASE}?month=${currentMonth}`;
+    // Safety check: ensure no double slashes or extra question marks
+    const cleanBase = API_BASE.split('?')[0]; 
+    const fetchUrl = `${cleanBase}?month=${currentMonth}`;
+
+    console.log("Attempting to fetch from:", fetchUrl);
 
     try {
-        const response = await fetch(fetchUrl);
-        
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
+        // We use a shorter timeout so it doesn't hang for a long time
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
+        const response = await fetch(fetchUrl, {
+            method: 'GET',
+            mode: 'cors', // Crucial for Google Apps Script
+            signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
         const data = await response.json();
         
         if (data.error) {
-            alert("Error: " + data.error);
-            return;
+            alert("Database Error: " + data.error);
+        } else {
+            updateUI(data);
         }
         
-        updateUI(data);
     } catch (error) {
-        console.error("Fetch Error:", error);
-        alert("Connection Error: Make sure the Google Script deployment is set to 'Anyone'.");
+        console.error("Detailed Error:", error);
+        if (error.name === 'AbortError') {
+            alert("Connection Timed Out. Check your internet or Google Script deployment.");
+        } else {
+            alert("Connection Error. Please check: \n1. Is the URL an /exec link? \n2. Is 'Anyone' access selected? \n3. Did you authorize the script?");
+        }
     } finally {
-        document.getElementById('loader').style.display = 'none';
+        loader.style.display = 'none';
     }
 }
-
         function updateUI(data) {
             document.getElementById('header-title').innerText = `${months.find(m => m.id === currentMonth).label} Report`;
             document.getElementById('kpi-sales').innerText = `SAR ${data.summary.totalSales.toLocaleString()}`;
