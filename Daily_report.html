@@ -160,7 +160,7 @@
 
     <script>
         // 1. YOUR APPS SCRIPT URL HERE
-        const API_BASE = "https://script.google.com/macros/s/AKfycbzRJT5FkHY-tIKY3ZOYAru0NZiMA8sLz9f2uq9tt5PeMAE5i9Wv6HJgD9pAgfcg_aF9Kg/exec";
+        const API_BASE = "https://script.google.com/macros/s/AKfycbzzTpLYFqAyygW0cOGcnaZw7-bY0ev6MKjMWqx_evu_FSZwrqA45qjP9IyQ6DHZGr-LZQ/exec";
         
         let currentMonth = "02-2026";
         let mainChart;
@@ -202,29 +202,53 @@
     const loader = document.getElementById('loader');
     loader.style.display = 'flex';
     
-    // This ensures we are hitting the correct month tab
-    const fetchUrl = `${API_BASE}?month=${currentMonth}`;
-    console.log("Requesting data from:", fetchUrl);
+    // Ensure the URL is clean
+    const apiUrl = `${API_BASE}?month=${currentMonth}`;
 
     try {
-        const response = await fetch(fetchUrl);
+        // We use a longer timeout and simple fetch
+        const response = await fetch(apiUrl);
         
-        if (!response.ok) {
-            throw new Error(`Google Script Error: ${response.status}`);
+        if (!response.ok) throw new Error('Google Script not responding');
+
+        const result = await response.json();
+        
+        if (result.error) {
+            alert("Sheet Error: " + result.error);
+            return;
         }
 
-        const data = await response.json();
+        // Update the UI using the new 'result' object structure
+        document.getElementById('kpi-sales').innerText = `SAR ${result.summary.totalSales.toLocaleString()}`;
+        document.getElementById('kpi-units').innerText = result.summary.totalUnits.toLocaleString();
+        document.getElementById('last-sync').innerText = `Synced: ${result.timestamp}`;
+
+        const tbody = document.getElementById('table-body');
+        tbody.innerHTML = '';
         
-        if (data.error) {
-            // This happens if the month tab name is wrong in your sheet
-            alert("Sheet Error: " + data.error);
-        } else {
-            updateUI(data);
-        }
-        
+        const labels = []; const sales = []; const lastYear = [];
+
+        result.data.forEach(item => {
+            labels.push(item.name);
+            sales.push(item.sales);
+            lastYear.push(item.lastYear);
+
+            tbody.innerHTML += `
+                <tr class="hover:bg-slate-800/40 border-b border-slate-800 transition">
+                    <td class="p-4 font-black text-white">${item.name}</td>
+                    <td class="p-4 text-slate-400 font-medium">${item.units.toLocaleString()}</td>
+                    <td class="p-4 font-black gold-text">SAR ${item.sales.toLocaleString()}</td>
+                    <td class="p-4"><span class="px-2 py-1 glass-card text-[10px] font-black uppercase text-blue-400 border-blue-500/30">${item.contribution}% Share</span></td>
+                </tr>
+            `;
+        });
+
+        renderChart(labels, sales, lastYear);
+        lucide.createIcons();
+
     } catch (error) {
-        console.error("Fetch failed:", error);
-        alert("Cannot connect to Google. Possible reasons:\n1. URL is wrong.\n2. Access is not set to 'Anyone'.\n3. You haven't created a 'New Version' in Deployment.");
+        console.error("Dashboard Error:", error);
+        alert("Connection Error. Please check the Browser Console (F12) for details.");
     } finally {
         loader.style.display = 'none';
     }
