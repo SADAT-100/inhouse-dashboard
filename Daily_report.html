@@ -28,37 +28,42 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
         
         :root {
-            --bg-dark: #020617;
-            --bg-panel: #0f172a;
-            --card-glass: rgba(15, 23, 42, 0.8);
-            --text-main: #ffffff;
+            /* Dark Matte Palette - Easier on eyes */
+            --bg-dark: #0f172a;
+            --bg-panel: #1e293b;
+            --card-glass: rgba(30, 41, 59, 0.7);
+            --text-main: #f1f5f9;
             --text-muted: #94a3b8;
-            --accent-gold: #fbbf24;
+            --accent-gold: #eab308;
             --accent-blue: #3b82f6;
-            --border: rgba(255, 255, 255, 0.08);
+            --border: rgba(255, 255, 255, 0.05);
             --chart-actual: #3b82f6;
-            --chart-target: rgba(251, 191, 36, 0.25);
+            --chart-target: rgba(234, 179, 8, 0.2);
         }
 
         .light {
-            --bg-dark: #f1f5f9;
+            /* Light Paper Palette - Low Glare */
+            --bg-dark: #f8fafc;
             --bg-panel: #ffffff;
             --card-glass: rgba(255, 255, 255, 0.9);
-            --text-main: #0f172a;
+            --text-main: #1e293b;
             --text-muted: #64748b;
+            --accent-gold: #ca8a04;
+            --accent-blue: #2563eb;
             --border: rgba(0, 0, 0, 0.1);
             --chart-actual: #2563eb;
-            --chart-target: rgba(146, 64, 14, 0.3);
+            --chart-target: rgba(202, 138, 4, 0.3);
         }
 
         body { 
             font-family: 'Inter', sans-serif; 
             background-color: var(--bg-dark); 
             color: var(--text-main);
-            transition: all 0.3s ease;
+            transition: background 0.4s ease, color 0.4s ease;
+            overflow-x: hidden;
         }
 
         .sidebar { 
@@ -68,121 +73,117 @@
             height: 100vh;
             position: sticky;
             top: 0;
-            transition: transform 0.3s ease;
         }
 
         @media (max-width: 1024px) {
-            .sidebar { position: fixed; z-index: 50; transform: translateX(-100%); }
+            .sidebar { position: fixed; z-index: 50; transform: translateX(-100%); transition: transform 0.3s ease;}
             .sidebar.open { transform: translateX(0); }
         }
 
         .glass-card { 
             background: var(--card-glass); 
-            backdrop-filter: blur(12px); 
+            backdrop-filter: blur(10px); 
             border: 1px solid var(--border); 
-            border-radius: 16px; 
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            border-radius: 20px; 
+            box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.1);
         }
 
         .gold-text { color: var(--accent-gold); }
         .label-caps { font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 800; color: var(--text-muted); }
         
         .nav-item { 
-            padding: 10px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
+            padding: 10px 16px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
             display: flex; align-items: center; gap: 12px; transition: all 0.2s ease; color: var(--text-muted);
         }
-        .nav-item:hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
-        .nav-item.active { background: var(--accent-blue); color: white; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
+        .nav-item:hover { color: var(--text-main); background: rgba(125,125,125,0.08); }
+        .nav-item.active { background: var(--accent-blue); color: #ffffff !important; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
 
-        .year-header { margin-top: 1.5rem; padding: 8px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); border-radius: 6px; }
+        .year-header { margin-top: 1.5rem; padding: 8px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: rgba(125,125,125,0.05); border-radius: 8px; font-size: 0.65rem; }
 
-        .loading-overlay { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.9); z-index: 100; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .loading-overlay { position: fixed; inset: 0; background: var(--bg-dark); opacity: 0.95; z-index: 100; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
 
         .back-hub-btn {
-            display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px;
+            display: inline-flex; align-items: center; gap: 8px; padding: 8px 20px;
             background: var(--bg-panel); border: 1px solid var(--border); border-radius: 30px;
-            font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;
+            font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
             color: var(--accent-gold); transition: all 0.2s;
         }
-        .back-hub-btn:hover { background: var(--accent-gold); color: #000; transform: translateX(-4px); }
+        .back-hub-btn:hover { background: var(--accent-gold); color: white; transform: scale(1.05); }
 
-        .spreadsheet-table thead th { background: #0b1120; border-bottom: 2px solid var(--border); padding: 12px 16px; }
-        .spreadsheet-table tbody td { padding: 12px 16px; border-bottom: 1px solid var(--border); }
-        .channel-indicator { width: 4px; height: 100%; position: absolute; left: 0; top: 0; border-radius: 4px 0 0 4px; }
+        .spreadsheet-table thead th { background: rgba(125,125,125,0.05); border-bottom: 2px solid var(--border); padding: 14px 16px; text-align: left; }
+        .spreadsheet-table tbody td { padding: 14px 16px; border-bottom: 1px solid var(--border); color: var(--text-main); }
+        .channel-indicator { width: 4px; height: 60%; position: absolute; left: 0; top: 20%; border-radius: 0 4px 4px 0; }
     </style>
 </head>
 <body class="flex min-h-screen">
 
     <div id="loader" class="loading-overlay">
         <div class="flex flex-col items-center gap-4">
-            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-amber-400"></div>
-            <p class="label-caps gold-text">Inhouse Syncing...</p>
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-500"></div>
+            <p class="label-caps gold-text">Optimizing Workspace...</p>
         </div>
     </div>
 
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar flex-shrink-0 flex flex-col p-6">
         <div class="flex items-center gap-3 mb-10">
-            <div class="w-10 h-10 bg-amber-400 rounded-lg flex items-center justify-center font-black text-slate-900 shadow-[0_0_15px_rgba(251,191,36,0.5)]">IH</div>
+            <div class="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center font-black text-white shadow-lg">IH</div>
             <div>
-                <h1 class="text-xl font-black tracking-tighter uppercase text-white">Inhouse</h1>
+                <h1 class="text-lg font-black tracking-tight">Inhouse</h1>
                 <p class="text-[0.6rem] label-caps leading-none gold-text">Executive Hub</p>
             </div>
         </div>
 
         <div class="flex-grow overflow-y-auto pr-2 custom-scrollbar">
-            <p class="label-caps mb-4 opacity-50">Reporting Periods</p>
+            <p class="label-caps mb-4 opacity-50">Reporting History</p>
             <div id="nav-container"></div>
         </div>
 
-        <div class="mt-auto pt-6 border-t border-slate-800 space-y-4">
-            <button onclick="toggleTheme()" class="w-full flex items-center gap-3 text-xs font-bold label-caps opacity-70 hover:opacity-100 transition">
-                <i data-lucide="sun-moon" class="w-4 h-4"></i> Switch Theme
+        <div class="mt-auto pt-6 border-t border-slate-700/20 space-y-4">
+            <button onclick="toggleTheme()" class="w-full flex items-center gap-3 text-xs font-bold label-caps opacity-70 hover:gold-text transition">
+                <i data-lucide="sun-moon" class="w-4 h-4"></i> Display Mode
             </button>
-            <div class="flex justify-between items-center">
-                <span class="text-[0.6rem] label-caps">v3.0.0 Pro</span>
-                <button onclick="toggleSidebar()" class="md:hidden p-2"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <div class="flex justify-between items-center opacity-40">
+                <span class="text-[0.6rem] label-caps">v3.1.0 Audited</span>
+                <button onclick="toggleSidebar()" class="lg:hidden p-2"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
         </div>
     </aside>
 
     <!-- Main Content -->
     <main class="flex-grow flex flex-col min-w-0 overflow-y-auto">
-        
-        <!-- Dashboard Header Area -->
-        <div class="p-6 md:p-10 space-y-8">
-            <nav class="flex justify-between items-center mb-6">
-                <!-- Return to Hub Button -->
+        <div class="p-6 lg:p-12 space-y-10 max-w-7xl mx-auto w-full">
+            
+            <nav class="flex justify-between items-center">
                 <a href="index.html" class="back-hub-btn">
-                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Return to Main Hub
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Main Dashboard
                 </a>
-                <button onclick="toggleSidebar()" class="lg:hidden p-2 glass-card"><i data-lucide="menu" class="w-6 h-6"></i></button>
+                <button onclick="toggleSidebar()" class="lg:hidden p-3 glass-card"><i data-lucide="menu" class="w-6 h-6"></i></button>
             </nav>
 
-            <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <header class="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
                 <div>
-                    <h2 class="text-3xl md:text-6xl font-black leading-tight" id="header-title">Analytics</h2>
-                    <p id="last-sync" class="text-xs font-bold gold-text uppercase tracking-[0.2em] mt-2 italic opacity-70"></p>
+                    <h2 class="text-4xl lg:text-6xl font-black tracking-tight leading-none" id="header-title">Analytics</h2>
+                    <p id="last-sync" class="label-caps gold-text mt-4 italic opacity-80"></p>
                 </div>
-                <button onclick="fetchData()" class="p-4 glass-card hover:bg-amber-400 hover:text-slate-900 transition-all duration-500 rounded-full group">
-                    <i data-lucide="refresh-ccw" class="w-6 h-6 group-hover:rotate-180 transition-transform"></i>
+                <button onclick="fetchData()" class="p-4 glass-card hover:gold-text rounded-full transition-all group">
+                    <i data-lucide="refresh-cw" class="w-6 h-6 group-hover:rotate-180 transition-transform duration-700"></i>
                 </button>
             </header>
 
             <!-- KPI Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="glass-card p-8 border-l-4 border-amber-400 relative overflow-hidden group">
-                    <div class="absolute -right-4 -bottom-4 opacity-5 text-white group-hover:scale-110 transition"><i data-lucide="banknote" class="w-32 h-32"></i></div>
-                    <p class="label-caps mb-2">Total MTD Revenue</p>
-                    <h3 id="kpi-sales" class="text-5xl font-black gold-text tracking-tighter">SAR 0</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-card p-8 border-l-4 border-amber-500">
+                    <p class="label-caps mb-2">Net Sales MTD</p>
+                    <h3 id="kpi-sales" class="text-4xl font-black gold-text tracking-tighter">SAR 0</h3>
                 </div>
                 <div class="glass-card p-8 border-l-4 border-blue-500">
-                    <p class="label-caps mb-2 text-slate-300">Unit Volume</p>
-                    <h3 id="kpi-units" class="text-5xl font-black tracking-tighter">0</h3>
+                    <p class="label-caps mb-2">Unit Volume</p>
+                    <h3 id="kpi-units" class="text-4xl font-black tracking-tighter">0</h3>
                 </div>
-                <div class="glass-card p-8 border-l-4 border-emerald-500 bg-emerald-500/5">
-                    <p class="label-caps mb-2 text-emerald-500">Market Accuracy</p>
-                    <h3 class="text-5xl font-black text-emerald-400 tracking-tighter">99.9%</h3>
+                <div class="glass-card p-8 border-l-4 border-emerald-500">
+                    <p class="label-caps mb-2 text-emerald-500">LY Benchmark Gap</p>
+                    <h3 id="kpi-gap" class="text-4xl font-black text-emerald-500 tracking-tighter">SAR 0</h3>
                 </div>
             </div>
 
@@ -190,10 +191,10 @@
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
                 <div class="glass-card p-8 flex flex-col">
                     <div class="flex items-center justify-between mb-8">
-                        <h4 class="label-caps">BioRender Comparative Performance</h4>
+                        <h4 class="label-caps">BioRender Performance Logic</h4>
                         <div class="flex gap-4">
                             <span class="flex items-center gap-2 text-[10px] uppercase font-black text-blue-500"><span class="w-2 h-2 bg-blue-500 rounded-full"></span> MTD</span>
-                            <span class="flex items-center gap-2 text-[10px] uppercase font-black gold-text"><span class="w-2 h-2 bg-amber-400/40 rounded-full"></span> Target (LY)</span>
+                            <span class="flex items-center gap-2 text-[10px] uppercase font-black gold-text opacity-50"><span class="w-2 h-2 bg-amber-500 rounded-full"></span> Target (LY)</span>
                         </div>
                     </div>
                     <div class="h-80 w-full"><canvas id="mainChart"></canvas></div>
@@ -201,31 +202,31 @@
 
                 <div class="glass-card p-8 flex flex-col">
                     <div class="flex items-center gap-3 mb-6">
-                        <i data-lucide="brain-circuit" class="w-6 h-6 gold-text"></i>
-                        <h4 class="label-caps">Executive Briefing (AI Insights)</h4>
+                        <i data-lucide="zap" class="w-6 h-6 gold-text"></i>
+                        <h4 class="label-caps">Executive Insights</h4>
                     </div>
-                    <div id="alerts-container" class="space-y-4 overflow-y-auto max-h-[320px]"></div>
+                    <div id="alerts-container" class="space-y-4 overflow-y-auto max-h-[320px] pr-2"></div>
                 </div>
             </div>
 
-            <!-- Spreadsheet Table -->
+            <!-- Table -->
             <div class="glass-card overflow-hidden">
-                <div class="p-6 bg-[#0b1120] border-b border-slate-800 flex justify-between items-center">
-                    <h4 class="label-caps text-white font-black">Detailed Ledger Breakdown</h4>
-                    <span class="text-[10px] font-black bg-amber-400 text-slate-900 px-3 py-1 rounded-full">LIVE FEED</span>
+                <div class="px-8 py-6 bg-slate-900/5 border-b border-slate-700/10 flex justify-between items-center">
+                    <h4 class="label-caps">Detailed Ledger Summary</h4>
+                    <span class="text-[10px] font-black gold-text opacity-70">AUDITED SHEET RANGE B3:F12</span>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left spreadsheet-table whitespace-nowrap">
-                        <thead class="bg-[#0b1120]/80">
-                            <tr>
-                                <th class="label-caps text-white">Channel</th>
-                                <th class="label-caps text-white text-center">Units</th>
-                                <th class="label-caps text-white text-right">Sales MTD</th>
-                                <th class="label-caps text-white text-right">LY (Full)</th>
-                                <th class="label-caps text-white text-right">Contribution</th>
+                        <thead>
+                            <tr class="label-caps text-[0.65rem]">
+                                <th>Channel</th>
+                                <th class="text-center">Units</th>
+                                <th class="text-right">Sales MTD</th>
+                                <th class="text-right">LY Target (Full)</th>
+                                <th class="text-right">Market Share</th>
                             </tr>
                         </thead>
-                        <tbody id="table-body" class="text-sm"></tbody>
+                        <tbody id="table-body" class="text-sm font-medium"></tbody>
                     </table>
                 </div>
             </div>
@@ -247,9 +248,12 @@
             ]
         };
 
-        function init() { lucide.createIcons(); renderNav(); fetchData(); }
+        function init() { renderNav(); fetchData(); lucide.createIcons(); }
 
-        function toggleTheme() { document.documentElement.classList.toggle('light'); fetchData(); }
+        function toggleTheme() { 
+            document.documentElement.classList.toggle('light'); 
+            fetchData(); // Redraw chart for theme
+        }
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
@@ -258,13 +262,13 @@
             let html = '';
             Object.keys(dataStructure).reverse().forEach(year => {
                 html += `
-                    <div class="year-header label-caps text-[0.65rem]" onclick="toggleYearGroup('${year}')">
-                        ${year} Data Group <i data-lucide="chevron-down" class="w-3 h-3"></i>
+                    <div class="year-header label-caps" onclick="toggleYearGroup('${year}')">
+                        ${year} Archive <i data-lucide="chevron-down" class="w-3 h-3"></i>
                     </div>
                     <div id="group-${year}" class="space-y-1 mt-2">
                         ${dataStructure[year].map(m => `
                             <div onclick="switchMonth('${m.id}')" class="nav-item ${currentMonth === m.id ? 'active' : ''}">
-                                <i data-lucide="calendar" class="w-4 h-4"></i> ${m.label}
+                                <i data-lucide="file-text" class="w-4 h-4"></i> ${m.label}
                             </div>
                         `).join('')}
                     </div>`;
@@ -282,14 +286,14 @@
                 const response = await fetch(`${API_BASE}?month=${currentMonth}`);
                 const data = await response.json();
                 updateUI(data);
-            } catch (error) { alert("Sync Error: Check Connection"); }
+            } catch (error) { console.error(error); }
             finally { document.getElementById('loader').style.display = 'none'; }
         }
 
         function updateUI(data) {
             const monthLabel = [...dataStructure["2025"], ...dataStructure["2026"]].find(m => m.id === currentMonth).label;
             document.getElementById('header-title').innerHTML = `<span class="gold-text">${monthLabel.split(' ')[0]}</span> ${monthLabel.split(' ')[2]}`;
-            document.getElementById('last-sync').innerText = `Sheet Timestamp: ${data.timestamp}`;
+            document.getElementById('last-sync').innerText = `Sync Date: ${data.timestamp}`;
             document.getElementById('kpi-sales').innerText = `SAR ${Math.round(data.summary.totalSales).toLocaleString()}`;
             document.getElementById('kpi-units').innerText = data.summary.totalUnits.toLocaleString();
 
@@ -298,36 +302,54 @@
             tbody.innerHTML = ''; alerts.innerHTML = '';
             
             const labels = []; const mtd = []; const ly = [];
-            
-            // Find lowest performer for the insight logic
-            const lowestPerfChannel = data.channels.reduce((prev, curr) => (parseFloat(prev.contribution) < parseFloat(curr.contribution) ? prev : curr));
+            let totalLY = 0;
 
             data.channels.forEach(ch => {
                 labels.push(ch.channel); mtd.push(ch.salesMTD); ly.push(ch.lastYear);
+                totalLY += ch.lastYear;
                 const cont = parseFloat(ch.contribution);
-                const colorClass = cont > 30 ? 'text-emerald-400' : cont < 3 ? 'text-rose-400' : 'text-white';
+                const colorClass = cont > 30 ? 'text-emerald-500' : cont < 3 ? 'text-rose-500' : '';
 
                 tbody.innerHTML += `
-                    <tr class="hover:bg-white/5 transition duration-150">
-                        <td class="font-bold py-4 relative pl-6 text-white"><div class="channel-indicator bg-blue-500"></div>${ch.channel}</td>
-                        <td class="text-center font-bold text-slate-400">${ch.units.toLocaleString()}</td>
-                        <td class="text-right font-black gold-text">SAR ${Math.round(ch.salesMTD).toLocaleString()}</td>
-                        <td class="text-right text-slate-500 font-medium italic">SAR ${Math.round(ch.lastYear).toLocaleString()}</td>
-                        <td class="text-right"><span class="px-3 py-1 rounded-full text-[10px] font-black bg-slate-800 ${colorClass}">${ch.contribution}%</span></td>
+                    <tr class="hover:bg-slate-400/5 transition duration-150">
+                        <td class="font-bold py-5 relative pl-6">
+                            <div class="channel-indicator bg-blue-500"></div>
+                            ${ch.channel}
+                        </td>
+                        <td class="text-center font-semibold opacity-60">${ch.units.toLocaleString()}</td>
+                        <td class="text-right font-bold gold-text">SAR ${Math.round(ch.salesMTD).toLocaleString()}</td>
+                        <td class="text-right opacity-40 font-medium italic">SAR ${Math.round(ch.lastYear).toLocaleString()}</td>
+                        <td class="text-right">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-black bg-slate-400/10 ${colorClass}">
+                                ${ch.contribution}%
+                            </span>
+                        </td>
                     </tr>`;
 
                 // Executive Briefing Logic
                 if(ch.lastYear > 0 && ch.salesMTD > ch.lastYear) {
-                    alerts.innerHTML += `<div class="p-4 glass-card border-l-4 border-emerald-500 flex gap-4 bg-emerald-500/5"><div class="bg-emerald-500/20 p-2 rounded-lg"><i data-lucide="trending-up" class="w-4 h-4 text-emerald-500"></i></div><div><p class="text-[10px] label-caps text-emerald-500 font-black">Target Beaten</p><p class="text-xs font-bold text-slate-100">${ch.channel} has outperformed Last Year's total.</p></div></div>`;
+                    alerts.innerHTML += `<div class="p-4 glass-card border-l-4 border-emerald-500 bg-emerald-500/5"><p class="text-[10px] label-caps text-emerald-500 font-black mb-1">Growth Success</p><p class="text-xs font-semibold">${ch.channel} has exceeded its Full LY month benchmark.</p></div>`;
                 } else if (ch.lastYear > 0 && ch.salesMTD < (ch.lastYear * 0.3)) {
-                    alerts.innerHTML += `<div class="p-4 glass-card border-l-4 border-rose-500 flex gap-4 bg-rose-500/5 animate-pulse"><div class="bg-rose-500/20 p-2 rounded-lg"><i data-lucide="alert-triangle" class="w-4 h-4 text-rose-500"></i></div><div><p class="text-[10px] label-caps text-rose-500 font-black">Critical Performance Lag</p><p class="text-xs font-bold text-slate-100">${ch.channel} is underperforming vs LY pace.</p></div></div>`;
+                    alerts.innerHTML += `<div class="p-4 glass-card border-l-4 border-rose-500 bg-rose-500/5"><p class="text-[10px] label-caps text-rose-500 font-black mb-1">Attention Required</p><p class="text-xs font-semibold">${ch.channel} is significantly lagging vs LY run-rate.</p></div>`;
                 }
             });
 
-            // Summary Totals
-            tbody.innerHTML += `<tr class="bg-slate-900/40"><td class="py-5 pl-6 font-black gold-text italic uppercase">Combined Audited</td><td class="text-center font-black">${data.summary.totalUnits.toLocaleString()}</td><td class="text-right font-black gold-text text-lg">SAR ${Math.round(data.summary.totalSales).toLocaleString()}</td><td class="text-right opacity-20 italic">--</td><td class="text-right font-black text-emerald-400">100.00%</td></tr>`;
+            // Update LY Gap KPI
+            const gap = totalLY - data.summary.totalSales;
+            document.getElementById('kpi-gap').innerText = gap > 0 ? `SAR ${Math.round(gap).toLocaleString()}` : 'TARGET BEATEN';
 
-            renderChart(labels, mtd, ly); lucide.createIcons();
+            // Summary Totals Row
+            tbody.innerHTML += `
+                <tr class="bg-amber-400/5 border-t-2 border-amber-400/20">
+                    <td class="py-6 pl-6 font-black gold-text uppercase italic tracking-widest">Combined Grand Total</td>
+                    <td class="text-center font-black">${data.summary.totalUnits.toLocaleString()}</td>
+                    <td class="text-right font-black gold-text text-xl">SAR ${Math.round(data.summary.totalSales).toLocaleString()}</td>
+                    <td class="text-right font-black opacity-60">SAR ${Math.round(totalLY).toLocaleString()}</td>
+                    <td class="text-right font-black text-emerald-500">100.00%</td>
+                </tr>`;
+
+            renderChart(labels, mtd, ly);
+            lucide.createIcons();
         }
 
         function renderChart(labels, mtd, ly) {
@@ -340,16 +362,16 @@
                 data: {
                     labels: labels,
                     datasets: [
-                        { label: 'MTD (Actual)', data: mtd, backgroundColor: isLight ? '#2563eb' : '#3b82f6', borderRadius: 4, barThickness: 24 },
-                        { label: 'LY (Full)', data: ly, backgroundColor: isLight ? 'rgba(180, 83, 9, 0.4)' : 'rgba(251, 191, 36, 0.25)', borderRadius: 4, barThickness: 24 }
+                        { label: 'MTD (Actual)', data: mtd, backgroundColor: isLight ? '#2563eb' : '#3b82f6', borderRadius: 4, barThickness: 20 },
+                        { label: 'LY (Full)', data: ly, backgroundColor: isLight ? 'rgba(202, 138, 4, 0.4)' : 'rgba(234, 179, 8, 0.2)', borderRadius: 4, barThickness: 20 }
                     ]
                 },
                 options: {
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0f172a', padding: 12 } },
+                    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0f172a', padding: 12, titleFont: { size: 14 } } },
                     scales: { 
                         y: { display: false }, 
-                        x: { grid: { display: false }, ticks: { color: isLight ? '#475569' : '#94a3b8', font: { size: 10, weight: '900' } } } 
+                        x: { grid: { display: false }, ticks: { color: isLight ? '#475569' : '#94a3b8', font: { size: 10, weight: '700' } } } 
                     }
                 }
             });
