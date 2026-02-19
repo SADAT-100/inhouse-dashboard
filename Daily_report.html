@@ -202,42 +202,29 @@
     const loader = document.getElementById('loader');
     loader.style.display = 'flex';
     
-    // Safety check: ensure no double slashes or extra question marks
-    const cleanBase = API_BASE.split('?')[0]; 
-    const fetchUrl = `${cleanBase}?month=${currentMonth}`;
-
-    console.log("Attempting to fetch from:", fetchUrl);
+    // This ensures we are hitting the correct month tab
+    const fetchUrl = `${API_BASE}?month=${currentMonth}`;
+    console.log("Requesting data from:", fetchUrl);
 
     try {
-        // We use a shorter timeout so it doesn't hang for a long time
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
-
-        const response = await fetch(fetchUrl, {
-            method: 'GET',
-            mode: 'cors', // Crucial for Google Apps Script
-            signal: controller.signal
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const response = await fetch(fetchUrl);
+        
+        if (!response.ok) {
+            throw new Error(`Google Script Error: ${response.status}`);
+        }
 
         const data = await response.json();
         
         if (data.error) {
-            alert("Database Error: " + data.error);
+            // This happens if the month tab name is wrong in your sheet
+            alert("Sheet Error: " + data.error);
         } else {
             updateUI(data);
         }
         
     } catch (error) {
-        console.error("Detailed Error:", error);
-        if (error.name === 'AbortError') {
-            alert("Connection Timed Out. Check your internet or Google Script deployment.");
-        } else {
-            alert("Connection Error. Please check: \n1. Is the URL an /exec link? \n2. Is 'Anyone' access selected? \n3. Did you authorize the script?");
-        }
+        console.error("Fetch failed:", error);
+        alert("Cannot connect to Google. Possible reasons:\n1. URL is wrong.\n2. Access is not set to 'Anyone'.\n3. You haven't created a 'New Version' in Deployment.");
     } finally {
         loader.style.display = 'none';
     }
