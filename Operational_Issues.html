@@ -7,79 +7,27 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --gold: #AC975B;
-            --dim-bg: #F8F8F8;
-            --card-bg: #FFFFFF;
-        }
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: var(--dim-bg);
-            color: #323130;
-            min-height: 100vh;
-        }
-        .gold-frame {
-            border: 2px solid var(--gold);
-            background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        }
-        .btn-gold {
-            background-color: var(--gold);
-            color: white;
-            transition: all 0.2s ease;
-        }
+        :root { --gold: #AC975B; --dim-bg: #F8F8F8; --card-bg: #FFFFFF; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--dim-bg); color: #323130; min-height: 100vh; }
+        .gold-frame { border: 2px solid var(--gold); background: var(--card-bg); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .btn-gold { background-color: var(--gold); color: white; transition: all 0.2s ease; }
         .btn-gold:hover:not(:disabled) { background-color: #8E7B46; }
         .btn-gold:disabled { background-color: #C8C6C4; opacity: 0.6; }
-
-        /* Toggle Switch UI */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 44px;
-            height: 22px;
-        }
+        .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 16px; width: 16px;
-            left: 3px; bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--gold); }
         input:checked + .slider:before { transform: translateX(22px); }
-
-        #toast {
-            position: fixed;
-            bottom: -100px; right: 2rem;
-            transition: transform 0.5s ease-in-out;
-            z-index: 1000;
-        }
+        #toast { position: fixed; bottom: -100px; right: 2rem; transition: transform 0.5s ease-in-out; z-index: 1000; }
         #toast.show { transform: translateY(-130px); }
-
-        /* Responsive adjustments */
-        @media (max-width: 640px) {
-            .gold-frame { padding: 1.5rem; }
-            h1 { font-size: 1.1rem; }
-        }
+        .drag-active { background-color: #fdfaf0 !important; border-color: var(--gold) !important; }
     </style>
 </head>
 <body class="flex items-center justify-center p-4">
 
     <div class="w-full max-w-2xl my-4">
-        
-        <!-- Header & Navigation -->
+        <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
             <div class="flex items-center space-x-3">
                 <div class="w-1.5 h-10 bg-[#AC975B]"></div>
@@ -88,166 +36,170 @@
                     <p class="text-[10px] sm:text-xs text-gray-400">Regal Inhouse & BackComfort Portal</p>
                 </div>
             </div>
-            <!-- Back to Hub Button -->
-            <a href="index.html" class="inline-flex items-center justify-center px-4 py-2 border border-[#AC975B] text-[#AC975B] text-xs font-bold uppercase tracking-widest rounded hover:bg-[#AC975B] hover:text-white transition-all">
-                ← Back to Hub
-            </a>
+            <a href="index.html" class="inline-flex items-center justify-center px-4 py-2 border border-[#AC975B] text-[#AC975B] text-xs font-bold uppercase tracking-widest rounded hover:bg-[#AC975B] hover:text-white transition-all">← Back to Hub</a>
         </div>
 
         <!-- Main Form -->
         <div class="gold-frame p-6 sm:p-8">
             <form id="opsForm" class="space-y-5">
-                
-                <!-- Row 1 -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="space-y-1">
                         <label class="text-[10px] font-bold text-[#AC975B] uppercase">Manager Name</label>
-                        <input type="text" id="managerName" required class="w-full p-2.5 bg-gray-50 border-b border-gray-200 focus:border-[#AC975B] outline-none text-sm transition-all">
+                        <input type="text" id="managerName" required class="w-full p-2.5 bg-gray-50 border-b border-gray-200 focus:border-[#AC975B] outline-none text-sm">
                     </div>
                     <div class="space-y-1">
                         <label class="text-[10px] font-bold text-[#AC975B] uppercase">Company</label>
                         <select id="company" required class="w-full p-2.5 bg-gray-50 border-b border-gray-200 focus:border-[#AC975B] outline-none text-sm">
                             <option value="">Select Company</option>
-                            <option>In-House</option>
-                            <option>Back Office</option>
+                            <option value="In-House">In-House</option>
+                            <option value="BackComfort">BackComfort</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- Row 2 -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="space-y-1">
                         <label class="text-[10px] font-bold text-[#AC975B] uppercase">Channel</label>
-                        <select id="channel" required class="w-full p-2.5 bg-gray-50 border-b border-gray-200 focus:border-[#AC975B] outline-none text-sm">
+                        <select id="channel" required onchange="toggleCustom('channel', 'customChannel')" class="w-full p-2.5 bg-gray-50 border-b border-gray-200 focus:border-[#AC975B] outline-none text-sm">
                             <option value="">Select Channel</option>
-                            <option>Amazon</option><option>Amazon Retail</option><option>Noon</option><option>Trendyol</option><option>Home Center</option><option>Centerpoint</option><option>Rogi</option>
+                            <option>Amazon</option><option>Amazon Retail</option><option>Noon Main</option><option>Noon Bulk</option><option>Trendyol</option><option>Home Center</option><option>Centerpoint</option><option>Alrugaib</option><option>Trendyol Bulky</option>
+                            <option value="CUSTOM">Other / Custom...</option>
                         </select>
+                        <input type="text" id="customChannel" placeholder="Specify Channel" class="hidden w-full mt-2 p-2 bg-white border border-gray-200 rounded text-xs outline-none focus:border-gold">
                     </div>
                     <div class="space-y-1">
                         <label class="text-[10px] font-bold text-[#AC975B] uppercase">Issue Type</label>
-                        <select id="issueType" required class="w-full p-2.5 bg-gray-50 border-b border-gray-200 focus:border-[#AC975B] outline-none text-sm">
+                        <select id="issueType" required onchange="toggleCustom('issueType', 'customIssue')" class="w-full p-2.5 bg-gray-50 border-b border-gray-200 focus:border-[#AC975B] outline-none text-sm">
                             <option value="">Select Issue</option>
-                            <option>Delivery Issue</option><option>Manufacturing Issue</option><option>Shipping Issue</option><option>Inventory Issue</option><option>Other</option>
+                            <option>Delivery Issue</option><option>Manufacturing Issue</option><option>Shipping Issue</option><option>Inventory Issue</option>
+                            <option value="CUSTOM">Other / Custom Issue...</option>
                         </select>
+                        <input type="text" id="customIssue" placeholder="Specify Issue" class="hidden w-full mt-2 p-2 bg-white border border-gray-200 rounded text-xs outline-none focus:border-gold">
                     </div>
                 </div>
 
-                <!-- Arabic/English Remarks -->
                 <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-[#AC975B] uppercase">Remarks / Message (Supports Arabic)</label>
+                    <label class="text-[10px] font-bold text-[#AC975B] uppercase">Remarks / Message (Arabic Supported)</label>
                     <textarea id="customMessage" rows="2" dir="auto" placeholder="Type notes here..." class="w-full p-2.5 bg-gray-50 border border-gray-100 focus:border-[#AC975B] outline-none text-sm rounded"></textarea>
                 </div>
 
-                <!-- Switches Area -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
-                        <div>
-                            <p class="text-[11px] font-semibold text-gray-700 leading-none">Inject Tab?</p>
-                            <p class="text-[9px] text-gray-400 mt-1 uppercase">Create Sheet Tab</p>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" id="injectToggle">
-                            <span class="slider"></span>
-                        </label>
+                        <div><p class="text-[11px] font-semibold text-gray-700 leading-none">Inject Tab?</p><p class="text-[9px] text-gray-400 mt-1 uppercase">Create Sheet Tab</p></div>
+                        <label class="switch"><input type="checkbox" id="injectToggle"><span class="slider"></span></label>
                     </div>
-
                     <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
-                        <div>
-                            <p class="text-[11px] font-semibold text-gray-700 leading-none">Alert Team?</p>
-                            <p class="text-[9px] text-gray-400 mt-1 uppercase">Email Others + Sadat</p>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" id="alertOthersToggle">
-                            <span class="slider"></span>
-                        </label>
+                        <div><p class="text-[11px] font-semibold text-gray-700 leading-none">Alert Team?</p><p class="text-[9px] text-gray-400 mt-1 uppercase">Email Others + Sadat</p></div>
+                        <label class="switch"><input type="checkbox" id="alertOthersToggle"><span class="slider"></span></label>
                     </div>
                 </div>
 
                 <!-- Upload Zone -->
                 <div id="dropZone" class="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center cursor-pointer hover:bg-gray-50 transition-all">
-                    <input type="file" id="fileInput" class="hidden" accept=".xlsx, .csv">
+                    <input type="file" id="fileInput" class="hidden" accept=".xlsx, .csv" multiple>
                     <div id="idle">
                         <svg class="w-6 h-6 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Select Excel File</p>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Select or Drag Excel Files</p>
                     </div>
-                    <div id="selected" class="hidden">
-                        <p id="fn" class="text-sm font-bold text-[#AC975B] break-all"></p>
+                    <div id="selected" class="hidden text-left">
+                        <p class="text-[10px] font-bold text-[#AC975B] uppercase mb-1">Attached Files:</p>
+                        <ul id="fileList" class="text-xs space-y-1 text-gray-600 list-disc pl-4"></ul>
                     </div>
                 </div>
 
-                <button type="button" id="submitBtn" disabled class="btn-gold w-full py-4 rounded font-bold text-xs uppercase tracking-widest shadow-md">
-                    Process Submission
-                </button>
+                <button type="button" id="submitBtn" disabled class="btn-gold w-full py-4 rounded font-bold text-xs uppercase tracking-widest shadow-md">Process Submission</button>
             </form>
         </div>
     </div>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="bg-white border-l-4 border-[#AC975B] p-5 shadow-2xl rounded flex items-center space-x-4 max-w-xs sm:max-w-sm">
-        <div class="text-[#AC975B]">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path></svg>
-        </div>
-        <div>
-            <p class="text-sm font-bold">Log Successful</p>
-            <p id="toastDetail" class="text-[10px] text-gray-500 uppercase"></p>
-        </div>
+    <!-- Toast -->
+    <div id="toast" class="bg-white border-l-4 border-[#AC975B] p-5 shadow-2xl rounded flex items-center space-x-4 max-w-sm">
+        <div class="text-[#AC975B]"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path></svg></div>
+        <div><p class="text-sm font-bold">Log Successful</p><p id="toastDetail" class="text-[10px] text-gray-500 uppercase"></p></div>
     </div>
 
     <script>
         const API = "https://script.google.com/macros/s/AKfycbzVKCicn1XVNjGIehoVhyU7ZUEbvLf3S0ejbLOMMcH0q8JK2ERqfBaUWJs3_Q_mgQ4SYQ/exec";
-
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
         const submitBtn = document.getElementById('submitBtn');
         const form = document.getElementById('opsForm');
-        let selectedFile = null;
+        let selectedFiles = [];
+
+        // Fix Drag & Drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => {
+            dropZone.addEventListener(e, (ev) => { ev.preventDefault(); ev.stopPropagation(); });
+        });
+        dropZone.addEventListener('dragover', () => dropZone.classList.add('drag-active'));
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-active'));
+        dropZone.addEventListener('drop', (e) => {
+            dropZone.classList.remove('drag-active');
+            handleFiles(e.dataTransfer.files);
+        });
 
         dropZone.onclick = () => fileInput.click();
-        fileInput.onchange = (e) => handleFile(e.target.files[0]);
+        fileInput.onchange = (e) => handleFiles(e.target.files);
 
-        function handleFile(file) {
-            if(!file) return;
-            selectedFile = file;
+        function handleFiles(files) {
+            if(!files.length) return;
+            selectedFiles = Array.from(files);
+            const list = document.getElementById('fileList');
+            list.innerHTML = selectedFiles.map(f => `<li>${f.name}</li>`).join('');
             document.getElementById('idle').classList.add('hidden');
             document.getElementById('selected').classList.remove('hidden');
-            document.getElementById('fn').innerText = file.name;
             validate();
         }
 
-        const validate = () => {
-            submitBtn.disabled = !(form.checkValidity() && selectedFile);
-        };
+        function toggleCustom(sid, iid) {
+            const s = document.getElementById(sid);
+            document.getElementById(iid).classList.toggle('hidden', s.value !== 'CUSTOM');
+            validate();
+        }
+
+        function validate() {
+            submitBtn.disabled = !(form.checkValidity() && selectedFiles.length > 0);
+        }
         form.oninput = validate;
 
         submitBtn.onclick = async () => {
             submitBtn.disabled = true;
-            submitBtn.innerText = "Syncing with Drive & Sheets...";
-            
-            const reader = new FileReader();
-            reader.readAsDataURL(selectedFile);
-            reader.onload = async () => {
-                const payload = {
-                    managerName: document.getElementById('managerName').value,
-                    company: document.getElementById('company').value,
-                    channel: document.getElementById('channel').value,
-                    issueType: document.getElementById('issueType').value,
-                    customMessage: document.getElementById('customMessage').value,
-                    injectTab: document.getElementById('injectToggle').checked,
-                    sendToOthers: document.getElementById('alertOthersToggle').checked,
-                    fileName: selectedFile.name,
-                    fileData: reader.result
-                };
+            submitBtn.innerText = "Processing Batch...";
 
-                try {
-                    const res = await fetch(API, { method: 'POST', body: JSON.stringify(payload) });
-                    const data = await res.json();
-                    if(data.status === 'success') {
-                        showToast(data.msg);
-                        reset();
-                    }
-                } catch (e) { alert("Error connecting to server."); }
-                finally { submitBtn.innerText = "Process Submission"; validate(); }
+            const fileDataPromises = selectedFiles.map(file => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve({ name: file.name, data: e.target.result });
+                    reader.readAsDataURL(file);
+                });
+            });
+
+            const filesArray = await Promise.all(fileDataPromises);
+
+            const payload = {
+                managerName: document.getElementById('managerName').value,
+                company: document.getElementById('company').value,
+                channel: document.getElementById('channel').value === 'CUSTOM' ? document.getElementById('customChannel').value : document.getElementById('channel').value,
+                issueType: document.getElementById('issueType').value === 'CUSTOM' ? document.getElementById('customIssue').value : document.getElementById('issueType').value,
+                customMessage: document.getElementById('customMessage').value,
+                injectTab: document.getElementById('injectToggle').checked,
+                sendToOthers: document.getElementById('alertOthersToggle').checked,
+                files: filesArray
             };
+
+            try {
+                const res = await fetch(API, { method: 'POST', body: JSON.stringify(payload) });
+                const data = await res.json();
+                if(data.status === 'success') {
+                    showToast(data.msg);
+                    form.reset();
+                    selectedFiles = [];
+                    document.getElementById('idle').classList.remove('hidden');
+                    document.getElementById('selected').classList.add('hidden');
+                    document.getElementById('customChannel').classList.add('hidden');
+                    document.getElementById('customIssue').classList.add('hidden');
+                }
+            } catch (e) { alert("Error connecting to server."); }
+            finally { submitBtn.innerText = "Process Submission"; validate(); }
         };
 
         function showToast(msg) {
@@ -255,14 +207,6 @@
             const t = document.getElementById('toast');
             t.classList.add('show');
             setTimeout(() => t.classList.remove('show'), 5000);
-        }
-
-        function reset() {
-            form.reset();
-            selectedFile = null;
-            document.getElementById('idle').classList.remove('hidden');
-            document.getElementById('selected').classList.add('hidden');
-            validate();
         }
     </script>
 </body>
