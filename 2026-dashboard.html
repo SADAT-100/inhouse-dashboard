@@ -156,15 +156,19 @@
 
     <nav class="sidebar" id="appSidebar">
         <div class="brand-header">
-            <a href="index.html" class="back-link">← BACK TO HUB</a> <br>
-            <a href="inhouse_reports.html" class="back-link"> ◀️ </a>
-
+            <a href="index.html" class="back-link">← BACK TO HUB</a>
             <span class="close-btn" onclick="toggleMenu()">×</span>
         </div>
 
         <div class="brand">
             <h1>INHOUSE</h1>
             <p>Marketplace Analytics</p>
+        </div>
+
+        <div class="report-group">
+            <div class="nav-label">2025 Reports</div>
+            <a href="JAN - DEC 2025 INHOUSE VERSION.html" class="report-item">Annual Performance</a>
+            <a href="JAN - DEC 2025 INHOUSE VERSION.html" class="sub-btn">↳ View Financial Detail</a>
         </div>
 
         <div class="report-group">
@@ -300,8 +304,20 @@
         }
 
         const STORAGE_KEY = 'inhouse_2026_overview_v1';
-        const EDIT_PASSCODE = '2026'; // simple deterrent only — see note below, this is NOT real security
+        // Passcode is stored as a SHA-256 hash, not plain text, so it isn't readable at a glance
+        // in "View Source" or Inspect. This raises the bar but is still NOT real security —
+        // anyone determined enough can copy the hash and try to crack it offline.
+        // To change the passcode: open browser dev tools console on ANY page and run:
+        //   crypto.subtle.digest('SHA-256', new TextEncoder().encode('yourNewPasscode'))
+        //     .then(b => console.log([...new Uint8Array(b)].map(x => x.toString(16).padStart(2,'0')).join('')))
+        // then paste the printed hash below, replacing PASSCODE_HASH.
+        const PASSCODE_HASH = '158a323a7ba44870f23d96f1516dd70aa48e9a72db4ebb026b0a89e212a208ab'; // currently "2026"
         let editMode = false;
+
+        async function sha256(text) {
+            const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+            return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+        }
 
         function applyEditState() {
             document.querySelectorAll('.editable').forEach(el => {
@@ -317,11 +333,13 @@
             discardBtn.style.display = editMode ? 'flex' : 'none';
         }
 
-        function toggleEdit() {
+        async function toggleEdit() {
             if (!editMode) {
                 const entered = prompt('Enter manager passcode to edit this page:');
-                if (entered !== EDIT_PASSCODE) {
-                    if (entered !== null) alert('Incorrect passcode. This page stays read-only.');
+                if (entered === null) return; // cancelled
+                const enteredHash = await sha256(entered);
+                if (enteredHash !== PASSCODE_HASH) {
+                    alert('Incorrect passcode. This page stays read-only.');
                     return;
                 }
             }
