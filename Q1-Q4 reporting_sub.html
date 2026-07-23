@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quarterly Report Submission | Marketplace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #AC975B; --dim-bg: #F8F8F8; --card-bg: #FFFFFF; }
+        body { font-family: 'Segoe UI', 'Cairo', sans-serif; background-color: var(--dim-bg); color: #323130; min-height: 100vh; }
+        .gold-frame { border: 2px solid var(--gold); background: var(--card-bg); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .btn-gold { background-color: var(--gold); color: white; transition: all 0.2s ease; }
+        .btn-gold:hover:not(:disabled) { background-color: #8E7B46; }
+        .btn-gold:disabled { background-color: #C8C6C4; opacity: 0.6; }
+        #toast { position: fixed; bottom: -100px; right: 2rem; transition: transform 0.5s ease-in-out; z-index: 1000; }
+        html[dir="rtl"] #toast { right: auto; left: 2rem; }
+        #toast.show { transform: translateY(-130px); }
+        .drag-active { background-color: #fdfaf0 !important; border-color: var(--gold) !important; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 4px; }
+    </style>
+</head>
+<body class="flex items-center justify-center p-3 sm:p-6">
+
+    <div class="w-full max-w-3xl my-2 sm:my-6">
+        <!-- Header & Language Switcher -->
+        <div class="flex items-center justify-between mb-4">
+            <a href="index.html" id="backLink" class="inline-flex items-center justify-center px-3 py-1.5 border border-[#AC975B] text-[#AC975B] text-xs font-bold uppercase tracking-widest rounded hover:bg-[#AC975B] hover:text-white transition-all">
+                ← Back to Hub
+            </a>
+
+            <button type="button" onclick="toggleLanguage()" class="flex items-center space-x-2 rtl:space-x-reverse bg-white border-2 border-[#AC975B] text-[#AC975B] hover:bg-[#AC975B] hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-all cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg>
+                <span id="langSwitchLabel">العربية</span>
+            </button>
+        </div>
+
+        <!-- Main Title -->
+        <div class="flex items-center space-x-3 rtl:space-x-reverse mb-6">
+            <div class="w-1.5 h-10 bg-[#AC975B] shrink-0"></div>
+            <div>
+                <h1 id="headerTitle" class="text-base sm:text-xl font-bold uppercase tracking-widest text-gray-700 leading-tight">Quarterly Report Submission</h1>
+                <p id="headerSub" class="text-[10px] sm:text-xs text-gray-400">Marketplace Intelligence Portal — Regal Inhouse & BackComfort</p>
+            </div>
+        </div>
+
+        <!-- Main Form Container -->
+        <div class="gold-frame p-4 sm:p-8 space-y-6">
+
+            <!-- Collapsible Data Checklist -->
+            <div class="border border-[#AC975B]/30 rounded-lg bg-[#FAF8F3] overflow-hidden">
+                <button type="button" onclick="toggleGuide()" class="w-full p-3 sm:p-4 flex items-center justify-between text-left rtl:text-right focus:outline-none">
+                    <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                        <span class="w-2.5 h-2.5 rounded-full bg-[#AC975B] shrink-0"></span>
+                        <span id="guideToggleTitle" class="text-xs font-bold uppercase tracking-wider text-[#AC975B]">View Full Performance Data Checklist (Guide Only)</span>
+                    </div>
+                    <span id="guideArrow" class="text-xs text-[#AC975B] font-semibold">▼ Expand Guide</span>
+                </button>
+                
+                <div id="guideContent" class="hidden p-4 pt-0 border-t border-[#AC975B]/20 text-xs space-y-4">
+                    <div id="guideInstruction" class="p-3 bg-white/80 rounded border border-[#AC975B]/20 text-gray-700 leading-relaxed text-[11px]">
+                        <strong>Instructions:</strong> No rigid template is required. Upload all raw data files, platform exports, or settlement reports currently available for your channel (Excel, CSV, PDF, ERP downloads). Our analytics team will extract and organize all necessary metrics.
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="p-3 bg-white rounded border-l-4 rtl:border-l-0 rtl:border-r-4 border-rose-500 shadow-sm space-y-1">
+                            <span id="req1Title" class="text-[10px] font-bold text-rose-600 uppercase tracking-wider block">🔴 Mandatory Requirements</span>
+                            <ul id="req1List" class="text-[11px] text-gray-600 space-y-1 list-disc pl-3 rtl:pl-0 rtl:pr-3">
+                                <li><strong>Sales Performance:</strong> Revenue, Orders, Units Sold, AOV, Best Seller Product/Category.</li>
+                                <li><strong>Monthly Summary:</strong> Revenue, Orders, Net Profit, and Margin breakdown per month.</li>
+                                <li><strong>Payment Status:</strong> Expected, Received, Outstanding, and Overdue amounts.</li>
+                            </ul>
+                        </div>
+
+                        <div class="p-3 bg-white rounded border-l-4 rtl:border-l-0 rtl:border-r-4 border-amber-500 shadow-sm space-y-1">
+                            <span id="req2Title" class="text-[10px] font-bold text-amber-600 uppercase tracking-wider block">🟠 High Priority (P&L & Orders)</span>
+                            <ul id="req2List" class="text-[11px] text-gray-600 space-y-1 list-disc pl-3 rtl:pl-0 rtl:pr-3">
+                                <li><strong>P&L Breakdown:</strong> Revenue, Discounts, COGS, Commissions, Shipping, Ad Spend, Gross/Net Profit.</li>
+                                <li><strong>Order Fulfillment:</strong> Delivered, Pending, Cancelled, Returned Orders + Return Rate %.</li>
+                            </ul>
+                        </div>
+
+                        <div class="p-3 bg-white rounded border-l-4 rtl:border-l-0 rtl:border-r-4 border-blue-500 shadow-sm space-y-1">
+                            <span id="req3Title" class="text-[10px] font-bold text-blue-600 uppercase tracking-wider block">🔵 Optional / Channel Data</span>
+                            <ul id="req3List" class="text-[11px] text-gray-600 space-y-1 list-disc pl-3 rtl:pl-0 rtl:pr-3">
+                                <li><strong>Logistics:</strong> Avg Delivery Days, Late Deliveries Count, Shipping Issues.</li>
+                                <li><strong>Advertising:</strong> Ad Spend, Attributed Sales, ROAS / ACOS.</li>
+                                <li><strong>Inventory:</strong> Out-of-Stock SKUs, Slow-Moving Stock, Unsellable Inventory.</li>
+                            </ul>
+                        </div>
+
+                        <div class="p-3 bg-white rounded border-l-4 rtl:border-l-0 rtl:border-r-4 border-emerald-500 shadow-sm space-y-1">
+                            <span id="req4Title" class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block">🟢 Business Highlights</span>
+                            <ul id="req4List" class="text-[11px] text-gray-600 space-y-1 list-disc pl-3 rtl:pl-0 rtl:pr-3">
+                                <li><strong>Achievements:</strong> Key milestones reached.</li>
+                                <li><strong>Challenges:</strong> Operational or commercial bottlenecks.</li>
+                                <li><strong>Action Plan:</strong> Opportunities & recommendations for next quarter.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form id="opsForm" class="space-y-4 sm:space-y-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label id="lblManager" class="text-[10px] font-bold text-[#AC975B] uppercase">Manager Name *</label>
+                        <input type="text" id="managerName" required placeholder="Enter manager name" class="w-full p-2.5 bg-gray-50 border-b border-gray-200 focus:border-[#AC975B] outline-none text-sm transition">
+                    </div>
+                    <div class="space-y-1">
+                        <label id="lblCompany" class="text-[10px] font-bold text-[#AC975B] uppercase">Company *</label>
+                        <select id="company" required class="w-full p-2.5 bg-gray-50 border-b border-gray-200 focus:border-[#AC975B] outline-none text-sm transition">
+                            <option value="" id="optSelectCompany">Select Company</option>
+                            <option value="In-House" id="optInhouse">In-House</option>
+                            <option value="BackComfort" id="optBackcomfort">BackComfort</option>
+                            <option value="In-House & BackComfort" id="optBothCompany">In-House & BackComfort</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label id="lblChannel" class="text-[10px] font-bold text-[#AC975B] uppercase">Channel *</label>
+                        <select id="channel" required onchange="toggleCustom('channel', 'customChannel')" class="w-full p-2.5 bg-gray-50 border-b border-gray-200 focus:border-[#AC975B] outline-none text-sm transition">
+                            <option value="" id="optSelectChannel">Select Channel</option>
+                            <option value="Amazon">Amazon</option>
+                            <option value="Amazon Retail">Amazon Retail</option>
+                            <option value="Noon Main">Noon Main</option>
+                            <option value="Noon Bulk">Noon Bulk</option>
+                            <option value="Trendyol">Trendyol</option>
+                            <option value="Home Center">Home Center</option>
+                            <option value="Centerpoint">Centerpoint</option>
+                            <option value="Alrugaib">Alrugaib</option>
+                            <option value="Trendyol Bulky">Trendyol Bulky</option>
+                            <option value="CUSTOM" id="optCustomChannel">Other / Custom Channel...</option>
+                        </select>
+                        <input type="text" id="customChannel" placeholder="Specify Channel Name" class="hidden w-full mt-2 p-2 bg-white border border-gray-200 rounded text-xs outline-none focus:border-gold">
+                    </div>
+
+                    <div class="space-y-1">
+                        <label id="lblQuarter" class="text-[10px] font-bold text-[#AC975B] uppercase">Reporting Quarter *</label>
+                        <select id="quarter" required class="w-full p-2.5 bg-gray-50 border-b border-gray-200 focus:border-[#AC975B] outline-none text-sm transition">
+                            <option value="" id="optSelectQuarter">Select Quarter</option>
+                            <option value="Q1 (Jan - Mar)" id="optQ1">Q1 (January – March)</option>
+                            <option value="Q2 (Apr - Jun)" id="optQ2">Q2 (April – June)</option>
+                            <option value="Q3 (Jul - Sep)" id="optQ3">Q3 (July – September)</option>
+                            <option value="Q4 (Oct - Dec)" id="optQ4">Q4 (October – December)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label id="lblRemarks" class="text-[10px] font-bold text-[#AC975B] uppercase">Remarks / Notes (Arabic Supported)</label>
+                    <textarea id="customMessage" rows="2" dir="auto" placeholder="Mention any specific details regarding the uploaded files..." class="w-full p-2.5 bg-gray-50 border border-gray-100 focus:border-[#AC975B] outline-none text-sm rounded transition"></textarea>
+                </div>
+
+                <!-- Multiple File Drag and Drop Zone -->
+                <div class="space-y-1">
+                    <label id="lblUpload" class="text-[10px] font-bold text-[#AC975B] uppercase">Upload Files (Multiple File Selection Allowed) *</label>
+                    <div id="dropZone" class="border-2 border-dashed border-gray-300 hover:border-[#AC975B] rounded-xl p-4 sm:p-6 text-center cursor-pointer hover:bg-gray-50/80 transition-all group">
+                        <input type="file" id="fileInput" class="hidden" accept=".xlsx, .xls, .csv, .pdf, .zip" multiple>
+                        
+                        <div id="idle">
+                            <svg class="w-8 h-8 mx-auto mb-2 text-gray-300 group-hover:text-[#AC975B] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                            <p id="dropTextMain" class="text-xs font-bold text-gray-500 uppercase tracking-widest">Select or Drag Multiple Files Here</p>
+                            <p id="dropTextSub" class="text-[10px] text-gray-400 mt-1">Accepts Excel (.xlsx, .xls), CSV, PDF, ZIP</p>
+                        </div>
+
+                        <div id="selected" class="hidden text-left rtl:text-right space-y-2">
+                            <div class="flex items-center justify-between">
+                                <p class="text-[10px] font-bold text-[#AC975B] uppercase"><span id="txtFilesAttached">Files Attached</span> (<span id="fileCount">0</span>):</p>
+                                <button type="button" onclick="clearAllFiles(event)" id="btnClearAll" class="text-[10px] text-rose-500 hover:underline uppercase font-bold">Clear All</button>
+                            </div>
+                            <div id="fileList" class="space-y-1.5 max-h-40 overflow-y-auto pr-1 rtl:pr-0 rtl:pl-1"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" id="submitBtn" disabled class="btn-gold w-full py-3.5 sm:py-4 rounded font-bold text-xs uppercase tracking-widest shadow-md">
+                    Process Submission
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="bg-white border-l-4 rtl:border-l-0 rtl:border-r-4 border-[#AC975B] p-4 sm:p-5 shadow-2xl rounded flex items-center space-x-4 rtl:space-x-reverse max-w-sm">
+        <div class="text-[#AC975B] shrink-0">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path></svg>
+        </div>
+        <div>
+            <p id="toastTitle" class="text-sm font-bold">Log Successful</p>
+            <p id="toastDetail" class="text-[10px] text-gray-500 uppercase"></p>
+        </div>
+    </div>
+
+    <script>
+        // PASTE YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL HERE:
+        const API = "https://script.google.com/macros/s/AKfycbwBuVtqUAXhXlQ9qRPM2xLep_Mjp4z5feax-6Ts1EjJ5WU0LKWWToNeVaNYb7w3Gx4Z/exec";
+        
+        let currentLang = 'en';
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const form = document.getElementById('opsForm');
+        let selectedFiles = [];
+
+        const i18n = {
+            en: {
+                backLink: "← Back to Hub",
+                langSwitchLabel: "العربية",
+                headerTitle: "Quarterly Report Submission",
+                headerSub: "Marketplace Intelligence Portal — Regal Inhouse & BackComfort",
+                guideToggleTitle: "View Full Performance Data Checklist (Guide Only)",
+                guideExpand: "▼ Expand Guide",
+                guideCollapse: "▲ Collapse Guide",
+                guideInstruction: "<strong>Instructions:</strong> No rigid template is required. Upload all raw data files, platform exports, or settlement reports currently available for your channel (Excel, CSV, PDF, ERP downloads). Our analytics team will extract and organize all necessary metrics.",
+                req1Title: "🔴 Mandatory Requirements",
+                req1List: "<li><strong>Sales Performance:</strong> Revenue, Orders, Units Sold, AOV, Best Seller Product/Category.</li><li><strong>Monthly Summary:</strong> Revenue, Orders, Net Profit, and Margin breakdown per month.</li><li><strong>Payment Status:</strong> Expected, Received, Outstanding, and Overdue amounts.</li>",
+                req2Title: "🟠 High Priority (P&L & Orders)",
+                req2List: "<li><strong>P&L Breakdown:</strong> Revenue, Discounts, COGS, Commissions, Shipping, Ad Spend, Gross/Net Profit.</li><li><strong>Order Fulfillment:</strong> Delivered, Pending, Cancelled, Returned Orders + Return Rate %.</li>",
+                req3Title: "🔵 Optional / Channel Data",
+                req3List: "<li><strong>Logistics:</strong> Avg Delivery Days, Late Deliveries Count, Shipping Issues.</li><li><strong>Advertising:</strong> Ad Spend, Attributed Sales, ROAS / ACOS.</li><li><strong>Inventory:</strong> Out-of-Stock SKUs, Slow-Moving Stock, Unsellable Inventory.</li>",
+                req4Title: "🟢 Business Highlights",
+                req4List: "<li><strong>Achievements:</strong> Key milestones reached.</li><li><strong>Challenges:</strong> Operational or commercial bottlenecks.</li><li><strong>Action Plan:</strong> Opportunities & recommendations for next quarter.</li>",
+                lblManager: "Manager Name *",
+                phManager: "Enter manager name",
+                lblCompany: "Company *",
+                optSelectCompany: "Select Company",
+                optInhouse: "In-House",
+                optBackcomfort: "BackComfort",
+                optBothCompany: "In-House & BackComfort",
+                lblChannel: "Channel *",
+                optSelectChannel: "Select Channel",
+                optCustomChannel: "Other / Custom Channel...",
+                phCustomChannel: "Specify Channel Name",
+                lblQuarter: "Reporting Quarter *",
+                optSelectQuarter: "Select Quarter",
+                optQ1: "Q1 (January – March)",
+                optQ2: "Q2 (April – June)",
+                optQ3: "Q3 (July – September)",
+                optQ4: "Q4 (October – December)",
+                lblRemarks: "Remarks / Notes (Arabic Supported)",
+                phRemarks: "Mention any specific details regarding the uploaded files...",
+                lblUpload: "Upload Files (Multiple File Selection Allowed) *",
+                dropTextMain: "Select or Drag Multiple Files Here",
+                dropTextSub: "Accepts Excel (.xlsx, .xls), CSV, PDF, ZIP",
+                txtFilesAttached: "Files Attached",
+                btnClearAll: "Clear All",
+                submitBtn: "Process Submission",
+                btnProcessing: "Processing Files...",
+                toastTitle: "Log Successful"
+            },
+            ar: {
+                backLink: "← العودة إلى المركز الرئيسي",
+                langSwitchLabel: "English",
+                headerTitle: "إرسال التقرير الربع سنوي",
+                headerSub: "بوابة تحليلات المتاجر الإلكترونية — ريجال إنهاوس وباك كومفورت",
+                guideToggleTitle: "عرض قائمة بيانات الأداء الكاملة (دليل إرشادي فقط)",
+                guideExpand: "▼ عرض الدليل الإرشادي",
+                guideCollapse: "▲ إخفاء الدليل الإرشادي",
+                guideInstruction: "<strong>تعليمات:</strong> لا يلزم استخدام نموذج محدد أو مسبق التنسيق. ببساطة قم بتحميل جميع ملفات البيانات الأولية أو تقارير التسوية المتاحة حالياً لقناتك (ملفات Excel أو CSV أو PDF أو تنزيلات نظام ERP). سيقوم فريق التحليلات لدينا باستخراج وتنظيم جميع المقاييس المطلوبة من جانبنا.",
+                req1Title: "🔴 المتطلبات الإلزامية",
+                req1List: "<li><strong>أداء المبيعات:</strong> إجمالي الإيرادات، إجمالي الطلبات، الوحدات المباعة، متوسط قيمة الطلب (AOV)، المنتج الأكثر مبيعاً، الفئة الأكثر مبيعاً.</li><li><strong>الملخص الشهري:</strong> تفاصيل الإيرادات والطلبات وصافي الربح وهامش الربح لكل شهر في الربع.</li><li><strong>حالة الدفع:</strong> المدفوعات المتوقعة، المدفوعات المستلمة، الرصيد المتبقي، المبالغ المتأخرة، تاريخ آخر دفعة.</li>",
+                req2Title: "🟠 أولوية عالية (المالية والطلبات)",
+                req2List: "<li><strong>الأرباح والخسائر (P&L):</strong> إجمالي الإيرادات، الخصومات، تكلفة البضاعة المباعة (COGS)، عمولات المنصة، تكاليف الشحن، مصاريف الإعلانات، المصاريف التشغيلية الأخرى، إجمالي وصافي الربح.</li><li><strong>أداء الطلبات:</strong> عدد الطلبات المسلمة، المعلقة، المُلغاة، والمرتجعة + نسبة الارتجاع %.</li>",
+                req3Title: "🔵 بيانات اختيارية / خاصة بالقناة",
+                req3List: "<li><strong>اللوجستيات:</strong> متوسط وقت التوصيل (بالأيام)، عدد الشحنات المتأخرة، مشكلات الشحن/الناقل.</li><li><strong>الإعلانات:</strong> إجمالي الإنفاق الإعلاني، الإيرادات الناتجة عن الإعلانات، عائد الإنفاق الإعلاني (ROAS) / تكلفة الإعلان (ACOS).</li><li><strong>صحة المخزون:</strong> المنتجات النفدة، المخزون بطيء الحركة، البضائع التالفة/غير الصالحة للبيع.</li>",
+                req4Title: "🟢 أبرز النقاط والأداء الكيفي",
+                req4List: "<li><strong>أبرز الإنجازات:</strong> أهم المحطات والنجاحات التي تم تحقيقها خلال الربع.</li><li><strong>التحديات الرئيسية:</strong> العقبات التشغيلية أو التجارية.</li><li><strong>خطة العمل:</strong> الفرص المحددة والتوصيات للربع القادم.</li>",
+                lblManager: "اسم المدير *",
+                phManager: "أدخل اسم المدير",
+                lblCompany: "الشركة *",
+                optSelectCompany: "اختر الشركة",
+                optInhouse: "إنهاوس (In-House)",
+                optBackcomfort: "باك كومفورت (BackComfort)",
+                optBothCompany: "إنهاوس وباك كومفورت",
+                lblChannel: "القناة / المنصة *",
+                optSelectChannel: "اختر القناة",
+                optCustomChannel: "قناة أخرى / مخصصة...",
+                phCustomChannel: "حدد اسم القناة",
+                lblQuarter: "الربع المحدد للتقرير *",
+                optSelectQuarter: "اختر الربع",
+                optQ1: "الربع الأول (يناير - مارس)",
+                optQ2: "الربع الثاني (أبريل - يونيو)",
+                optQ3: "الربع الثالث (يوليو - سبتمبر)",
+                optQ4: "الربع الرابع (أكتوبر - ديسمبر)",
+                lblRemarks: "ملاحظات / تعليقات (يدعم اللغة العربية)",
+                phRemarks: "اذكر أي تفاصيل الملاحظات بخصوص الملفات المرفقة...",
+                lblUpload: "تحميل الملفات (يُسمح بتحديد ملفات متعددة) *",
+                dropTextMain: "حدد أو اسحب ملفات متعددة هنا",
+                dropTextSub: "يقبل ملفات Excel (.xlsx, .xls) و CSV و PDF و ZIP",
+                txtFilesAttached: "الملفات المرفقة",
+                btnClearAll: "مسح الكل",
+                submitBtn: "إرسال التقرير",
+                btnProcessing: "جاري معالجة الملفات...",
+                toastTitle: "تم التسجيل بنجاح"
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            const langData = i18n[currentLang];
+
+            document.documentElement.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
+            document.documentElement.setAttribute('lang', currentLang);
+
+            document.getElementById('backLink').innerText = langData.backLink;
+            document.getElementById('langSwitchLabel').innerText = langData.langSwitchLabel;
+            document.getElementById('headerTitle').innerText = langData.headerTitle;
+            document.getElementById('headerSub').innerText = langData.headerSub;
+            document.getElementById('guideToggleTitle').innerText = langData.guideToggleTitle;
+            
+            const contentHidden = document.getElementById('guideContent').classList.contains('hidden');
+            document.getElementById('guideArrow').innerText = contentHidden ? langData.guideExpand : langData.guideCollapse;
+
+            document.getElementById('guideInstruction').innerHTML = langData.guideInstruction;
+
+            document.getElementById('req1Title').innerText = langData.req1Title;
+            document.getElementById('req1List').innerHTML = langData.req1List;
+            document.getElementById('req2Title').innerText = langData.req2Title;
+            document.getElementById('req2List').innerHTML = langData.req2List;
+            document.getElementById('req3Title').innerText = langData.req3Title;
+            document.getElementById('req3List').innerHTML = langData.req3List;
+            document.getElementById('req4Title').innerText = langData.req4Title;
+            document.getElementById('req4List').innerHTML = langData.req4List;
+
+            document.getElementById('lblManager').innerText = langData.lblManager;
+            document.getElementById('managerName').placeholder = langData.phManager;
+            document.getElementById('lblCompany').innerText = langData.lblCompany;
+            document.getElementById('optSelectCompany').innerText = langData.optSelectCompany;
+            document.getElementById('optInhouse').innerText = langData.optInhouse;
+            document.getElementById('optBackcomfort').innerText = langData.optBackcomfort;
+            document.getElementById('optBothCompany').innerText = langData.optBothCompany;
+
+            document.getElementById('lblChannel').innerText = langData.lblChannel;
+            document.getElementById('optSelectChannel').innerText = langData.optSelectChannel;
+            document.getElementById('optCustomChannel').innerText = langData.optCustomChannel;
+            document.getElementById('customChannel').placeholder = langData.phCustomChannel;
+
+            document.getElementById('lblQuarter').innerText = langData.lblQuarter;
+            document.getElementById('optSelectQuarter').innerText = langData.optSelectQuarter;
+            document.getElementById('optQ1').innerText = langData.optQ1;
+            document.getElementById('optQ2').innerText = langData.optQ2;
+            document.getElementById('optQ3').innerText = langData.optQ3;
+            document.getElementById('optQ4').innerText = langData.optQ4;
+
+            document.getElementById('lblRemarks').innerText = langData.lblRemarks;
+            document.getElementById('customMessage').placeholder = langData.phRemarks;
+
+            document.getElementById('lblUpload').innerText = langData.lblUpload;
+            document.getElementById('dropTextMain').innerText = langData.dropTextMain;
+            document.getElementById('dropTextSub').innerText = langData.dropTextSub;
+            document.getElementById('txtFilesAttached').innerText = langData.txtFilesAttached;
+            document.getElementById('btnClearAll').innerText = langData.btnClearAll;
+
+            submitBtn.innerText = langData.submitBtn;
+            document.getElementById('toastTitle').innerText = langData.toastTitle;
+        }
+
+        function toggleGuide() {
+            const content = document.getElementById('guideContent');
+            const arrow = document.getElementById('guideArrow');
+            const isHidden = content.classList.contains('hidden');
+            const langData = i18n[currentLang];
+            
+            content.classList.toggle('hidden');
+            arrow.innerText = isHidden ? langData.guideCollapse : langData.guideExpand;
+        }
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => {
+            dropZone.addEventListener(e, (ev) => { ev.preventDefault(); ev.stopPropagation(); });
+        });
+        dropZone.addEventListener('dragover', () => dropZone.classList.add('drag-active'));
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-active'));
+        dropZone.addEventListener('drop', (e) => {
+            dropZone.classList.remove('drag-active');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        dropZone.onclick = (e) => {
+            if(e.target.tagName !== 'BUTTON' && !e.target.closest('button')) {
+                fileInput.click();
+            }
+        };
+
+        fileInput.onchange = (e) => handleFiles(e.target.files);
+
+        function handleFiles(files) {
+            if(!files.length) return;
+            Array.from(files).forEach(newFile => {
+                if(!selectedFiles.some(f => f.name === newFile.name && f.size === newFile.size)) {
+                    selectedFiles.push(newFile);
+                }
+            });
+            renderFileList();
+            validate();
+        }
+
+        function renderFileList() {
+            const listContainer = document.getElementById('fileList');
+            document.getElementById('fileCount').innerText = selectedFiles.length;
+
+            if (selectedFiles.length === 0) {
+                document.getElementById('idle').classList.remove('hidden');
+                document.getElementById('selected').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('idle').classList.add('hidden');
+            document.getElementById('selected').classList.remove('hidden');
+
+            listContainer.innerHTML = selectedFiles.map((f, index) => `
+                <div class="flex items-center justify-between p-2 bg-gray-50 border border-gray-200 rounded text-xs">
+                    <div class="flex items-center space-x-2 rtl:space-x-reverse truncate">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#AC975B] shrink-0"></span>
+                        <span class="font-medium text-gray-700 truncate">${f.name}</span>
+                        <span class="text-[9px] text-gray-400 shrink-0">(${formatBytes(f.size)})</span>
+                    </div>
+                    <button type="button" onclick="removeFile(${index}, event)" class="text-gray-400 hover:text-rose-500 font-bold px-1 text-sm transition-colors">
+                        &times;
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function removeFile(index, event) {
+            event.stopPropagation();
+            selectedFiles.splice(index, 1);
+            renderFileList();
+            validate();
+        }
+
+        function clearAllFiles(event) {
+            event.stopPropagation();
+            selectedFiles = [];
+            fileInput.value = "";
+            renderFileList();
+            validate();
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        function toggleCustom(sid, iid) {
+            const s = document.getElementById(sid);
+            document.getElementById(iid).classList.toggle('hidden', s.value !== 'CUSTOM');
+            validate();
+        }
+
+        function validate() {
+            const isCustomChannel = document.getElementById('channel').value === 'CUSTOM';
+            const customChanValid = !isCustomChannel || document.getElementById('customChannel').value.trim() !== '';
+            
+            submitBtn.disabled = !(form.checkValidity() && selectedFiles.length > 0 && customChanValid);
+        }
+        form.oninput = validate;
+
+        submitBtn.onclick = async () => {
+            submitBtn.disabled = true;
+            submitBtn.innerText = `${i18n[currentLang].btnProcessing} (${selectedFiles.length})`;
+
+            const fileDataPromises = selectedFiles.map(file => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve({ 
+                        name: file.name, 
+                        size: formatBytes(file.size),
+                        data: e.target.result 
+                    });
+                    reader.readAsDataURL(file);
+                });
+            });
+
+            const filesArray = await Promise.all(fileDataPromises);
+
+            const payload = {
+                managerName: document.getElementById('managerName').value,
+                company: document.getElementById('company').value,
+                channel: document.getElementById('channel').value === 'CUSTOM' ? document.getElementById('customChannel').value : document.getElementById('channel').value,
+                quarter: document.getElementById('quarter').value,
+                customMessage: document.getElementById('customMessage').value,
+                language: currentLang,
+                files: filesArray
+            };
+
+            try {
+                const res = await fetch(API, { method: 'POST', body: JSON.stringify(payload) });
+                const data = await res.json();
+                
+                if(data.status === 'success') {
+                    showToast(data.msg || (currentLang === 'ar' ? "تم تسجيل التقرير وحفظ الملفات بنجاح!" : "Report logged successfully!"));
+                    form.reset();
+                    selectedFiles = [];
+                    renderFileList();
+                    document.getElementById('customChannel').classList.add('hidden');
+                } else {
+                    alert((currentLang === 'ar' ? "خطأ في الإرسال: " : "Submission error: ") + (data.msg || "Unknown response"));
+                }
+            } catch (e) { 
+                alert(currentLang === 'ar' ? "خطأ في الاتصال بالخادم." : "Error connecting to server."); 
+            }
+            finally { 
+                submitBtn.innerText = i18n[currentLang].submitBtn; 
+                validate(); 
+            }
+        };
+
+        function showToast(msg) {
+            document.getElementById('toastDetail').innerText = msg;
+            const t = document.getElementById('toast');
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 5000);
+        }
+    </script>
+</body>
+</html>
