@@ -121,25 +121,65 @@
                     </div>
                 </div>
 
+                <!-- MULTI-SELECT CHANNELS GRID & QUARTER -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Channels Multi-Selection Box -->
                     <div class="space-y-1">
-                        <label id="lblChannel" class="text-[10px] font-bold text-[#AC975B] uppercase">Channel *</label>
-                        <select id="channel" required onchange="toggleCustom('channel', 'customChannel')" class="w-full p-2.5 bg-gray-50 border-b border-gray-200 focus:border-[#AC975B] outline-none text-sm transition">
-                            <option value="" id="optSelectChannel">Select Channel</option>
-                            <option value="Amazon">Amazon</option>
-                            <option value="Amazon Retail">Amazon Retail</option>
-                            <option value="Noon Main">Noon Main</option>
-                            <option value="Noon Bulk">Noon Bulk</option>
-                            <option value="Trendyol">Trendyol</option>
-                            <option value="Home Center">Home Center</option>
-                            <option value="Centerpoint">Centerpoint</option>
-                            <option value="Alrugaib">Alrugaib</option>
-                            <option value="Trendyol Bulky">Trendyol Bulky</option>
-                            <option value="CUSTOM" id="optCustomChannel">Other / Custom Channel...</option>
-                        </select>
+                        <label id="lblChannel" class="text-[10px] font-bold text-[#AC975B] uppercase">Select Channel(s) (Multiple Allowed) *</label>
+                        <div class="p-2.5 bg-gray-50 border border-gray-200 rounded text-xs space-y-1.5 max-h-36 overflow-y-auto" id="channelBox">
+                            <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer hover:bg-gray-100 p-1 rounded">
+                                <input type="checkbox" value="Amazon" class="channel-cb accent-[#AC975B]" onchange="validate()">
+                                <span>Amazon</span>
+                            </label>
+                            <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer hover:bg-gray-100 p-1 rounded">
+                                <input type="checkbox" value="Amazon Retail" class="channel-cb accent-[#AC975B]" onchange="validate()">
+                                <span>Amazon Retail</span>
+                            </label>
+                            <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer hover:bg-gray-100 p-1 rounded">
+                                <input type="checkbox" value="Noon Main" class="channel-cb accent-[#AC975B]" onchange="validate()">
+                                <span>Noon Main</span>
+                            </label>
+                            <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer hover:bg-gray-100 p-1 rounded">
+                                <input type="checkbox" value="Noon Bulk" class="channel-cb accent-[#AC975B]" onchange="validate()">
+                                <span>Noon Bulk</span>
+                            </label>
+                            <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer hover:bg-gray-100 p-1 rounded">
+                                <input type="checkbox" value="Trendyol" class="channel-cb accent-[#AC975B]" onchange="validate()">
+                                <span>Trendyol</span>
+                            </label>
+                            <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer hover:bg-gray-100 p-1 rounded">
+                                <input type="checkbox" value="Extra" class="channel-cb accent-[#AC975B]" onchange="validate()">
+                                <span id="optExtra">Extra</span>
+                            </label>
+                            <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer hover:bg-gray-100 p-1 rounded">
+                                <input type="checkbox" value="Al-Saif" class="channel-cb accent-[#AC975B]" onchange="validate()">
+                                <span id="optAlSaif">Al-Saif</span>
+                            </label>
+                            <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer hover:bg-gray-100 p-1 rounded">
+                                <input type="checkbox" value="Home Center" class="channel-cb accent-[#AC975B]" onchange="validate()">
+                                <span>Home Center</span>
+                            </label>
+                            <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer hover:bg-gray-100 p-1 rounded">
+                                <input type="checkbox" value="Centerpoint" class="channel-cb accent-[#AC975B]" onchange="validate()">
+                                <span>Centerpoint</span>
+                            </label>
+                            <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer hover:bg-gray-100 p-1 rounded">
+                                <input type="checkbox" value="Alrugaib" class="channel-cb accent-[#AC975B]" onchange="validate()">
+                                <span>Alrugaib</span>
+                            </label>
+                            <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer hover:bg-gray-100 p-1 rounded">
+                                <input type="checkbox" value="Trendyol Bulky" class="channel-cb accent-[#AC975B]" onchange="validate()">
+                                <span>Trendyol Bulky</span>
+                            </label>
+                            <label class="flex items-center space-x-2 rtl:space-x-reverse cursor-pointer hover:bg-gray-100 p-1 rounded">
+                                <input type="checkbox" value="CUSTOM" id="cbCustom" class="channel-cb accent-[#AC975B]" onchange="toggleCustomChannelInput()">
+                                <span id="optCustomChannel">Other / Custom Channel...</span>
+                            </label>
+                        </div>
                         <input type="text" id="customChannel" placeholder="Specify Channel Name" class="hidden w-full mt-2 p-2 bg-white border border-gray-200 rounded text-xs outline-none focus:border-gold">
                     </div>
 
+                    <!-- Quarter Dropdown -->
                     <div class="space-y-1">
                         <label id="lblQuarter" class="text-[10px] font-bold text-[#AC975B] uppercase">Reporting Quarter *</label>
                         <select id="quarter" required class="w-full p-2.5 bg-gray-50 border-b border-gray-200 focus:border-[#AC975B] outline-none text-sm transition">
@@ -154,12 +194,19 @@
 
                 <div class="space-y-1">
                     <label id="lblRemarks" class="text-[10px] font-bold text-[#AC975B] uppercase">Remarks / Notes (Arabic Supported)</label>
-                    <textarea id="customMessage" rows="2" dir="auto" placeholder="Mention any specific details regarding the uploaded files..." class="w-full p-2.5 bg-gray-50 border border-gray-100 focus:border-[#AC975B] outline-none text-sm rounded transition"></textarea>
+                    <textarea id="customMessage" rows="2" dir="auto" placeholder="Mention any specific details regarding the report or paste links here..." class="w-full p-2.5 bg-gray-50 border border-gray-100 focus:border-[#AC975B] outline-none text-sm rounded transition"></textarea>
                 </div>
 
-                <!-- Multiple File Drag and Drop Zone -->
+                <!-- Multiple File Drag and Drop Zone + Optional Link Checkbox -->
                 <div class="space-y-1">
-                    <label id="lblUpload" class="text-[10px] font-bold text-[#AC975B] uppercase">Upload Files (Multiple File Selection Allowed) *</label>
+                    <label id="lblUpload" class="text-[10px] font-bold text-[#AC975B] uppercase">Upload Files (Multiple File Selection Allowed)</label>
+                    
+                    <!-- Checkbox for No File Upload -->
+                    <div class="flex items-center space-x-2 rtl:space-x-reverse pb-1">
+                        <input type="checkbox" id="noFileCheck" onchange="toggleNoFileOption()" class="accent-[#AC975B] w-3.5 h-3.5 rounded cursor-pointer">
+                        <label for="noFileCheck" id="lblNoFile" class="text-[11px] text-gray-600 cursor-pointer">No file to upload (I am pasting links or details in the Remarks box)</label>
+                    </div>
+
                     <div id="dropZone" class="border-2 border-dashed border-gray-300 hover:border-[#AC975B] rounded-xl p-4 sm:p-6 text-center cursor-pointer hover:bg-gray-50/80 transition-all group">
                         <input type="file" id="fileInput" class="hidden" accept=".xlsx, .xls, .csv, .pdf, .zip" multiple>
                         
@@ -233,10 +280,11 @@
                 optInhouse: "In-House",
                 optBackcomfort: "BackComfort",
                 optBothCompany: "In-House & BackComfort",
-                lblChannel: "Channel *",
-                optSelectChannel: "Select Channel",
+                lblChannel: "Select Channel(s) (Multiple Allowed) *",
                 optCustomChannel: "Other / Custom Channel...",
                 phCustomChannel: "Specify Channel Name",
+                optExtra: "Extra",
+                optAlSaif: "Al-Saif",
                 lblQuarter: "Reporting Quarter *",
                 optSelectQuarter: "Select Quarter",
                 optQ1: "Q1 (January – March)",
@@ -244,8 +292,9 @@
                 optQ3: "Q3 (July – September)",
                 optQ4: "Q4 (October – December)",
                 lblRemarks: "Remarks / Notes (Arabic Supported)",
-                phRemarks: "Mention any specific details regarding the uploaded files...",
-                lblUpload: "Upload Files (Multiple File Selection Allowed) *",
+                phRemarks: "Mention any specific details regarding the report or paste links here...",
+                lblUpload: "Upload Files (Multiple File Selection Allowed)",
+                lblNoFile: "No file to upload (I am pasting links or details in the Remarks box)",
                 dropTextMain: "Select or Drag Multiple Files Here",
                 dropTextSub: "Accepts Excel (.xlsx, .xls), CSV, PDF, ZIP",
                 txtFilesAttached: "Files Attached",
@@ -278,10 +327,11 @@
                 optInhouse: "إنهاوس (In-House)",
                 optBackcomfort: "باك كومفورت (BackComfort)",
                 optBothCompany: "إنهاوس وباك كومفورت",
-                lblChannel: "القناة / المنصة *",
-                optSelectChannel: "اختر القناة",
+                lblChannel: "اختر القناة / القنوات (يُسمح بتحديد قنوات متعددة) *",
                 optCustomChannel: "قناة أخرى / مخصصة...",
                 phCustomChannel: "حدد اسم القناة",
+                optExtra: "إكسترا (Extra)",
+                optAlSaif: "السيف غاليري (Al-Saif)",
                 lblQuarter: "الربع المحدد للتقرير *",
                 optSelectQuarter: "اختر الربع",
                 optQ1: "الربع الأول (يناير - مارس)",
@@ -289,8 +339,9 @@
                 optQ3: "الربع الثالث (يوليو - سبتمبر)",
                 optQ4: "الربع الرابع (أكتوبر - ديسمبر)",
                 lblRemarks: "ملاحظات / تعليقات (يدعم اللغة العربية)",
-                phRemarks: "اذكر أي تفاصيل الملاحظات بخصوص الملفات المرفقة...",
-                lblUpload: "تحميل الملفات (يُسمح بتحديد ملفات متعددة) *",
+                phRemarks: "اذكر أي تفاصيل بخصوص التقرير أو قم بلصق الروابط هنا...",
+                lblUpload: "تحميل الملفات (اختياري - يُسمح بتحديد ملفات متعددة)",
+                lblNoFile: "لا يوجد ملف للتحميل (سأقوم بوضع الروابط أو التفاصيل في صندوق الملاحظات)",
                 dropTextMain: "حدد أو اسحب ملفات متعددة هنا",
                 dropTextSub: "يقبل ملفات Excel (.xlsx, .xls) و CSV و PDF و ZIP",
                 txtFilesAttached: "الملفات المرفقة",
@@ -337,9 +388,10 @@
             document.getElementById('optBothCompany').innerText = langData.optBothCompany;
 
             document.getElementById('lblChannel').innerText = langData.lblChannel;
-            document.getElementById('optSelectChannel').innerText = langData.optSelectChannel;
             document.getElementById('optCustomChannel').innerText = langData.optCustomChannel;
             document.getElementById('customChannel').placeholder = langData.phCustomChannel;
+            document.getElementById('optExtra').innerText = langData.optExtra;
+            document.getElementById('optAlSaif').innerText = langData.optAlSaif;
 
             document.getElementById('lblQuarter').innerText = langData.lblQuarter;
             document.getElementById('optSelectQuarter').innerText = langData.optSelectQuarter;
@@ -352,6 +404,7 @@
             document.getElementById('customMessage').placeholder = langData.phRemarks;
 
             document.getElementById('lblUpload').innerText = langData.lblUpload;
+            document.getElementById('lblNoFile').innerText = langData.lblNoFile;
             document.getElementById('dropTextMain').innerText = langData.dropTextMain;
             document.getElementById('dropTextSub').innerText = langData.dropTextSub;
             document.getElementById('txtFilesAttached').innerText = langData.txtFilesAttached;
@@ -369,6 +422,33 @@
             
             content.classList.toggle('hidden');
             arrow.innerText = isHidden ? langData.guideCollapse : langData.guideExpand;
+        }
+
+        function toggleCustomChannelInput() {
+            const cb = document.getElementById('cbCustom');
+            document.getElementById('customChannel').classList.toggle('hidden', !cb.checked);
+            validate();
+        }
+
+        function toggleNoFileOption() {
+            const noFileChecked = document.getElementById('noFileCheck').checked;
+            if (noFileChecked) {
+                dropZone.classList.add('opacity-50', 'pointer-events-none');
+            } else {
+                dropZone.classList.remove('opacity-50', 'pointer-events-none');
+            }
+            validate();
+        }
+
+        function getSelectedChannels() {
+            const checkedBoxes = document.querySelectorAll('.channel-cb:checked');
+            let channels = Array.from(checkedBoxes).map(cb => cb.value);
+            if (channels.includes('CUSTOM')) {
+                const customVal = document.getElementById('customChannel').value.trim();
+                channels = channels.filter(c => c !== 'CUSTOM');
+                if (customVal) channels.push(customVal);
+            }
+            return channels.join(', ');
         }
 
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => {
@@ -450,23 +530,36 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
         }
 
-        function toggleCustom(sid, iid) {
-            const s = document.getElementById(sid);
-            document.getElementById(iid).classList.toggle('hidden', s.value !== 'CUSTOM');
-            validate();
-        }
-
         function validate() {
-            const isCustomChannel = document.getElementById('channel').value === 'CUSTOM';
-            const customChanValid = !isCustomChannel || document.getElementById('customChannel').value.trim() !== '';
+            const managerVal = document.getElementById('managerName').value.trim();
+            const companyVal = document.getElementById('company').value;
+            const quarterVal = document.getElementById('quarter').value;
+            const selectedChannels = getSelectedChannels();
             
-            submitBtn.disabled = !(form.checkValidity() && selectedFiles.length > 0 && customChanValid);
+            const noFileChecked = document.getElementById('noFileCheck').checked;
+            const hasFiles = selectedFiles.length > 0;
+            const remarksVal = document.getElementById('customMessage').value.trim();
+
+            // File is valid if files uploaded OR noFile checked OR remarks supplied
+            const fileValidity = hasFiles || noFileChecked || remarksVal !== '';
+
+            submitBtn.disabled = !(managerVal && companyVal && quarterVal && selectedChannels && fileValidity);
         }
         form.oninput = validate;
 
         submitBtn.onclick = async () => {
             submitBtn.disabled = true;
             submitBtn.innerText = `${i18n[currentLang].btnProcessing} (${selectedFiles.length})`;
+
+            let totalBytes = selectedFiles.reduce((acc, file) => acc + file.size, 0);
+            if (totalBytes > 15 * 1024 * 1024) {
+                alert(currentLang === 'ar' ? 
+                    "حجم الملفات كبير جداً (الحد الأقصى 15 ميجابايت). يرجى تقليل حجم الملفات." : 
+                    "Total file size exceeds 15MB limit. Please attach smaller files or fewer files at once.");
+                submitBtn.innerText = i18n[currentLang].submitBtn;
+                validate();
+                return;
+            }
 
             const fileDataPromises = selectedFiles.map(file => {
                 return new Promise((resolve) => {
@@ -485,15 +578,23 @@
             const payload = {
                 managerName: document.getElementById('managerName').value,
                 company: document.getElementById('company').value,
-                channel: document.getElementById('channel').value === 'CUSTOM' ? document.getElementById('customChannel').value : document.getElementById('channel').value,
+                channel: getSelectedChannels(),
                 quarter: document.getElementById('quarter').value,
                 customMessage: document.getElementById('customMessage').value,
+                noFileAttached: document.getElementById('noFileCheck').checked,
                 language: currentLang,
                 files: filesArray
             };
 
             try {
-                const res = await fetch(API, { method: 'POST', body: JSON.stringify(payload) });
+                const res = await fetch(API, { 
+                    method: 'POST', 
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8'
+                    },
+                    body: JSON.stringify(payload) 
+                });
+                
                 const data = await res.json();
                 
                 if(data.status === 'success') {
@@ -502,11 +603,13 @@
                     selectedFiles = [];
                     renderFileList();
                     document.getElementById('customChannel').classList.add('hidden');
+                    toggleNoFileOption();
                 } else {
-                    alert((currentLang === 'ar' ? "خطأ في الإرسال: " : "Submission error: ") + (data.msg || "Unknown response"));
+                    alert((currentLang === 'ar' ? "خطأ في الإرسال: " : "Submission error: ") + (data.msg || "Unknown error"));
                 }
             } catch (e) { 
-                alert(currentLang === 'ar' ? "خطأ في الاتصال بالخادم." : "Error connecting to server."); 
+                console.error("Submission Error:", e);
+                alert((currentLang === 'ar' ? "خطأ في الاتصال بالخادم. يرجى التأكد من إعدادات نشر Google Apps Script." : "Error connecting to server. Please check Google Apps Script deployment settings.") + "\n\n" + e.message); 
             }
             finally { 
                 submitBtn.innerText = i18n[currentLang].submitBtn; 
