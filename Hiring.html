@@ -1,0 +1,1002 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="assets/favicon.png">
+<title>In-House Careers</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Careers portal for In-House and Back Comfort — Online Channels team.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Marcellus&display=swap">
+<style>
+/* Layout: fixed top bar (brands, language, theme) + left rail nav on desktop that becomes a drawer on phones; content column ≤ 860px. */
+:root{
+  --bg:#F3F2EE; --surface:#FFFFFF; --surface-2:#ECEAE3; --line:#DDD9CF;
+  --fg:#1D1E21; --muted:#66635B; --gold:#8A7640; --gold-strong:#9B8752; --gold-soft:#F0EAD9;
+  --coral:#DF4A2C; --ok:#2E7A57; --ok-soft:#E3F1E9; --err:#B3261E; --err-soft:#FBE9E7;
+  --logo-l:block; --logo-d:none; --shadow:0 1px 2px rgba(40,34,20,.06),0 8px 24px rgba(40,34,20,.06);
+  --f-display:"Marcellus","IBM Plex Sans Arabic",Georgia,serif;
+  --f-body:"IBM Plex Sans","IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --r:10px; --top:64px; --rail:260px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#2A2D33; --surface:#33373E; --surface-2:#3B4048; --line:#4A5059;
+  --fg:#ECEAE4; --muted:#A9A69C; --gold:#D3BC85; --gold-strong:#C7AF74; --gold-soft:#433D2E;
+  --coral:#F27A60; --ok:#7CCBA2; --ok-soft:#2F4A3D; --err:#F2938A; --err-soft:#4A3332;
+  --logo-l:none; --logo-d:block; --shadow:0 1px 2px rgba(0,0,0,.18),0 8px 24px rgba(0,0,0,.18); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#2A2D33; --surface:#33373E; --surface-2:#3B4048; --line:#4A5059;
+  --fg:#ECEAE4; --muted:#A9A69C; --gold:#D3BC85; --gold-strong:#C7AF74; --gold-soft:#433D2E;
+  --coral:#F27A60; --ok:#7CCBA2; --ok-soft:#2F4A3D; --err:#F2938A; --err-soft:#4A3332;
+  --logo-l:none; --logo-d:block; --shadow:0 1px 2px rgba(0,0,0,.18),0 8px 24px rgba(0,0,0,.18); color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg);overflow-x:clip}
+body{color:var(--fg);font-family:var(--f-body);font-size:15.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
+[dir="rtl"] body,[dir="rtl"]{--f-display:"IBM Plex Sans Arabic","Marcellus",serif;--f-body:"IBM Plex Sans Arabic","IBM Plex Sans",system-ui,sans-serif}
+a{color:var(--gold)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:6px}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;line-height:1.2}
+[dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3{font-weight:700}
+h1{font-size:clamp(1.9rem,4.2vw,2.75rem)}
+h2{font-size:clamp(1.5rem,3vw,2rem)}
+h3{font-size:1.15rem}
+[dir="rtl"] h3{font-weight:600}
+p{margin:0}
+.eyebrow{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:600}
+[dir="rtl"] .eyebrow{letter-spacing:0;font-size:.85rem}
+.muted{color:var(--muted)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* ---------- top bar ---------- */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--surface)}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;height:var(--top);background:var(--surface);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;min-width:0}
+.brand img{height:34px;width:auto}
+.brand .bc{height:30px}
+.brand .sep{width:1px;height:28px;background:var(--line)}
+.logo-l{display:var(--logo-l)} .logo-d{display:var(--logo-d)}
+.brand-tag{font-size:.8rem;color:var(--muted);white-space:nowrap;padding-inline-start:4px}
+.top-actions{margin-inline-start:auto;display:flex;align-items:center;gap:8px}
+.chip-btn{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:.9rem;font-weight:500}
+.chip-btn:hover{border-color:var(--gold)}
+.icon-btn{width:38px;padding:0;justify-content:center}
+.icon-btn svg{width:18px;height:18px}
+.menu-btn{display:none}
+
+/* ---------- shell ---------- */
+.shell{display:grid;grid-template-columns:var(--rail) minmax(0,1fr);min-height:calc(100vh - var(--top))}
+.rail{position:sticky;top:calc(var(--top) + env(safe-area-inset-top,0px));align-self:start;height:calc(100vh - var(--top) - env(safe-area-inset-top,0px));
+  border-inline-end:1px solid var(--line);background:var(--surface);padding:22px 16px;display:flex;flex-direction:column;gap:6px;overflow:auto}
+.rail .label{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:6px 12px;font-weight:600}
+[dir="rtl"] .rail .label{letter-spacing:0;font-size:.8rem}
+.nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;text-decoration:none;color:var(--fg);font-weight:500}
+.nav a svg{width:18px;height:18px;color:var(--muted);flex:none}
+.nav a:hover{background:var(--surface-2)}
+.nav a[aria-current="page"]{background:var(--gold-soft);color:var(--fg)}
+.nav a[aria-current="page"] svg{color:var(--gold)}
+.nav a.apply{margin-top:6px;background:var(--fg);color:var(--bg)}
+.nav a.apply svg{color:var(--bg)}
+.nav a.apply[aria-current="page"]{background:var(--gold-strong);color:#fff}
+.nav a.apply[aria-current="page"] svg{color:#fff}
+.rail .opening{margin-top:auto;border:1px solid var(--line);border-radius:var(--r);padding:14px;background:var(--bg)}
+.opening .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);margin-inline-end:6px}
+.opening strong{display:block;font-size:.95rem;margin:4px 0 2px}
+.opening span{font-size:.82rem;color:var(--muted)}
+.scrim{display:none}
+
+main{min-width:0;padding-block:40px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.page{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:36px}
+.page[hidden]{display:none!important}
+.stack{display:flex;flex-direction:column;gap:14px}
+.lead{font-size:1.08rem;color:var(--muted);max-width:62ch}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:46px;padding:0 22px;border-radius:999px;border:1px solid transparent;font-weight:600;cursor:pointer;text-decoration:none;font-size:.97rem}
+.btn-primary{background:var(--gold-strong);color:#fff}
+.btn-primary:hover{filter:brightness(1.06)}
+.btn-ghost{background:transparent;border-color:var(--line);color:var(--fg)}
+.btn-ghost:hover{border-color:var(--gold)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.btn svg{width:18px;height:18px}
+[dir="rtl"] .flip{transform:scaleX(-1)}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+
+/* ---------- welcome ---------- */
+.hero{display:flex;flex-direction:column;gap:18px;padding-top:8px}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:var(--r);background:var(--surface);overflow:hidden}
+.fact{padding:16px 18px;border-inline-start:1px solid var(--line)}
+.fact:first-child{border-inline-start:0}
+.fact b{display:block;font-size:1.02rem}
+.fact span{font-size:.85rem;color:var(--muted)}
+.channels{display:flex;flex-wrap:wrap;gap:8px}
+.channel{font-size:.88rem;padding:6px 12px;border-radius:999px;background:var(--surface-2);font-weight:500}
+.channel i{font-style:normal;color:var(--muted);font-size:.8rem;margin-inline-start:6px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.checklist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.checklist li{display:flex;gap:10px;align-items:flex-start}
+.checklist svg{width:18px;height:18px;flex:none;margin-top:3px;color:var(--ok)}
+
+/* ---------- about / role ---------- */
+.brands{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.brand-card{display:flex;flex-direction:column;gap:14px}
+.brand-card .logo-box{height:64px;display:flex;align-items:center}
+.brand-card .logo-box img{max-height:56px;width:auto}
+.brand-card a{font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:6px;margin-top:auto}
+.brand-card a svg{width:15px;height:15px}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.tick-list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.tick-list li{position:relative;padding-inline-start:20px}
+.tick-list li::before{content:"";position:absolute;inset-inline-start:0;top:.62em;width:8px;height:8px;border-radius:2px;background:var(--gold-strong)}
+.tick-list.alt li::before{background:transparent;border:1.5px solid var(--gold-strong)}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:.84rem;padding:5px 11px;border-radius:6px;border:1px solid var(--line);background:var(--surface)}
+.section-h{display:flex;flex-direction:column;gap:6px}
+
+/* ---------- process ---------- */
+.timeline{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.timeline li{display:grid;grid-template-columns:44px minmax(0,1fr);gap:16px;padding-bottom:26px;position:relative}
+.timeline li:not(:last-child)::after{content:"";position:absolute;inset-inline-start:21px;top:44px;bottom:2px;width:2px;background:var(--line)}
+.timeline .n{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--gold-soft);color:var(--gold);font-family:var(--f-mono);font-weight:500}
+.timeline h3{margin-top:9px;margin-bottom:4px}
+.faq details{border-bottom:1px solid var(--line);padding:14px 0}
+.faq summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.faq summary::after{content:"+";color:var(--gold);font-size:1.2rem;line-height:1}
+.faq details[open] summary::after{content:"–"}
+.faq p{margin-top:8px;color:var(--muted)}
+
+/* ---------- websites ---------- */
+.site-card{display:flex;flex-direction:column;gap:18px;text-decoration:none;color:inherit;transition:border-color .15s, transform .15s}
+.site-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.site-card .url{font-family:var(--f-mono);font-size:.88rem;color:var(--gold);display:flex;align-items:center;gap:6px;direction:ltr}
+.site-card .url svg{width:14px;height:14px}
+
+/* ---------- apply ---------- */
+.apply-head{display:flex;flex-direction:column;gap:8px}
+.steps{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;list-style:none;margin:0;padding:0}
+.steps li{display:flex;flex-direction:column;gap:8px;font-size:.8rem;color:var(--muted);min-width:0}
+.steps li .bar{height:4px;border-radius:4px;background:var(--line)}
+.steps li.done .bar,.steps li.cur .bar{background:var(--gold-strong)}
+.steps li.cur{color:var(--fg);font-weight:600}
+.steps li span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.step-count{font-size:.85rem;color:var(--muted)}
+.form-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:22px}
+.form-card > header{display:flex;flex-direction:column;gap:4px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+.fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.field{display:flex;flex-direction:column;gap:7px;min-width:0}
+.field.full{grid-column:1 / -1}
+.field > label,.field > .lbl{font-weight:600;font-size:.92rem}
+.req{color:var(--coral);margin-inline-start:3px}
+.opt{color:var(--muted);font-weight:400;font-size:.82rem;margin-inline-start:6px}
+.hint{font-size:.82rem;color:var(--muted)}
+.input,select.input,textarea.input{width:100%;height:46px;border:1px solid var(--line);border-radius:8px;background:var(--bg);padding:0 14px;transition:border-color .15s, box-shadow .15s}
+textarea.input{height:auto;min-height:110px;padding:12px 14px;resize:vertical;line-height:1.55}
+.input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft)}
+.ltr{direction:ltr;text-align:left}
+[dir="rtl"] .ltr{text-align:right}
+.field.invalid .input,.field.invalid .opt-group,.field.invalid .drop{border-color:var(--err)}
+.err{display:none;font-size:.82rem;color:var(--err)}
+.field.invalid .err{display:block}
+.opt-group{display:flex;flex-wrap:wrap;gap:8px;border:1px solid transparent;border-radius:10px}
+.pill{position:relative}
+.pill input{position:absolute;opacity:0;pointer-events:none}
+.pill span{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);cursor:pointer;font-size:.92rem;user-select:none}
+.pill input:checked + span{border-color:var(--gold-strong);background:var(--gold-soft);font-weight:600}
+.pill input:focus-visible + span{outline:2px solid var(--gold);outline-offset:2px}
+.pill input[type=checkbox] + span::before{content:"";width:14px;height:14px;border-radius:4px;border:1.5px solid var(--muted);flex:none}
+.pill input[type=checkbox]:checked + span::before{background:var(--gold-strong);border-color:var(--gold-strong);box-shadow:inset 0 0 0 2px var(--gold-soft)}
+.sub-h{display:flex;flex-direction:column;gap:2px;padding-top:6px}
+.sub-h h3{font-size:1.05rem}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.8rem;color:var(--muted);background:var(--bg);border-radius:8px;padding:10px 12px}
+.legend b{color:var(--gold);font-family:var(--f-mono);margin-inline-end:4px}
+.rate-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line)}
+.rate-row:last-child{border-bottom:0}
+.rate-row .name{font-weight:500;font-size:.94rem}
+.scale{display:flex;gap:5px;direction:ltr}
+.scale label{position:relative}
+.scale input{position:absolute;opacity:0;pointer-events:none}
+.scale span{display:grid;place-items:center;width:38px;height:38px;border-radius:8px;border:1px solid var(--line);background:var(--bg);cursor:pointer;font-family:var(--f-mono);font-size:.9rem}
+.scale input:checked + span{background:var(--gold-strong);border-color:var(--gold-strong);color:#fff}
+.scale input:focus-visible + span{outline:2px solid var(--gold);outline-offset:2px}
+.rate-row.invalid .scale span{border-color:var(--err)}
+.tool-row .scale span{width:auto;padding:0 10px;font-family:var(--f-body);font-size:.82rem}
+.cefr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cefr label{position:relative}
+.cefr input{position:absolute;opacity:0;pointer-events:none}
+.cefr .box{display:flex;flex-direction:column;gap:2px;height:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);cursor:pointer}
+.cefr .box b{font-family:var(--f-mono);font-weight:500;color:var(--gold)}
+.cefr .box strong{font-size:.9rem}
+.cefr .box small{font-size:.8rem;color:var(--muted);line-height:1.4}
+.cefr input:checked + .box{border-color:var(--gold-strong);background:var(--gold-soft)}
+.cefr input:focus-visible + .box{outline:2px solid var(--gold);outline-offset:2px}
+.native{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;background:var(--ok-soft);font-weight:500}
+.native svg{width:18px;height:18px;color:var(--ok)}
+.q-card{border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px;background:var(--bg)}
+.q-card .qn{display:flex;gap:10px;align-items:baseline}
+.q-card .qn b{font-family:var(--f-mono);color:var(--gold);font-weight:500}
+.lang-badge{font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--gold-soft);color:var(--gold);white-space:nowrap}
+.q-card textarea.input{background:var(--surface)}
+.counter{font-size:.78rem;color:var(--muted);align-self:flex-end;font-variant-numeric:tabular-nums}
+.drop{border:1.5px dashed var(--line);border-radius:12px;padding:26px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;background:var(--bg);cursor:pointer;transition:border-color .15s, background .15s}
+.drop:hover,.drop.over{border-color:var(--gold);background:var(--gold-soft)}
+.drop svg{width:30px;height:30px;color:var(--gold)}
+.drop input{position:absolute;opacity:0;width:1px;height:1px}
+.file-chip{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg)}
+.file-chip .ext{font-family:var(--f-mono);font-size:.75rem;padding:4px 7px;border-radius:5px;background:var(--coral);color:#fff}
+.file-chip .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.file-chip button{border:0;background:none;color:var(--muted);cursor:pointer;font-size:.85rem;text-decoration:underline}
+.consent{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:10px;background:var(--bg);cursor:pointer}
+.consent input{width:18px;height:18px;margin-top:3px;accent-color:var(--gold-strong);flex:none}
+.review{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.review div{background:var(--surface);padding:10px 14px;min-width:0}
+.review dt{font-size:.75rem;color:var(--muted)}
+.review dd{margin:0;font-weight:500;overflow-wrap:anywhere}
+.form-nav{display:flex;justify-content:space-between;gap:12px;padding-top:18px;border-top:1px solid var(--line)}
+.save-note{font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.save-note svg{width:14px;height:14px}
+.hp{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;opacity:0}
+.form-card{position:relative}
+.banner{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:10px;font-size:.88rem}
+.banner.err-b{background:var(--err-soft);color:var(--err)}
+.banner.info{background:var(--gold-soft);color:var(--fg)}
+.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.success{text-align:center;align-items:center;padding:44px 28px}
+.success .seal{width:72px;height:72px;border-radius:50%;background:var(--ok-soft);display:grid;place-items:center}
+.success .seal svg{width:34px;height:34px;color:var(--ok)}
+.ref{font-family:var(--f-mono);font-size:1.15rem;padding:10px 18px;border-radius:8px;background:var(--bg);border:1px dashed var(--gold);direction:ltr;display:inline-block}
+.footer{max-width:860px;margin:56px auto 0;padding-top:20px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between}
+
+@media (max-width:980px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .menu-btn{display:inline-flex}
+  .rail{position:fixed;top:calc(var(--top) + env(safe-area-inset-top,0px));inset-inline-start:0;z-index:40;width:min(300px,86vw);height:calc(100% - var(--top) - env(safe-area-inset-top,0px));
+    transform:translateX(-100%);visibility:hidden;transition:transform .22s ease, visibility .22s;box-shadow:var(--shadow);padding-bottom:max(22px,env(safe-area-inset-bottom,0px))}
+  [dir="rtl"] .rail{transform:translateX(100%)}
+  body.nav-open .rail{transform:none;visibility:visible}
+  body.nav-open .scrim{display:block;position:fixed;inset:0;top:var(--top);background:rgba(20,20,20,.35);z-index:30}
+  .brand-tag{display:none}
+}
+@media (max-width:680px){
+  :root{--top:58px}
+  .brand img{height:26px} .brand .bc{height:23px}
+  .brand .sep{height:22px}
+  .lang-label{display:none}
+  .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fact:nth-child(3){border-inline-start:0}
+  .fact:nth-child(n+3){border-top:1px solid var(--line)}
+  .brands,.grid-2,.fgrid,.review{grid-template-columns:minmax(0,1fr)}
+  .cefr{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .steps span{display:none}
+  .rate-row{grid-template-columns:minmax(0,1fr)}
+  .form-card{padding:20px 16px}
+  main{padding-block:28px 64px}
+}
+@media (max-width:420px){ .brand .bc,.brand .sep{display:none} .scale span{width:34px;height:36px} }
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+
+<header class="topbar">
+  <button class="chip-btn icon-btn menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+  </button>
+  <a class="brand" href="#welcome" aria-label="In-House &amp; Back Comfort">
+    <img class="logo-l" src="assets/inhouse.png" alt="In-House">
+    <img class="logo-d" src="assets/inhouse-dark.png" alt="In-House">
+    <span class="sep" aria-hidden="true"></span>
+    <img class="bc logo-l" src="assets/backcomfort.png" alt="Back Comfort">
+    <img class="bc logo-d" src="assets/backcomfort-dark.png" alt="Back Comfort">
+    <span class="brand-tag" data-i18n="careers">Careers</span>
+  </a>
+  <div class="top-actions">
+    <button class="chip-btn" id="langBtn" aria-label="Switch language">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>
+      <span class="lang-label" id="langLabel">العربية</span>
+    </button>
+    <button class="chip-btn icon-btn" id="themeBtn" aria-label="Switch light or dark mode">
+      <svg id="icoMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
+      <svg id="icoSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" hidden><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="rail" id="rail">
+    <div class="label" data-i18n="nav_label">Explore</div>
+    <nav class="nav" aria-label="Main">
+      <a href="#welcome" data-page="welcome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg><span data-i18n="nav_welcome">Welcome</span></a>
+      <a href="#about" data-page="about"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/></svg><span data-i18n="nav_about">About us</span></a>
+      <a href="#role" data-page="role"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 13h18"/></svg><span data-i18n="nav_role">The role</span></a>
+      <a href="#process" data-page="process"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="12" r="2"/><circle cx="6" cy="18" r="2"/><path d="M8 6h4a4 4 0 0 1 4 4M16 14a4 4 0 0 1-4 4H8"/></svg><span data-i18n="nav_process">Hiring process</span></a>
+      <a href="#websites" data-page="websites"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/></svg><span data-i18n="nav_websites">Our websites</span></a>
+      <a href="#apply" data-page="apply" class="apply"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg><span data-i18n="nav_apply">Apply now</span></a>
+    </nav>
+    <div class="opening">
+      <span><i class="dot"></i><span data-i18n="open_now">Hiring now</span></span>
+      <strong data-i18n="role_title">Online Channels Assistant</strong>
+      <span data-i18n="role_sub">Based in Syria · KSA team</span>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <main id="main">
+    <!-- WELCOME -->
+    <section class="page" id="p-welcome" data-page="welcome">
+      <div class="hero">
+        <span class="eyebrow" data-i18n="w_eyebrow">Careers · Online Channels team</span>
+        <h1 data-i18n="w_h1">Help us grow our brands on Saudi Arabia’s leading online channels.</h1>
+        <p class="lead" data-i18n="w_lead">In-House and Back Comfort sell bedding, mattresses, furniture and comfort products across Saudi Arabia. We are looking for assistants based in Syria to join our online channels team and work alongside our team in Saudi Arabia. Tell us about yourself, and the next step is a short online interview.</p>
+        <div class="row" style="margin-top:6px">
+          <a class="btn btn-primary" href="#apply"><span data-i18n="w_cta">Start your application</span><svg class="flip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="btn btn-ghost" href="#role" data-i18n="w_cta2">Read about the role</a>
+        </div>
+      </div>
+      <div class="facts">
+        <div class="fact"><b data-i18n="f1b">About 10 minutes</b><span data-i18n="f1s">to complete the form</span></div>
+        <div class="fact"><b data-i18n="f2b">Based in Syria</b><span data-i18n="f2s">working with our KSA team</span></div>
+        <div class="fact"><b data-i18n="f3b">Your CV</b><span data-i18n="f3s">PDF or Word, up to 5 MB</span></div>
+        <div class="fact"><b data-i18n="f4b">Short interview</b><span data-i18n="f4s">online, under 10 minutes</span></div>
+      </div>
+      <div class="stack">
+        <span class="eyebrow" data-i18n="w_channels">The channels you will work on</span>
+        <div class="channels">
+          <span class="channel" data-i18n="ch_amazon">Amazon.sa</span><span class="channel" data-i18n="ch_trendyol">Trendyol</span><span class="channel" data-i18n="ch_rugaib">Al Rugaib</span><span class="channel" data-i18n="ch_homecentre">Home Centre</span><span class="channel" data-i18n="ch_centrepoint">Centrepoint</span><span class="channel" data-i18n="ch_carrefour">Carrefour</span><span class="channel" data-i18n="ch_alsaif">Al-Saif Gallery</span>
+        </div>
+      </div>
+      <div class="card stack">
+        <h3 data-i18n="w_before">Before you start</h3>
+        <ul class="checklist">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span data-i18n="w_b1">Have your CV ready as a PDF or Word file.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span data-i18n="w_b2">Answer in your own words. Honest answers matter more to us than perfect ones.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span data-i18n="w_b3">Your answers are saved on this device as you type, so you can come back and finish later.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span data-i18n="w_b4">There are no trick questions and no timed tests.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="page" id="p-about" data-page="about" hidden>
+      <div class="section-h">
+        <span class="eyebrow" data-i18n="nav_about">About us</span>
+        <h2 data-i18n="a_h">Two brands, one team</h2>
+      </div>
+      <p class="lead" data-i18n="a_lead">We are a Saudi company behind two home and comfort brands. Both sell through our own online stores and through the leading marketplaces in the Kingdom, and our online channels team keeps every store accurate, stocked and competitive.</p>
+      <div class="brands">
+        <div class="card brand-card">
+          <div class="logo-box"><img class="logo-l" src="assets/inhouse.png" alt="In-House"><img class="logo-d" src="assets/inhouse-dark.png" alt="In-House"></div>
+          <p data-i18n="a_ih">Bedding, mattresses, recliners, massage chairs, furniture and home décor, under the promise “Your comfort in one place”.</p>
+          <a href="https://inhouse.sa/ar/" target="_blank" rel="noopener">inhouse.sa <svg class="flip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg></a>
+        </div>
+        <div class="card brand-card">
+          <div class="logo-box"><img class="logo-l" src="assets/backcomfort.png" alt="Back Comfort"><img class="logo-d" src="assets/backcomfort-dark.png" alt="Back Comfort"></div>
+          <p data-i18n="a_bc">Comfort products designed for better rest, healthy posture and everyday wellbeing.</p>
+          <a href="https://www.backcomfort.com.sa/en" target="_blank" rel="noopener">backcomfort.com.sa <svg class="flip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg></a>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card stack">
+          <h3 data-i18n="a_sell">Where we sell</h3>
+          <ul class="tick-list">
+            <li data-i18n="a_s1">Our own online stores, inhouse.sa and backcomfort.com.sa</li>
+            <li data-i18n="a_s2">Amazon Saudi Arabia (Amazon.sa)</li>
+            <li data-i18n="a_s3">Trendyol</li>
+            <li data-i18n="a_s4">Showrooms across the Kingdom</li>
+          </ul>
+        </div>
+        <div class="card stack">
+          <h3 data-i18n="a_work">Working with us</h3>
+          <ul class="tick-list alt">
+            <li data-i18n="a_w1">Clear daily tasks and regular follow-up</li>
+            <li data-i18n="a_w2">Training on our products and seller accounts</li>
+            <li data-i18n="a_w3">An Arabic-speaking team you can always ask</li>
+            <li data-i18n="a_w4">Work from Syria on Saudi working hours</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ROLE -->
+    <section class="page" id="p-role" data-page="role" hidden>
+      <div class="section-h">
+        <span class="eyebrow" data-i18n="r_eyebrow">Open position</span>
+        <h2 data-i18n="role_title">Online Channels Assistant</h2>
+      </div>
+      <div class="meta">
+        <span class="tag" data-i18n="r_t1">Based in Syria</span>
+        <span class="tag" data-i18n="r_t2">Full-time or part-time</span>
+        <span class="tag" data-i18n="r_t3">Amazon &amp; Trendyol accounts</span>
+        <span class="tag" data-i18n="r_t4">Arabic + English</span>
+      </div>
+      <p class="lead" data-i18n="r_lead">You will support our online channels team in running In-House and Back Comfort products on Amazon, Trendyol and our retail partners such as Al Rugaib, Home Centre, Centrepoint, Carrefour and Al-Saif Gallery, from building product pages to keeping prices, stock and customer messages under control.</p>
+      <div class="card stack">
+        <h3 data-i18n="r_do">What you will do</h3>
+        <ul class="tick-list">
+          <li data-i18n="r_d1">Create and update product listings: titles, bullet points, descriptions, images and keywords.</li>
+          <li data-i18n="r_d2">Keep prices and stock levels correct on every channel.</li>
+          <li data-i18n="r_d3">Follow up on orders, returns and customer messages.</li>
+          <li data-i18n="r_d4">Track competitors and suggest ways to improve our listings.</li>
+          <li data-i18n="r_d5">Prepare daily and weekly sales reports in Excel or Google Sheets.</li>
+          <li data-i18n="r_d6">Help the team run sponsored ads, campaigns and promotions.</li>
+        </ul>
+      </div>
+      <div class="grid-2">
+        <div class="card stack">
+          <h3 data-i18n="r_look">What we look for</h3>
+          <ul class="tick-list">
+            <li data-i18n="r_l1">Native Arabic and good working English</li>
+            <li data-i18n="r_l2">Hands-on experience with an online marketplace or e-commerce store</li>
+            <li data-i18n="r_l3">Comfortable with Excel or Google Sheets</li>
+            <li data-i18n="r_l4">Organized, careful with details and reliable with deadlines</li>
+            <li data-i18n="r_l5">A laptop or desktop and a stable internet connection</li>
+          </ul>
+        </div>
+        <div class="card stack">
+          <h3 data-i18n="r_nice">Nice to have</h3>
+          <ul class="tick-list alt">
+            <li data-i18n="r_n1">Turkish, for the Trendyol seller panel</li>
+            <li data-i18n="r_n2">Experience with Amazon Seller Central</li>
+            <li data-i18n="r_n3">Canva or Photoshop for product images</li>
+            <li data-i18n="r_n4">Sponsored ads (PPC) experience</li>
+            <li data-i18n="r_n5">Tools like Helium 10 or Jungle Scout</li>
+          </ul>
+        </div>
+      </div>
+      <div class="row"><a class="btn btn-primary" href="#apply"><span data-i18n="w_cta">Start your application</span><svg class="flip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+    </section>
+
+    <!-- PROCESS -->
+    <section class="page" id="p-process" data-page="process" hidden>
+      <div class="section-h">
+        <span class="eyebrow" data-i18n="nav_process">Hiring process</span>
+        <h2 data-i18n="p_h">Four simple steps</h2>
+      </div>
+      <ol class="timeline">
+        <li><span class="n">1</span><div><h3 data-i18n="p1h">Apply online</h3><p class="muted" data-i18n="p1p">Fill in the application form and upload your CV. It takes about 10 minutes.</p></div></li>
+        <li><span class="n">2</span><div><h3 data-i18n="p2h">Application review</h3><p class="muted" data-i18n="p2p">Our hiring team reads every application and compares it with the role.</p></div></li>
+        <li><span class="n">3</span><div><h3 data-i18n="p3h">Online interview</h3><p class="muted" data-i18n="p3p">A short video call of less than 10 minutes, mostly in Arabic with a few questions in English.</p></div></li>
+        <li><span class="n">4</span><div><h3 data-i18n="p4h">Decision</h3><p class="muted" data-i18n="p4p">We contact you by email or WhatsApp with the result and the next steps.</p></div></li>
+      </ol>
+      <div class="faq">
+        <h3 style="margin-bottom:6px" data-i18n="faq_h">Common questions</h3>
+        <details><summary data-i18n="q1">Do I need experience on Amazon specifically?</summary><p data-i18n="a1">No. Experience on any marketplace or online store helps. Tell us what you have actually done and we will take it from there.</p></details>
+        <details><summary data-i18n="q2">Which language should I use in the form?</summary><p data-i18n="a2">Arabic or English, whichever you prefer. A few questions ask for a specific language, and they are clearly marked.</p></details>
+        <details><summary data-i18n="q3">My internet connection is unstable. Will I lose my answers?</summary><p data-i18n="a3">No. Your answers are saved on your device as you type. If the page closes, open it again on the same device and continue.</p></details>
+        <details><summary data-i18n="q4">Who sees my information?</summary><p data-i18n="a4">Only our hiring team. We use your information for this hiring process only.</p></details>
+      </div>
+    </section>
+
+    <!-- WEBSITES -->
+    <section class="page" id="p-websites" data-page="websites" hidden>
+      <div class="section-h">
+        <span class="eyebrow" data-i18n="nav_websites">Our websites</span>
+        <h2 data-i18n="s_h">See our stores</h2>
+        <p class="lead" data-i18n="s_lead">Take a look at the products you would be working with. Both sites open in a new tab.</p>
+      </div>
+      <div class="brands">
+        <a class="card site-card" href="https://inhouse.sa/ar/" target="_blank" rel="noopener">
+          <div class="logo-box" style="height:64px;display:flex;align-items:center"><img class="logo-l" src="assets/inhouse.png" alt="In-House" style="max-height:56px"><img class="logo-d" src="assets/inhouse-dark.png" alt="In-House" style="max-height:56px"></div>
+          <p data-i18n="s_ih">Bedding, mattresses, recliners, furniture and home décor.</p>
+          <span class="url">inhouse.sa <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+        </a>
+        <a class="card site-card" href="https://www.backcomfort.com.sa/en" target="_blank" rel="noopener">
+          <div class="logo-box" style="height:64px;display:flex;align-items:center"><img class="logo-l" src="assets/backcomfort.png" alt="Back Comfort" style="max-height:52px"><img class="logo-d" src="assets/backcomfort-dark.png" alt="Back Comfort" style="max-height:52px"></div>
+          <p data-i18n="s_bc">Comfort products for better rest and everyday wellbeing.</p>
+          <span class="url">backcomfort.com.sa <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+        </a>
+      </div>
+    </section>
+
+    <!-- APPLY -->
+    <section class="page" id="p-apply" data-page="apply" hidden>
+      <div class="apply-head" id="applyHead">
+        <span class="eyebrow" data-i18n="ap_eyebrow">Application form</span>
+        <h2 data-i18n="role_title">Online Channels Assistant</h2>
+        <p class="muted" data-i18n="ap_sub">Based in Syria · In-House &amp; Back Comfort · Fields marked * are required.</p>
+      </div>
+
+      <div id="formWrap" class="stack" style="gap:20px">
+        <ol class="steps" id="steps" aria-label="Progress"></ol>
+        <form class="form-card" id="appForm" novalidate>
+          <div class="hp" aria-hidden="true"><label>Company website<input type="text" id="website" name="website" tabindex="-1" autocomplete="off"></label></div>
+
+          <!-- STEP 1 -->
+          <fieldset data-step="1">
+            <header style="display:flex;flex-direction:column;gap:4px;padding-bottom:16px;margin-bottom:20px;border-bottom:1px solid var(--line)">
+              <span class="step-count" data-stepcount></span>
+              <h3 data-i18n="s1_h">Personal details</h3>
+              <p class="hint" data-i18n="s1_p">How we can reach you.</p>
+            </header>
+            <div class="fgrid">
+              <div class="field"><label for="nameAr"><span data-i18n="l_nameAr">Full name in Arabic</span><span class="req">*</span></label><input class="input" id="nameAr" name="nameAr" dir="rtl" autocomplete="name" required><span class="err" data-i18n="e_req">This field is required.</span></div>
+              <div class="field"><label for="nameEn"><span data-i18n="l_nameEn">Full name in English</span><span class="req">*</span></label><input class="input ltr" id="nameEn" name="nameEn" autocomplete="name" required><span class="err" data-i18n="e_req">This field is required.</span></div>
+              <div class="field"><label for="email"><span data-i18n="l_email">Email</span><span class="req">*</span></label><input class="input ltr" id="email" name="email" type="email" autocomplete="email" required placeholder="name@example.com"><span class="err" data-i18n="e_email">Enter a valid email, like name@gmail.com.</span></div>
+              <div class="field"><label for="whatsapp"><span data-i18n="l_wa">WhatsApp number</span><span class="req">*</span></label><input class="input ltr" id="whatsapp" name="whatsapp" type="tel" autocomplete="tel" required placeholder="+963 9xx xxx xxx" data-pattern="phone"><span class="err" data-i18n="e_phone">Include the country code, for example +963 912 345 678.</span></div>
+              <div class="field"><label for="country"><span data-i18n="l_country">Country you live in</span><span class="req">*</span></label>
+                <select class="input" id="country" name="country" required>
+                  <option value="" data-i18n="choose">Choose…</option>
+                  <option value="Syria" data-i18n="c_sy">Syria</option><option value="Türkiye" data-i18n="c_tr">Türkiye</option><option value="Lebanon" data-i18n="c_lb">Lebanon</option><option value="Jordan" data-i18n="c_jo">Jordan</option><option value="Saudi Arabia" data-i18n="c_sa">Saudi Arabia</option><option value="UAE" data-i18n="c_ae">United Arab Emirates</option><option value="Egypt" data-i18n="c_eg">Egypt</option><option value="Other" data-i18n="other">Other</option>
+                </select><span class="err" data-i18n="e_choose">Please choose one option.</span></div>
+              <div class="field"><label for="city"><span data-i18n="l_city">City</span><span class="req">*</span></label><input class="input" id="city" name="city" required><span class="err" data-i18n="e_req">This field is required.</span></div>
+              <div class="field full"><label for="linkedin"><span data-i18n="l_li">LinkedIn profile</span><span class="opt" data-i18n="optional">Optional</span></label><input class="input ltr" id="linkedin" name="linkedin" type="url" placeholder="https://linkedin.com/in/…"></div>
+              <div class="field"><label for="source"><span data-i18n="l_src">How did you hear about this job?</span><span class="req">*</span></label>
+                <select class="input" id="source" name="source" required>
+                  <option value="" data-i18n="choose">Choose…</option>
+                  <option value="Referral" data-i18n="src_ref">Someone from the company</option><option value="LinkedIn">LinkedIn</option><option value="Friend" data-i18n="src_friend">A friend</option><option value="Other" data-i18n="other">Other</option>
+                </select><span class="err" data-i18n="e_choose">Please choose one option.</span></div>
+              <div class="field"><label for="referrer"><span data-i18n="l_refname">Name of the person who referred you</span><span class="opt" data-i18n="optional">Optional</span></label><input class="input" id="referrer" name="referrer"></div>
+            </div>
+          </fieldset>
+
+          <!-- STEP 2 -->
+          <fieldset data-step="2" hidden>
+            <header style="display:flex;flex-direction:column;gap:4px;padding-bottom:16px;margin-bottom:20px;border-bottom:1px solid var(--line)">
+              <span class="step-count" data-stepcount></span>
+              <h3 data-i18n="s2_h">Experience and availability</h3>
+              <p class="hint" data-i18n="s2_p">No marketplace experience yet? That is fine. Answer honestly.</p>
+            </header>
+            <div class="fgrid">
+              <div class="field full"><span class="lbl"><span data-i18n="l_years">Years of e-commerce experience</span><span class="req">*</span></span>
+                <div class="opt-group" data-radio="years" data-req></div><span class="err" data-i18n="e_choose">Please choose one option.</span></div>
+              <div class="field full"><span class="lbl"><span data-i18n="l_platforms">Platforms you have worked on</span><span class="req">*</span></span><span class="hint" data-i18n="h_platforms">Choose all that apply.</span>
+                <div class="opt-group" data-check="platforms" data-req></div><span class="err" data-i18n="e_atleast">Choose at least one option.</span></div>
+              <div class="field"><label for="lastTitle"><span data-i18n="l_lastTitle">Most recent job title</span><span class="req">*</span></label><input class="input" id="lastTitle" name="lastTitle" required><span class="err" data-i18n="e_req">This field is required.</span></div>
+              <div class="field"><label for="lastCompany"><span data-i18n="l_lastCompany">Company</span><span class="opt" data-i18n="optional">Optional</span></label><input class="input" id="lastCompany" name="lastCompany"></div>
+              <div class="field full"><label for="lastTasks"><span data-i18n="l_lastTasks">What were your main tasks in that job?</span><span class="req">*</span></label><textarea class="input" id="lastTasks" name="lastTasks" rows="4" required data-min="30" maxlength="1200"></textarea><span class="counter" data-counter="lastTasks"></span><span class="err" data-i18n="e_min30">Please write at least 30 characters.</span></div>
+              <div class="field"><span class="lbl"><span data-i18n="l_start">When can you start?</span><span class="req">*</span></span><div class="opt-group" data-radio="start" data-req></div><span class="err" data-i18n="e_choose">Please choose one option.</span></div>
+              <div class="field"><span class="lbl"><span data-i18n="l_type">Work type</span><span class="req">*</span></span><div class="opt-group" data-radio="workType" data-req></div><span class="err" data-i18n="e_choose">Please choose one option.</span></div>
+              <div class="field full"><span class="lbl"><span data-i18n="l_hours">Can you work Saudi working hours (Sunday to Thursday)?</span><span class="req">*</span></span><div class="opt-group" data-radio="hours" data-req></div><span class="err" data-i18n="e_choose">Please choose one option.</span></div>
+              <div class="field"><span class="lbl"><span data-i18n="l_internet">Your internet connection</span><span class="req">*</span></span><div class="opt-group" data-radio="internet" data-req></div><span class="err" data-i18n="e_choose">Please choose one option.</span></div>
+              <div class="field"><span class="lbl"><span data-i18n="l_power">Backup power (UPS, battery or solar)?</span><span class="req">*</span></span><div class="opt-group" data-radio="power" data-req></div><span class="err" data-i18n="e_choose">Please choose one option.</span></div>
+              <div class="field full"><span class="lbl"><span data-i18n="l_device">Device you will work on</span><span class="req">*</span></span><div class="opt-group" data-radio="device" data-req></div><span class="err" data-i18n="e_choose">Please choose one option.</span></div>
+            </div>
+          </fieldset>
+
+          <!-- STEP 3 -->
+          <fieldset data-step="3" hidden>
+            <header style="display:flex;flex-direction:column;gap:4px;padding-bottom:16px;margin-bottom:20px;border-bottom:1px solid var(--line)">
+              <span class="step-count" data-stepcount></span>
+              <h3 data-i18n="s3_h">Skills and tools</h3>
+              <p class="hint" data-i18n="s3_p">Rate yourself honestly. We will talk about these in the interview.</p>
+            </header>
+            <div class="stack" style="gap:18px">
+              <div class="sub-h"><h3 data-i18n="sk_h">Channel management skills</h3></div>
+              <div class="legend" id="skillLegend"></div>
+              <div id="skillRows"></div>
+              <div class="sub-h"><h3 data-i18n="tl_h">Software and tools</h3><span class="hint" data-i18n="tl_p">Choose your level for each one.</span></div>
+              <div id="toolRows"></div>
+            </div>
+          </fieldset>
+
+          <!-- STEP 4 -->
+          <fieldset data-step="4" hidden>
+            <header style="display:flex;flex-direction:column;gap:4px;padding-bottom:16px;margin-bottom:20px;border-bottom:1px solid var(--line)">
+              <span class="step-count" data-stepcount></span>
+              <h3 data-i18n="s4_h">Languages</h3>
+              <p class="hint" data-i18n="s4_p">Most of our work is in Arabic, with English on Amazon and with some suppliers.</p>
+            </header>
+            <div class="stack" style="gap:22px">
+              <div class="native"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span data-i18n="l_arabic">Arabic: native speaker</span></div>
+              <div class="field"><span class="lbl"><span data-i18n="l_english">Your English level</span><span class="req">*</span></span><span class="hint" data-i18n="h_english">Choose the description that fits you best.</span>
+                <div class="cefr opt-group" id="cefr" data-req-cefr></div><span class="err" data-i18n="e_choose">Please choose one option.</span></div>
+              <div class="field"><span class="lbl"><span data-i18n="l_turkish">Turkish</span><span class="req">*</span></span><span class="hint" data-i18n="h_turkish">Helpful for the Trendyol seller panel, but not required.</span><div class="opt-group" data-radio="turkish" data-req></div><span class="err" data-i18n="e_choose">Please choose one option.</span></div>
+              <div class="field"><label for="otherLangs"><span data-i18n="l_otherLangs">Other languages</span><span class="opt" data-i18n="optional">Optional</span></label><input class="input" id="otherLangs" name="otherLangs"></div>
+            </div>
+          </fieldset>
+
+          <!-- STEP 5 -->
+          <fieldset data-step="5" hidden>
+            <header style="display:flex;flex-direction:column;gap:4px;padding-bottom:16px;margin-bottom:20px;border-bottom:1px solid var(--line)">
+              <span class="step-count" data-stepcount></span>
+              <h3 data-i18n="s5_h">Three short questions</h3>
+              <p class="hint" data-i18n="s5_p">A few sentences for each is enough. Please write your own answers without AI tools, as we will discuss them with you.</p>
+            </header>
+            <div class="stack" style="gap:16px">
+              <div class="q-card field"><div class="qn"><b>Q1</b><label for="q1" style="font-weight:600" data-i18n="q1_t">One of our Amazon listings was suddenly suppressed and is no longer showing to customers. What would you check first?</label></div><span><span class="lang-badge" data-i18n="ans_en">Answer in English</span></span><textarea class="input ltr" id="q1" name="q1" rows="4" required data-min="40" maxlength="1500"></textarea><span class="counter" data-counter="q1"></span><span class="err" data-i18n="e_min40">Please write at least 40 characters.</span></div>
+              <div class="q-card field"><div class="qn"><b>Q2</b><label for="q2" style="font-weight:600" data-i18n="q2_t">A competitor sells a product very similar to ours and gets far more sales. Name three things you would compare.</label></div><span><span class="lang-badge" data-i18n="ans_any">Arabic or English</span></span><textarea class="input" id="q2" name="q2" rows="4" required data-min="40" maxlength="1500"></textarea><span class="counter" data-counter="q2"></span><span class="err" data-i18n="e_min40">Please write at least 40 characters.</span></div>
+              <div class="q-card field"><div class="qn"><b>Q3</b><label for="q3" style="font-weight:600" data-i18n="q3_t">A customer sent an angry message because their order arrived late. Write the reply you would send.</label></div><span><span class="lang-badge" data-i18n="ans_ar">Answer in Arabic</span></span><textarea class="input" id="q3" name="q3" dir="rtl" rows="4" required data-min="40" maxlength="1500"></textarea><span class="counter" data-counter="q3"></span><span class="err" data-i18n="e_min40">Please write at least 40 characters.</span></div>
+              <div class="field"><label for="why"><span data-i18n="l_why">Why would you like to join our team?</span><span class="opt" data-i18n="optional">Optional</span></label><textarea class="input" id="why" name="why" rows="3" maxlength="800"></textarea></div>
+            </div>
+          </fieldset>
+
+          <!-- STEP 6 -->
+          <fieldset data-step="6" hidden>
+            <header style="display:flex;flex-direction:column;gap:4px;padding-bottom:16px;margin-bottom:20px;border-bottom:1px solid var(--line)">
+              <span class="step-count" data-stepcount></span>
+              <h3 data-i18n="s6_h">CV and submit</h3>
+              <p class="hint" data-i18n="s6_p">Upload your CV, check your details and send your application.</p>
+            </header>
+            <div class="stack" style="gap:20px">
+              <div class="field" id="cvField"><span class="lbl"><span data-i18n="l_cv">Your CV</span><span class="req">*</span></span>
+                <label class="drop" id="drop" for="cv">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+                  <strong data-i18n="cv_drop">Choose a file or drag it here</strong>
+                  <span class="hint" data-i18n="cv_hint">PDF or Word (.pdf, .doc, .docx), up to 5 MB</span>
+                  <input type="file" id="cv" name="cv" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                </label>
+                <div class="file-chip" id="cvChip" hidden><span class="ext" id="cvExt">PDF</span><span class="nm" id="cvName"></span><span class="hint mono" id="cvSize"></span><button type="button" id="cvRemove" data-i18n="remove">Remove</button></div>
+                <span class="err" id="cvErr" data-i18n="e_cv">Please upload your CV as a PDF or Word file up to 5 MB.</span>
+              </div>
+              <div class="field"><label for="portfolio"><span data-i18n="l_portfolio">Link to work samples or a portfolio</span><span class="opt" data-i18n="optional">Optional</span></label><input class="input ltr" id="portfolio" name="portfolio" type="url" placeholder="https://drive.google.com/…"><span class="hint" data-i18n="h_portfolio">For example, a Google Drive folder with listings or reports you made.</span></div>
+              <div class="stack" style="gap:8px"><span class="lbl" style="font-weight:600" data-i18n="rev_h">Check your details</span><dl class="review" id="review" style="margin:0"></dl></div>
+              <div class="field" id="consentField">
+                <label class="consent" for="consent"><input type="checkbox" id="consent" name="consent"><span data-i18n="consent">I confirm that the information I have given is true, and I agree that In-House and Back Comfort may use it for this hiring process.</span></label>
+                <span class="err" data-i18n="e_consent">Please confirm to submit your application.</span>
+              </div>
+              <div class="banner err-b" id="submitErr" hidden></div>
+            </div>
+          </fieldset>
+
+          <div class="form-nav">
+            <button type="button" class="btn btn-ghost" id="prevBtn"><svg class="flip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg><span data-i18n="back">Back</span></button>
+            <span class="save-note" id="saveNote"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span data-i18n="saved">Saved on this device</span></span>
+            <button type="button" class="btn btn-primary" id="nextBtn"><span data-i18n="next">Continue</span><svg class="flip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+            <button type="submit" class="btn btn-primary" id="submitBtn" hidden><span data-i18n="submit">Submit application</span></button>
+          </div>
+        </form>
+      </div>
+
+      <div class="form-card success" id="success" hidden>
+        <div class="seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+        <h2 data-i18n="ok_h">Application received</h2>
+        <p class="lead" style="margin:0 auto" id="okText"></p>
+        <div class="stack" style="align-items:center;gap:6px"><span class="hint" data-i18n="ok_ref">Your reference number</span><span class="ref" id="okRef"></span></div>
+        <p class="muted" style="max-width:52ch;margin:0 auto" data-i18n="ok_next">We will contact you by email or WhatsApp about the next step, a short online interview.</p>
+        <div class="banner info" id="previewNote" hidden></div>
+        <a class="btn btn-ghost" href="#websites" data-i18n="ok_browse">Browse our websites</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>© <span id="yr"></span> In-House · Back Comfort</span>
+      <span data-i18n="foot">Your information is used only for hiring and is seen only by our hiring team.</span>
+    </footer>
+  </main>
+</div>
+
+<script>
+/* =========================================================
+   CONFIG — paste your Google Apps Script Web App URL here.
+   Leave empty to run in preview mode (nothing is sent).
+   ========================================================= */
+const API_URL = "";
+
+const STR = {
+careers:["Careers","التوظيف"],
+nav_label:["Explore","تصفّح"],nav_welcome:["Welcome","الرئيسية"],nav_about:["About us","من نحن"],nav_role:["The role","الوظيفة"],nav_process:["Hiring process","مراحل التوظيف"],nav_websites:["Our websites","مواقعنا"],nav_apply:["Apply now","قدّم الآن"],
+open_now:["Hiring now","التوظيف مفتوح"],role_title:["Online Channels Assistant","مساعد إدارة القنوات الإلكترونية"],role_sub:["Based in Syria · KSA team","مقرّ العمل سوريا · مع فريق السعودية"],
+w_eyebrow:["Careers · Online Channels team","التوظيف · فريق القنوات الإلكترونية"],
+w_h1:["Help us grow our brands on Saudi Arabia’s leading online channels.","ساعدنا في تنمية علاماتنا التجارية على أبرز القنوات الإلكترونية في السعودية."],
+w_lead:["In-House and Back Comfort sell bedding, mattresses, furniture and comfort products across Saudi Arabia. We are looking for assistants based in Syria to join our online channels team and work alongside our team in Saudi Arabia. Tell us about yourself, and the next step is a short online interview.","تبيع إن هاوس وباك كمفورت المفارش والمراتب والأثاث ومنتجات الراحة في جميع أنحاء المملكة العربية السعودية. نبحث عن مساعدين مقيمين في سوريا للانضمام إلى فريق القنوات الإلكترونية والعمل مع فريقنا في السعودية. عرّفنا بنفسك، والخطوة التالية مقابلة قصيرة عبر الإنترنت."],
+w_cta:["Start your application","ابدأ طلبك"],w_cta2:["Read about the role","تعرّف على الوظيفة"],
+f1b:["About 10 minutes","حوالي ١٠ دقائق"],f1s:["to complete the form","لتعبئة النموذج"],f2b:["Based in Syria","مقرّ العمل سوريا"],f2s:["working with our KSA team","مع فريقنا في السعودية"],f3b:["Your CV","سيرتك الذاتية"],f3s:["PDF or Word, up to 5 MB","PDF أو Word، حتى ٥ ميغابايت"],f4b:["Short interview","مقابلة قصيرة"],f4s:["online, under 10 minutes","عبر الإنترنت، أقل من ١٠ دقائق"],
+w_channels:["Channels you will work on","القنوات التي ستعمل عليها"],ch_amazon:["Amazon.sa","أمازون السعودية"],ch_trendyol:["Trendyol","ترينديول"],ch_rugaib:["Al Rugaib","الرقيب"],ch_homecentre:["Home Centre","هوم سنتر"],ch_centrepoint:["Centrepoint","سنتربوينت"],ch_carrefour:["Carrefour","كارفور"],ch_alsaif:["Al-Saif Gallery","السيف غاليري"],
+w_before:["Before you start","قبل أن تبدأ"],
+w_b1:["Have your CV ready as a PDF or Word file.","جهّز سيرتك الذاتية بصيغة PDF أو Word."],
+w_b2:["Answer in your own words. Honest answers matter more to us than perfect ones.","أجب بأسلوبك الخاص. الإجابة الصادقة أهم لنا من الإجابة المثالية."],
+w_b3:["Your answers are saved on this device as you type, so you can come back and finish later.","تُحفظ إجاباتك على هذا الجهاز أثناء الكتابة، لتتمكن من العودة وإكمالها لاحقًا."],
+w_b4:["There are no trick questions and no timed tests.","لا توجد أسئلة خادعة ولا اختبارات بوقت محدد."],
+a_h:["Two brands, one team","علامتان تجاريتان، فريق واحد"],
+a_lead:["We are a Saudi company behind two home and comfort brands. Both sell through our own online stores and through the leading marketplaces in the Kingdom, and our online channels team keeps every store accurate, stocked and competitive.","نحن شركة سعودية تقف خلف علامتين تجاريتين في مجال المنزل والراحة. نبيع عبر متاجرنا الإلكترونية وعبر أبرز المنصات في المملكة، ويحرص فريق القنوات الإلكترونية على أن يكون كل متجر دقيقًا ومتوفر المخزون وقادرًا على المنافسة."],
+a_ih:["Bedding, mattresses, recliners, massage chairs, furniture and home décor, under the promise “Your comfort in one place”.","مفارش، مراتب، كراسي استرخاء، كراسي مساج، أثاث وديكور منزلي، تحت شعار «راحتك في مكان واحد»."],
+a_bc:["Comfort products designed for better rest, healthy posture and everyday wellbeing.","منتجات راحة مصممة لنوم أفضل ووضعية صحية وراحة يومية."],
+a_sell:["Where we sell","أين نبيع"],a_s1:["Marketplaces: Amazon.sa and Trendyol","المنصات: أمازون السعودية وترينديول"],a_s2:["Retail partners: Al Rugaib, Home Centre, Centrepoint, Carrefour and Al-Saif Gallery","شركاء التجزئة: الرقيب، هوم سنتر، سنتربوينت، كارفور والسيف غاليري"],a_s3:["Our own online stores","متاجرنا الإلكترونية"],a_s4:["Showrooms across the Kingdom","معارضنا في أنحاء المملكة"],
+a_work:["Working with us","العمل معنا"],a_w1:["Clear daily tasks and regular follow-up","مهام يومية واضحة ومتابعة مستمرة"],a_w2:["Training on our products and seller accounts","تدريب على منتجاتنا وحسابات البائع"],a_w3:["An Arabic-speaking team you can always ask","فريق يتحدث العربية تستطيع سؤاله دائمًا"],a_w4:["Work from Syria on Saudi working hours","العمل من سوريا بساعات الدوام السعودية"],
+r_eyebrow:["Open position","وظيفة شاغرة"],r_t1:["Based in Syria","مقرّ العمل سوريا"],r_t2:["Full-time or part-time","دوام كامل أو جزئي"],r_t3:["Marketplaces & retail partners","المنصات وشركاء التجزئة"],r_t4:["Arabic + English","العربية + الإنجليزية"],
+r_lead:["You will support our online channels team in running In-House and Back Comfort products on Amazon, Trendyol and our retail partners such as Al Rugaib, Home Centre, Centrepoint, Carrefour and Al-Saif Gallery, from building product pages to keeping prices, stock and customer messages under control.","ستدعم فريق القنوات الإلكترونية في إدارة منتجات إن هاوس وباك كمفورت على أمازون وترينديول وشركاء التجزئة مثل الرقيب وهوم سنتر وسنتربوينت وكارفور والسيف غاليري، من إنشاء صفحات المنتجات إلى ضبط الأسعار والمخزون ورسائل العملاء."],
+r_do:["What you will do","ماذا ستعمل"],
+r_d1:["Create and update product listings: titles, bullet points, descriptions, images and keywords.","إنشاء وتحديث صفحات المنتجات: العناوين، النقاط، الوصف، الصور والكلمات المفتاحية."],
+r_d2:["Keep prices and stock levels correct on every channel and partner portal.","ضبط الأسعار ومستويات المخزون على جميع القنوات وبوابات الشركاء."],
+r_d3:["Follow up on orders, returns and customer messages.","متابعة الطلبات والمرتجعات ورسائل العملاء."],
+r_d4:["Track competitors and suggest ways to improve our listings.","متابعة المنافسين واقتراح تحسينات لصفحات منتجاتنا."],
+r_d5:["Prepare daily and weekly sales reports in Excel or Google Sheets.","إعداد تقارير مبيعات يومية وأسبوعية على Excel أو Google Sheets."],
+r_d6:["Help the team run sponsored ads, campaigns and promotions.","مساعدة الفريق في الإعلانات الممولة والحملات والعروض."],
+r_look:["What we look for","ما نبحث عنه"],r_l1:["Native Arabic and good working English","العربية لغة أم، وإنجليزية جيدة للعمل"],r_l2:["Hands-on experience with an online marketplace or e-commerce store","خبرة عملية في منصة بيع إلكترونية أو متجر إلكتروني"],r_l3:["Comfortable with Excel or Google Sheets","إتقان Excel أو Google Sheets"],r_l4:["Organized, careful with details and reliable with deadlines","منظم، دقيق في التفاصيل وملتزم بالمواعيد"],r_l5:["Comfortable working on a computer every day","التعامل اليومي المريح مع الكمبيوتر"],
+r_nice:["Nice to have","ميزة إضافية"],r_n1:["Turkish, for the Trendyol seller panel","اللغة التركية للتعامل مع لوحة بائع ترينديول"],r_n2:["Experience with Amazon Seller Central","خبرة في Amazon Seller Central"],r_n3:["Canva or Photoshop for product images","Canva أو Photoshop لصور المنتجات"],r_n4:["Sponsored ads (PPC) experience","خبرة في الإعلانات الممولة (PPC)"],r_n5:["Tools like Helium 10 or Jungle Scout","أدوات مثل Helium 10 أو Jungle Scout"],
+p_h:["Four simple steps","أربع خطوات بسيطة"],
+p1h:["Apply online","التقديم عبر الإنترنت"],p1p:["Fill in the application form and upload your CV. It takes about 10 minutes.","عبّئ نموذج التقديم وارفع سيرتك الذاتية. يستغرق ذلك حوالي ١٠ دقائق."],
+p2h:["Application review","مراجعة الطلب"],p2p:["Our hiring team reads your application and gets to know your experience.","يطّلع فريق التوظيف على طلبك ويتعرّف على خبرتك."],
+p3h:["Online interview","مقابلة عبر الإنترنت"],p3p:["A short video call of less than 10 minutes, mostly in Arabic with a few questions in English.","مكالمة فيديو قصيرة أقل من ١٠ دقائق، معظمها بالعربية مع بعض الأسئلة بالإنجليزية."],
+p4h:["Decision","القرار"],p4p:["We contact you by email or WhatsApp with the result and the next steps.","نتواصل معك عبر البريد الإلكتروني أو واتساب بالنتيجة والخطوات التالية."],
+faq_h:["Common questions","أسئلة شائعة"],
+q1:["Do I need experience on Amazon specifically?","هل أحتاج إلى خبرة على أمازون تحديدًا؟"],a1:["No. Experience on any marketplace or online store helps. Tell us what you have actually done and we will take it from there.","لا. أي خبرة في منصة أو متجر إلكتروني مفيدة. أخبرنا بما عملت عليه فعلًا وسنبني على ذلك."],
+q2:["Which language should I use in the form?","بأي لغة أكتب في النموذج؟"],a2:["Arabic or English, whichever you prefer. A few questions ask for a specific language, and they are clearly marked.","بالعربية أو الإنجليزية، كما تفضّل. بعض الأسئلة تطلب لغة محددة، وهي موضحة بشكل واضح."],
+q3:["My internet connection is unstable. Will I lose my answers?","اتصال الإنترنت لدي غير مستقر. هل ستضيع إجاباتي؟"],a3:["No. Your answers are saved on your device as you type. If the page closes, open it again on the same device and continue.","لا. تُحفظ إجاباتك على جهازك أثناء الكتابة. إذا أُغلقت الصفحة، افتحها مجددًا على نفس الجهاز وأكمل."],
+q4:["Who sees my information?","من يطّلع على معلوماتي؟"],a4:["Only our hiring team. We use your information for this hiring process only.","فريق التوظيف فقط. نستخدم معلوماتك لعملية التوظيف هذه فقط."],
+s_h:["See our stores","تعرّف على متاجرنا"],s_lead:["Take a look at the products you would be working with. Both sites open in a new tab.","اطّلع على المنتجات التي ستعمل عليها. يفتح كل موقع في نافذة جديدة."],
+s_ih:["Bedding, mattresses, recliners, furniture and home décor.","مفارش، مراتب، كراسي استرخاء، أثاث وديكور منزلي."],s_bc:["Comfort products for better rest and everyday wellbeing.","منتجات راحة لنوم أفضل وراحة يومية."],
+ap_eyebrow:["Application form","نموذج التقديم"],ap_sub:["Based in Syria · In-House & Back Comfort · Fields marked * are required.","مقرّ العمل سوريا · إن هاوس وباك كمفورت · الحقول المعلّمة بـ * مطلوبة."],
+step:["Step {n} of 6","الخطوة {n} من ٦"],
+st1:["Personal","البيانات"],st2:["Experience","الخبرة"],st3:["Skills & tools","المهارات"],st4:["Languages","اللغات"],st5:["Questions","الأسئلة"],st6:["CV & submit","الإرسال"],
+s1_h:["Personal details","البيانات الشخصية"],s1_p:["How we can reach you.","كيف نتواصل معك."],
+l_nameAr:["Full name in Arabic","الاسم الكامل بالعربية"],l_nameEn:["Full name in English","الاسم الكامل بالإنجليزية"],l_email:["Email","البريد الإلكتروني"],l_wa:["WhatsApp number","رقم واتساب"],l_country:["Country you live in","بلد الإقامة"],l_city:["City","المدينة"],l_li:["LinkedIn profile","حساب لينكدإن"],l_src:["How did you hear about this job?","كيف عرفت عن هذه الوظيفة؟"],l_refname:["Name of the person who referred you","اسم الشخص الذي رشّحك"],
+choose:["Choose…","اختر…"],other:["Other","أخرى"],optional:["Optional","اختياري"],
+c_sy:["Syria","سوريا"],c_tr:["Türkiye","تركيا"],c_lb:["Lebanon","لبنان"],c_jo:["Jordan","الأردن"],c_sa:["Saudi Arabia","السعودية"],c_ae:["United Arab Emirates","الإمارات"],c_eg:["Egypt","مصر"],
+src_ref:["Someone from the company","شخص من الشركة"],src_friend:["A friend","صديق"],
+s2_h:["Experience and availability","الخبرة والتفرّغ"],s2_p:["No marketplace experience yet? That is fine. Answer honestly.","ليس لديك خبرة في المنصات بعد؟ لا بأس، أجب بصدق."],
+l_years:["Years of e-commerce experience","سنوات الخبرة في التجارة الإلكترونية"],l_platforms:["Platforms you have worked on","المنصات التي عملت عليها"],h_platforms:["Choose all that apply.","اختر كل ما ينطبق."],
+l_lastTitle:["Most recent job title","آخر مسمى وظيفي"],l_lastCompany:["Company","الشركة"],l_lastTasks:["What were your main tasks in that job?","ما هي مهامك الأساسية في تلك الوظيفة؟"],
+l_start:["When can you start?","متى يمكنك البدء؟"],l_type:["Work type","نوع الدوام"],l_hours:["Can you work Saudi working hours (Sunday to Thursday)?","هل يمكنك العمل بساعات الدوام السعودية (من الأحد إلى الخميس)؟"],
+l_internet:["Your internet connection","اتصال الإنترنت لديك"],l_power:["Backup power (UPS, battery or solar)?","هل لديك كهرباء احتياطية (UPS أو بطارية أو طاقة شمسية)؟"],l_device:["Device you will work on","الجهاز الذي ستعمل عليه"],
+s3_h:["Skills and tools","المهارات والأدوات"],s3_p:["Rate yourself honestly. We will talk about these in the interview.","قيّم نفسك بصدق، سنتحدث عن ذلك في المقابلة."],
+sk_h:["Channel management skills","مهارات إدارة القنوات"],tl_h:["Software and tools","البرامج والأدوات"],tl_p:["Choose your level for each one.","اختر مستواك في كل منها."],
+s4_h:["Languages","اللغات"],s4_p:["Most of our work is in Arabic, with English on Amazon and with some suppliers.","معظم عملنا بالعربية، مع الإنجليزية على أمازون ومع بعض الموردين."],
+l_arabic:["Arabic: native speaker","العربية: اللغة الأم"],l_english:["Your English level","مستواك في الإنجليزية"],h_english:["Choose the description that fits you best.","اختر الوصف الأقرب لمستواك."],l_turkish:["Turkish","التركية"],h_turkish:["Helpful for the Trendyol seller panel, but not required.","مفيدة للوحة بائع ترينديول، لكنها غير مطلوبة."],l_otherLangs:["Other languages","لغات أخرى"],
+s5_h:["Three short questions","ثلاثة أسئلة قصيرة"],s5_p:["A few sentences for each is enough. Please write your own answers without AI tools, as we will discuss them with you.","تكفي بضع جمل لكل سؤال. اكتب إجاباتك بنفسك دون أدوات الذكاء الاصطناعي، لأننا سنناقشها معك."],
+q1_t:["One of our Amazon listings was suddenly suppressed and is no longer showing to customers. What would you check first?","One of our Amazon listings was suddenly suppressed and is no longer showing to customers. What would you check first?"],
+q2_t:["A competitor sells a product very similar to ours and gets far more sales. Name three things you would compare.","منافس يبيع منتجًا مشابهًا جدًا لمنتجنا ويحقق مبيعات أعلى بكثير. اذكر ثلاثة أشياء ستقارنها."],
+q3_t:["A customer sent an angry message because their order arrived late. Write the reply you would send.","أرسل عميل رسالة غاضبة لأن طلبه وصل متأخرًا. اكتب الرد الذي سترسله."],
+ans_en:["Answer in English","أجب بالإنجليزية"],ans_any:["Arabic or English","بالعربية أو الإنجليزية"],ans_ar:["Answer in Arabic","أجب بالعربية"],
+l_why:["Why would you like to join our team?","لماذا ترغب بالانضمام إلى فريقنا؟"],
+s6_h:["CV and submit","السيرة الذاتية والإرسال"],s6_p:["Upload your CV, check your details and send your application.","ارفع سيرتك الذاتية، راجع بياناتك ثم أرسل طلبك."],
+l_cv:["Your CV","سيرتك الذاتية"],cv_drop:["Choose a file or drag it here","اختر ملفًا أو اسحبه إلى هنا"],cv_hint:["PDF or Word (.pdf, .doc, .docx), up to 5 MB","PDF أو Word (.pdf, .doc, .docx)، حتى ٥ ميغابايت"],remove:["Remove","إزالة"],
+l_portfolio:["Link to work samples or a portfolio","رابط لنماذج من أعمالك"],h_portfolio:["For example, a Google Drive folder with listings or reports you made.","مثل مجلد Google Drive فيه صفحات منتجات أو تقارير أعددتها."],
+rev_h:["Check your details","راجع بياناتك"],
+consent:["I confirm that the information I have given is true, and I agree that In-House and Back Comfort may use it for this hiring process.","أؤكد أن المعلومات التي قدمتها صحيحة، وأوافق على أن تستخدمها إن هاوس وباك كمفورت لعملية التوظيف هذه."],
+back:["Back","السابق"],next:["Continue","متابعة"],submit:["Submit application","إرسال الطلب"],sending:["Sending…","جارٍ الإرسال…"],saved:["Saved on this device","محفوظ على هذا الجهاز"],
+e_req:["This field is required.","هذا الحقل مطلوب."],e_email:["Enter a valid email, like name@gmail.com.","أدخل بريدًا إلكترونيًا صحيحًا، مثل name@gmail.com."],e_phone:["Include the country code, for example +963 912 345 678.","أضف رمز الدولة، مثل ‎+963 912 345 678."],e_choose:["Please choose one option.","يرجى اختيار خيار واحد."],e_atleast:["Choose at least one option.","اختر خيارًا واحدًا على الأقل."],e_min30:["Please write at least 30 characters.","يرجى كتابة ٣٠ حرفًا على الأقل."],e_min40:["Please write at least 40 characters.","يرجى كتابة ٤٠ حرفًا على الأقل."],e_cv:["Please upload your CV as a PDF or Word file up to 5 MB.","يرجى رفع سيرتك الذاتية بصيغة PDF أو Word بحجم لا يتجاوز ٥ ميغابايت."],e_consent:["Please confirm to submit your application.","يرجى التأكيد لإرسال طلبك."],e_rate:["Please rate every skill.","يرجى تقييم جميع المهارات."],
+e_send:["We could not send your application. Check your internet connection and try again. Your answers are still saved.","تعذّر إرسال طلبك. تحقق من اتصال الإنترنت وحاول مجددًا. إجاباتك ما زالت محفوظة."],
+ok_h:["Application received","تم استلام طلبك"],ok_text:["Thank you, {name}. We have sent a confirmation to {email}.","شكرًا لك يا {name}. أرسلنا تأكيدًا إلى {email}."],ok_ref:["Your reference number","رقمك المرجعي"],ok_next:["We will contact you by email or WhatsApp about the next step, a short online interview.","سنتواصل معك عبر البريد الإلكتروني أو واتساب بخصوص الخطوة التالية، وهي مقابلة قصيرة عبر الإنترنت."],ok_browse:["Browse our websites","تصفّح مواقعنا"],
+preview:["Preview mode: this application was not sent anywhere. Add the Apps Script URL to go live.","وضع المعاينة: لم يتم إرسال هذا الطلب. أضف رابط Apps Script لتفعيل الإرسال."],
+foot:["Your information is used only for hiring and is seen only by our hiring team.","تُستخدم معلوماتك للتوظيف فقط ولا يطّلع عليها إلا فريق التوظيف."],
+rv_name:["Name","الاسم"],rv_email:["Email","البريد"],rv_wa:["WhatsApp","واتساب"],rv_loc:["Location","الموقع"],rv_exp:["Experience","الخبرة"],rv_plat:["Platforms","المنصات"],rv_en:["English","الإنجليزية"],rv_start:["Start","البدء"],
+};
+
+const OPTIONS = {
+  years:[["0","No experience yet","لا توجد خبرة بعد"],["<1","Less than 1 year","أقل من سنة"],["1-2","1–2 years","١–٢ سنة"],["3-5","3–5 years","٣–٥ سنوات"],["5+","More than 5 years","أكثر من ٥ سنوات"]],
+  platforms:[["Amazon.sa","Amazon.sa","Amazon.sa"],["Amazon (other)","Amazon (other countries)","أمازون (دول أخرى)"],["Trendyol","Trendyol","ترينديول"],["Noon","Noon","نون"],["Shopify","Shopify","Shopify"],["Salla / Zid","Salla / Zid","سلة / زد"],["Social commerce","Instagram / Facebook shop","متجر إنستغرام / فيسبوك"],["None","None yet","لا شيء بعد"]],
+  start:[["Immediately","Immediately","فورًا"],["2 weeks","Within 2 weeks","خلال أسبوعين"],["1 month","Within a month","خلال شهر"],["Later","Later","لاحقًا"]],
+  workType:[["Full-time","Full-time","دوام كامل"],["Part-time","Part-time","دوام جزئي"],["Either","Either","أيٌّ منهما"]],
+  hours:[["Yes","Yes, fully","نعم، بالكامل"],["Partly","Partly","جزئيًا"],["No","No","لا"]],
+  internet:[["Stable","Stable","مستقر"],["Mostly stable","Mostly stable","مستقر غالبًا"],["Unstable","Often unstable","غير مستقر غالبًا"]],
+  power:[["Yes","Yes","نعم"],["No","No","لا"]],
+  device:[["Laptop","Laptop","لابتوب"],["Desktop","Desktop computer","كمبيوتر مكتبي"],["Phone only","Phone only","هاتف فقط"]],
+  turkish:[["None","None","لا أتحدثها"],["Basic","Basic","مبتدئ"],["Conversational","Conversational","محادثة"],["Fluent","Fluent","طلاقة"]],
+};
+const SKILLS = [
+  ["listing","Product listing creation and optimization","إنشاء صفحات المنتجات وتحسينها"],
+  ["seo","Keywords and search ranking (SEO)","الكلمات المفتاحية والظهور في البحث (SEO)"],
+  ["pricing","Pricing and winning the Buy Box","التسعير والفوز بصندوق الشراء (Buy Box)"],
+  ["inventory","Inventory and shipments (FBA, restocking)","المخزون والشحنات (FBA وإعادة التعبئة)"],
+  ["orders","Orders, returns and cancellations","الطلبات والمرتجعات والإلغاءات"],
+  ["customers","Customer messages and reviews","رسائل العملاء والتقييمات"],
+  ["ads","Sponsored ads (PPC)","الإعلانات الممولة (PPC)"],
+  ["reports","Sales reports and analysis","تقارير المبيعات وتحليلها"],
+  ["competitors","Competitor research","دراسة المنافسين"],
+];
+const SCALE = [["1","No experience","لا خبرة"],["2","Basic","أساسي"],["3","Can do it alone","أنجزه وحدي"],["4","Strong","قوي"],["5","Can train others","أستطيع تدريب غيري"]];
+const TOOLS = [
+  ["sellerCentral","Amazon Seller Central","Amazon Seller Central"],
+  ["trendyolPanel","Trendyol Seller Panel","لوحة بائع ترينديول"],
+  ["excel","Excel / Google Sheets (formulas, pivot tables)","Excel / Google Sheets (المعادلات والجداول المحورية)"],
+  ["design","Canva / Photoshop","Canva / Photoshop"],
+  ["ai","ChatGPT or other AI tools","ChatGPT وأدوات الذكاء الاصطناعي"],
+  ["research","Helium 10 / Jungle Scout","Helium 10 / Jungle Scout"],
+  ["gworkspace","Google Drive and Docs","Google Drive و Docs"],
+];
+const TOOL_LV = [["0","Not used","لم أستخدمه"],["1","Basic","أساسي"],["2","Good","جيد"],["3","Advanced","متقدم"]];
+const CEFR = [
+  ["A1","Beginner","مبتدئ","I know basic words and phrases.","أعرف كلمات وعبارات بسيطة."],
+  ["A2","Elementary","أساسي","I understand simple sentences.","أفهم الجمل البسيطة."],
+  ["B1","Intermediate","متوسط","I can handle everyday work emails.","أتعامل مع رسائل العمل اليومية."],
+  ["B2","Upper-intermediate","فوق المتوسط","I write and speak with confidence at work.","أكتب وأتحدث بثقة في العمل."],
+  ["C1","Advanced","متقدم","Fluent, with few mistakes.","بطلاقة ومع أخطاء قليلة."],
+  ["C2","Proficient","متمكن","Close to a native speaker.","قريب من مستوى المتحدث الأصلي."],
+];
+
+/* ---------- state ---------- */
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const store = { get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}, del(k){try{localStorage.removeItem(k)}catch(e){}} };
+let lang = store.get("ih_lang") || ((navigator.language||"").toLowerCase().startsWith("en") ? "en" : "ar");
+let step = 1; const TOTAL = 6; let cvFile = null;
+const DRAFT = "ih_application_draft_v1";
+const L = () => lang === "ar" ? 1 : 0;
+const t = (k, vars) => { let s = (STR[k] || [k,k])[L()]; if (vars) for (const v in vars) s = s.replace("{"+v+"}", vars[v]); return s; };
+
+/* ---------- build generated parts ---------- */
+function opt(type, name, v, label){ return `<label class="pill"><input type="${type}" name="${name}" value="${v}"><span>${label}</span></label>`; }
+function buildDynamic(){
+  $$("[data-radio]").forEach(g => { const n = g.dataset.radio; g.innerHTML = OPTIONS[n].map(o => opt("radio", n, o[0], o[1+L()])).join(""); });
+  $$("[data-check]").forEach(g => { const n = g.dataset.check; g.innerHTML = OPTIONS[n].map(o => opt("checkbox", n, o[0], o[1+L()])).join(""); });
+  $("#skillLegend").innerHTML = SCALE.map(s => `<span><b>${s[0]}</b>${s[1+L()]}</span>`).join("");
+  $("#skillRows").innerHTML = SKILLS.map(s => `<div class="rate-row" data-rate="${s[0]}"><span class="name">${s[1+L()]}</span><div class="scale" role="radiogroup" aria-label="${s[1+L()]}">${SCALE.map(v=>`<label title="${v[1+L()]}"><input type="radio" name="sk_${s[0]}" value="${v[0]}"><span>${v[0]}</span></label>`).join("")}</div></div>`).join("") + `<span class="err" id="rateErr" style="margin-top:8px">${t("e_rate")}</span>`;
+  $("#toolRows").innerHTML = TOOLS.map(s => `<div class="rate-row tool-row" data-rate="${s[0]}"><span class="name">${s[1+L()]}</span><div class="scale" role="radiogroup" aria-label="${s[1+L()]}">${TOOL_LV.map(v=>`<label><input type="radio" name="tl_${s[0]}" value="${v[0]}"><span>${v[1+L()]}</span></label>`).join("")}</div></div>`).join("");
+  $("#cefr").innerHTML = CEFR.map(c => `<label><input type="radio" name="english" value="${c[0]}"><span class="box"><b>${c[0]}</b><strong>${c[1+L()]}</strong><small>${c[3+L()]}</small></span></label>`).join("");
+  $("#steps").innerHTML = [1,2,3,4,5,6].map(i => `<li data-i="${i}"><span class="bar"></span><span>${t("st"+i)}</span></li>`).join("");
+}
+
+/* ---------- language & theme ---------- */
+function applyLang(){
+  const data = collect(); // keep answers when rebuilding option labels
+  document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  $$("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
+  $("#langLabel").textContent = lang === "ar" ? "English" : "العربية";
+  buildDynamic(); restore(data); renderStep(false);
+  document.title = lang === "ar" ? "وظائف إن هاوس" : "In-House Careers";
+}
+function currentTheme(){ const a = document.documentElement.getAttribute("data-theme"); if (a) return a; return matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; }
+function applyTheme(th){ document.documentElement.setAttribute("data-theme", th); $("#icoSun").hidden = th !== "dark"; $("#icoMoon").hidden = th === "dark"; }
+$("#langBtn").onclick = () => { lang = lang === "ar" ? "en" : "ar"; store.set("ih_lang", lang); applyLang(); };
+$("#themeBtn").onclick = () => { const n = currentTheme() === "dark" ? "light" : "dark"; store.set("ih_theme", n); applyTheme(n); };
+
+/* ---------- routing ---------- */
+const PAGES = ["welcome","about","role","process","websites","apply"];
+function route(){
+  const h = (location.hash || "#welcome").slice(1); const p = PAGES.includes(h) ? h : "welcome";
+  $$(".page").forEach(s => s.hidden = s.dataset.page !== p);
+  $$(".nav a").forEach(a => { if (a.dataset.page === p) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
+  document.body.classList.remove("nav-open"); $("#menuBtn").setAttribute("aria-expanded","false");
+  window.scrollTo({top:0});
+}
+addEventListener("hashchange", route);
+$("#menuBtn").onclick = () => { const o = document.body.classList.toggle("nav-open"); $("#menuBtn").setAttribute("aria-expanded", o); };
+$("#scrim").onclick = () => document.body.classList.remove("nav-open");
+
+/* ---------- collect / restore ---------- */
+const form = $("#appForm");
+function collect(){
+  const d = {}; if (!form) return d;
+  form.querySelectorAll("input,select,textarea").forEach(el => {
+    if (!el.name || el.type === "file" || el.name === "website") return;
+    if (el.type === "radio"){ if (el.checked) d[el.name] = el.value; }
+    else if (el.type === "checkbox"){ if (el.name === "consent") d.consent = el.checked; else { d[el.name] = d[el.name] || []; if (el.checked) d[el.name].push(el.value); } }
+    else d[el.name] = el.value;
+  });
+  return d;
+}
+function restore(d){
+  if (!d) return;
+  form.querySelectorAll("input,select,textarea").forEach(el => {
+    if (!el.name || el.type === "file" || !(el.name in d)) return;
+    if (el.type === "radio") el.checked = d[el.name] === el.value;
+    else if (el.type === "checkbox") el.checked = el.name === "consent" ? !!d.consent : (d[el.name]||[]).includes(el.value);
+    else el.value = d[el.name];
+  });
+  updateCounters();
+}
+let saveT; function saveDraft(){ clearTimeout(saveT); saveT = setTimeout(() => store.set(DRAFT, JSON.stringify({d:collect(), step})), 300); }
+form.addEventListener("input", e => { saveDraft(); const f = e.target.closest(".field,.rate-row"); if (f) f.classList.remove("invalid"); if (e.target.closest(".rate-row")) checkRates(false); updateCounters(); });
+form.addEventListener("change", saveDraft);
+
+function updateCounters(){ $$("[data-counter]").forEach(c => { const el = document.getElementById(c.dataset.counter); const max = el.maxLength > 0 ? el.maxLength : ""; c.textContent = `${el.value.length}${max ? " / " + max : ""}`; }); }
+
+/* ---------- validation ---------- */
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/; const PHONE = /^\+?[0-9\s\-()]{8,20}$/;
+function checkRates(show){
+  const fs = form.querySelector(`fieldset[data-step="3"]`); let ok = true;
+  fs.querySelectorAll("#skillRows .rate-row").forEach(r => { const has = r.querySelector("input:checked"); if (!has){ ok = false; if (show) r.classList.add("invalid"); } else r.classList.remove("invalid"); });
+  const e = $("#rateErr"); if (e) e.style.display = (!ok && show) ? "block" : (ok ? "none" : e.style.display);
+  return ok;
+}
+function validateStep(n){
+  const fs = form.querySelector(`fieldset[data-step="${n}"]`); let first = null; const bad = el => { const f = el.closest(".field"); f && f.classList.add("invalid"); if (!first) first = el; };
+  fs.querySelectorAll("input[required],select[required],textarea[required]").forEach(el => {
+    const v = el.value.trim(); el.closest(".field")?.classList.remove("invalid");
+    if (!v) return bad(el);
+    if (el.type === "email" && !EMAIL.test(v)) return bad(el);
+    if (el.dataset.pattern === "phone" && !PHONE.test(v)) return bad(el);
+    if (el.dataset.min && v.length < +el.dataset.min) return bad(el);
+  });
+  fs.querySelectorAll("[data-req]").forEach(g => { const any = g.querySelector("input:checked"); g.closest(".field").classList.toggle("invalid", !any); if (!any && !first) first = g; });
+  fs.querySelectorAll("[data-req-cefr]").forEach(g => { const any = g.querySelector("input:checked"); g.closest(".field").classList.toggle("invalid", !any); if (!any && !first) first = g; });
+  if (n === 3 && !checkRates(true) && !first) first = $("#skillRows");
+  if (n === 6){
+    if (!cvFile){ $("#cvField").classList.add("invalid"); first = first || $("#drop"); }
+    if (!$("#consent").checked){ $("#consentField").classList.add("invalid"); first = first || $("#consent"); }
+  }
+  if (first){ first.scrollIntoView({behavior:"smooth", block:"center"}); const focusable = first.matches("input,select,textarea") ? first : first.querySelector("input"); focusable && setTimeout(()=>focusable.focus({preventScroll:true}), 250); return false; }
+  return true;
+}
+
+/* ---------- steps ---------- */
+function renderStep(scroll = true){
+  form.querySelectorAll("fieldset[data-step]").forEach(f => f.hidden = +f.dataset.step !== step);
+  $$("#steps li").forEach(li => { const i = +li.dataset.i; li.className = i < step ? "done" : i === step ? "cur" : ""; });
+  $$("[data-stepcount]").forEach(s => s.textContent = t("step", {n: lang === "ar" ? String(step).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]) : step}));
+  $("#prevBtn").style.visibility = step === 1 ? "hidden" : "visible";
+  $("#nextBtn").hidden = step === TOTAL; $("#submitBtn").hidden = step !== TOTAL;
+  if (step === TOTAL) renderReview();
+  if (scroll) $("#applyHead").scrollIntoView({behavior:"smooth", block:"start"});
+}
+$("#nextBtn").onclick = () => { if (!validateStep(step)) return; step = Math.min(TOTAL, step + 1); saveDraft(); renderStep(); };
+$("#prevBtn").onclick = () => { step = Math.max(1, step - 1); saveDraft(); renderStep(); };
+
+function label(group, v){ const o = (OPTIONS[group]||[]).find(x => x[0] === v); return o ? o[1+L()] : (v || "—"); }
+function renderReview(){
+  const d = collect(); const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const cefr = CEFR.find(c => c[0] === d.english);
+  const rows = [
+    ["rv_name", (lang === "ar" ? d.nameAr : d.nameEn) || d.nameEn || d.nameAr],
+    ["rv_email", d.email], ["rv_wa", d.whatsapp],
+    ["rv_loc", [d.city, d.country && t(({"Syria":"c_sy","Türkiye":"c_tr","Lebanon":"c_lb","Jordan":"c_jo","Saudi Arabia":"c_sa","UAE":"c_ae","Egypt":"c_eg","Other":"other"})[d.country])].filter(Boolean).join(lang==="ar"?"، ":", ")],
+    ["rv_exp", label("years", d.years)], ["rv_plat", (d.platforms||[]).map(p => label("platforms", p)).join(lang==="ar"?"، ":", ")],
+    ["rv_en", cefr ? `${cefr[0]} · ${cefr[1+L()]}` : "—"], ["rv_start", label("start", d.start)],
+  ];
+  $("#review").innerHTML = rows.map(r => `<div><dt>${t(r[0])}</dt><dd>${esc(r[1]) || "—"}</dd></div>`).join("");
+}
+
+/* ---------- CV upload ---------- */
+const OK_EXT = ["pdf","doc","docx"]; const MAX = 5 * 1024 * 1024;
+function setCv(f){
+  if (!f) return; const ext = (f.name.split(".").pop() || "").toLowerCase();
+  if (!OK_EXT.includes(ext) || f.size > MAX){ cvFile = null; $("#cvField").classList.add("invalid"); return; }
+  cvFile = f; $("#cvField").classList.remove("invalid");
+  $("#cvChip").hidden = false; $("#drop").hidden = true;
+  $("#cvExt").textContent = ext.toUpperCase(); $("#cvName").textContent = f.name; $("#cvSize").textContent = (f.size/1024/1024).toFixed(2) + " MB";
+}
+$("#cv").addEventListener("change", e => setCv(e.target.files[0]));
+$("#cvRemove").onclick = () => { cvFile = null; $("#cv").value = ""; $("#cvChip").hidden = true; $("#drop").hidden = false; };
+const drop = $("#drop");
+["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave","drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => setCv(e.dataTransfer.files[0]));
+$("#consent").addEventListener("change", () => $("#consentField").classList.remove("invalid"));
+
+/* ---------- submit ---------- */
+function makeRef(){ const d = new Date(); const yy = String(d.getFullYear()).slice(2), mm = String(d.getMonth()+1).padStart(2,"0"); const r = Math.random().toString(36).slice(2,6).toUpperCase(); return `INH-${yy}${mm}-${r}`; }
+function fileToBase64(f){ return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(",")[1]); r.onerror = rej; r.readAsDataURL(f); }); }
+form.addEventListener("submit", async e => {
+  e.preventDefault(); if (!validateStep(6)) return;
+  if ($("#website").value) return; // spam trap
+  const btn = $("#submitBtn"); btn.disabled = true; btn.innerHTML = `<span class="spinner"></span><span>${t("sending")}</span>`; $("#submitErr").hidden = true;
+  const d = collect();
+  const skills = {}; SKILLS.forEach(s => skills[s[0]] = { label: s[1], score: +(d["sk_"+s[0]] || 0) });
+  const tools = {}; TOOLS.forEach(s => tools[s[0]] = { label: s[1], level: +(d["tl_"+s[0]] || 0) });
+  const ref = makeRef();
+  const payload = {
+    ref, submittedAt: new Date().toISOString(), formLang: lang, role: "Online Channels Assistant",
+    personal: { nameAr: d.nameAr, nameEn: d.nameEn, email: d.email, whatsapp: d.whatsapp, country: d.country, city: d.city, linkedin: d.linkedin, source: d.source, referrer: d.referrer },
+    experience: { years: d.years, platforms: d.platforms || [], lastTitle: d.lastTitle, lastCompany: d.lastCompany, lastTasks: d.lastTasks, start: d.start, workType: d.workType, saudiHours: d.hours, internet: d.internet, backupPower: d.power, device: d.device },
+    skills, tools,
+    languages: { arabic: "Native", english: d.english, turkish: d.turkish, other: d.otherLangs },
+    answers: { q1: d.q1, q2: d.q2, q3: d.q3, why: d.why },
+    questions: { q1: STR.q1_t[0], q2: STR.q2_t[0], q3: STR.q3_t[0] },
+    portfolio: d.portfolio, website: $("#website").value,
+  };
+  try {
+    if (API_URL){
+      payload.cv = { name: cvFile.name, type: cvFile.type || "application/octet-stream", data: await fileToBase64(cvFile) };
+      const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+      const out = await res.json().catch(() => ({ ok: res.ok }));
+      if (!out.ok) throw new Error(out.error || "Failed");
+      if (out.ref) payload.ref = out.ref;
+    } else {
+      console.log("[preview] payload", payload);
+      await new Promise(r => setTimeout(r, 700));
+      $("#previewNote").hidden = false; $("#previewNote").textContent = t("preview");
+    }
+    store.del(DRAFT);
+    $("#formWrap").hidden = true; $("#success").hidden = false;
+    const nm = lang === "ar" ? (d.nameAr || d.nameEn) : (d.nameEn || d.nameAr);
+    $("#okText").textContent = t("ok_text", { name: nm.split(" ")[0], email: d.email });
+    $("#okRef").textContent = payload.ref;
+    $("#applyHead").scrollIntoView({behavior:"smooth"});
+  } catch (err){
+    console.error(err); $("#submitErr").textContent = t("e_send"); $("#submitErr").hidden = false;
+  } finally {
+    btn.disabled = false; btn.innerHTML = `<span>${t("submit")}</span>`;
+  }
+});
+
+/* ---------- init ---------- */
+(function init(){
+  $("#yr").textContent = new Date().getFullYear();
+  const th = store.get("ih_theme"); applyTheme(th || currentTheme());
+  matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", e => { if (!store.get("ih_theme")) applyTheme(e.matches ? "dark" : "light"); });
+  let draft = null; try { draft = JSON.parse(store.get(DRAFT) || "null"); } catch(e){}
+  applyLang();
+  if (draft){ restore(draft.d); step = Math.min(Math.max(1, draft.step || 1), TOTAL); renderStep(false); }
+  route();
+})();
+</script>
+
+</body>
+</html>
